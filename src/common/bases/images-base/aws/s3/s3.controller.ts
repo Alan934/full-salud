@@ -1,3 +1,7 @@
+import { Express, Request } from 'express';
+
+// This is a hack to make Multer available in the Express namespace
+import { Multer } from 'multer';
 import {
   Controller,
   Post,
