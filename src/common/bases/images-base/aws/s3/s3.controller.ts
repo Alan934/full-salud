@@ -70,21 +70,13 @@ export class S3Controller<T extends ImageBase> {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: 'image/png|image/jpg|image/jpeg' })]
-      })
-    )
-    file: Express.Multer.File // Recibe el archivo como un objeto de Multer
+    fileBuffer: Buffer, // Buffer del archivo
+    fileName: string, // Nombre del archivo
+    mimeType: string // Tipo MIME del archivo
   ) {
-    if (!file) {
-      throw new BadRequestException('File is required');
+    if (!fileBuffer || !fileName || !mimeType) {
+      throw new BadRequestException('File, fileName, and mimeType are required');
     }
-  
-    // Extrae buffer, nombre y tipo MIME del archivo
-    const fileBuffer = file.buffer;
-    const fileName = file.originalname;
-    const mimeType = file.mimetype;
   
     // Llama al servicio con los tres parámetros requeridos
     return this.s3Service.uploadFile(fileBuffer, fileName, mimeType);
@@ -147,14 +139,17 @@ export class S3Controller<T extends ImageBase> {
   })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadMultipleImages(
-    @UploadedFiles(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
-      })
-    )
-    files: Express.Multer.File[]
+    files: { buffer: Buffer; name: string; mimeType: string }[] // Recibe un arreglo de objetos con buffer, nombre y tipo MIME
   ) {
-    return this.s3Service.uploadFiles(files);
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files provided');
+    }
+  
+    // Llama al servicio con los datos de cada archivo
+    const uploadPromises = files.map(({ buffer, name, mimeType }) =>
+      this.s3Service.uploadFile(buffer, name, mimeType)
+    );
+    return Promise.all(uploadPromises);
   }
 
   @Get(':id')
