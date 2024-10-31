@@ -67,28 +67,17 @@ export class ImagesBaseController<T extends ImageBase> {
       }
     }
   })
-  @UseInterceptors(FilesInterceptor('file')) // Cambiado a FilesInterceptor para recibir múltiples archivos
+  @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    @UploadedFiles(
+    @UploadedFile(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })],
+        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
       })
     )
-    files: { buffer: Buffer; originalname: string }[] // Cambiar el tipo de archivo a un objeto que contenga buffer y originalname
+    file: Express.Multer.File
   ) {
-    return this.imagesService.uploadFiles(files);
+    return this.imagesService.uploadFile(file);
   }
-  // @UseInterceptors(FileInterceptor('file'))
-  // async uploadImage(
-  //   @UploadedFile(
-  //     new ParseFilePipe({
-  //       validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
-  //     })
-  //   )
-  //   file: Express.Multer.File
-  // ) {
-  //   return this.imagesService.uploadFile(file);
-  // }
 
   @Post('upload-multiple')
   @ApiOperation({ description: 'Subir múltiples imágenes' })
@@ -134,28 +123,17 @@ export class ImagesBaseController<T extends ImageBase> {
       }
     }
   })
-  @UseInterceptors(FilesInterceptor('files')) // Cambiado a FilesInterceptor para recibir múltiples archivos
+  @UseInterceptors(FilesInterceptor('files'))
   async uploadMultipleImages(
     @UploadedFiles(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })],
+        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
       })
     )
-    files: { buffer: Buffer; originalname: string }[] // Cambiar el tipo de archivo a un objeto que contenga buffer y originalname
+    files: Express.Multer.File[]
   ) {
     return this.imagesService.uploadFiles(files);
   }
-  // @UseInterceptors(FilesInterceptor('files'))
-  // async uploadMultipleImages(
-  //   @UploadedFiles(
-  //     new ParseFilePipe({
-  //       validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
-  //     })
-  //   )
-  //   files: Express.Multer.File[]
-  // ) {
-  //   return this.imagesService.uploadFiles(files);
-  // }
 
   @Get(':id')
   @ApiOperation({ description: 'Obtener una imagen' })

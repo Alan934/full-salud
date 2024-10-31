@@ -9,8 +9,7 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   Get,
-  Param,
-  BadRequestException
+  Param
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImageBase } from 'src/domain/entities/image-base.entity';
@@ -70,19 +69,6 @@ export class S3Controller<T extends ImageBase> {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
-    fileBuffer: Buffer, // Buffer del archivo
-    fileName: string, // Nombre del archivo
-    mimeType: string // Tipo MIME del archivo
-  ) {
-    if (!fileBuffer || !fileName || !mimeType) {
-      throw new BadRequestException('File, fileName, and mimeType are required');
-    }
-  
-    // Llama al servicio con los tres parámetros requeridos
-    return this.s3Service.uploadFile(fileBuffer, fileName, mimeType);
-  }
-  /*@UseInterceptors(FileInterceptor('file'))
-  async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
@@ -91,7 +77,7 @@ export class S3Controller<T extends ImageBase> {
     file: Express.Multer.File
   ) {
     return this.s3Service.uploadFile(file);
-  }*/
+  }
 
   @Post('upload-multiple')
   @ApiOperation({ description: 'Subir múltiples imágenes' })
@@ -139,17 +125,14 @@ export class S3Controller<T extends ImageBase> {
   })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadMultipleImages(
-    files: { buffer: Buffer; name: string; mimeType: string }[] // Recibe un arreglo de objetos con buffer, nombre y tipo MIME
+    @UploadedFiles(
+      new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
+      })
+    )
+    files: Express.Multer.File[]
   ) {
-    if (!files || files.length === 0) {
-      throw new BadRequestException('No files provided');
-    }
-  
-    // Llama al servicio con los datos de cada archivo
-    const uploadPromises = files.map(({ buffer, name, mimeType }) =>
-      this.s3Service.uploadFile(buffer, name, mimeType)
-    );
-    return Promise.all(uploadPromises);
+    return this.s3Service.uploadFiles(files);
   }
 
   @Get(':id')
