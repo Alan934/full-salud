@@ -26,14 +26,15 @@
 //   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
 //   SwaggerModule.setup(envConfig.SWAGGER_PATH, app, swaggerDocument);
 // };
+
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import basicAuth from 'express-basic-auth';
 import { envConfig } from '../../config/envs';
 
 export function setupSwagger(app: INestApplication, useAuth = true) {
-  if (useAuth) {
-    // Añade la autenticación básica para el acceso a Swagger en producción
+  if (useAuth && envConfig.NODE_ENV !== 'development') {
+    // Añade autenticación básica para Swagger fuera del entorno de desarrollo
     app.use(
       [envConfig.SWAGGER_PATH, `${envConfig.SWAGGER_PATH}-json`],
       basicAuth({
@@ -45,12 +46,12 @@ export function setupSwagger(app: INestApplication, useAuth = true) {
 
   const config = new DocumentBuilder()
     .setTitle('Full Salud API')
-    .setDescription('')
+    .setDescription('Documentación de la API')
     .setVersion('1.0')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
+  SwaggerModule.setup(envConfig.SWAGGER_PATH, app, document, {
     customSiteTitle: 'Backend Generator',
     customfavIcon: 'https://avatars.githubusercontent.com/u/185267919?s=400&u=7d74f9c123b27391d3f11da2815de1e9a1031ca9&v=4',
     customJs: [
@@ -64,3 +65,43 @@ export function setupSwagger(app: INestApplication, useAuth = true) {
     ],
   });
 }
+
+
+// import { INestApplication } from '@nestjs/common';
+// import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+// import basicAuth from 'express-basic-auth';
+// import { envConfig } from '../../config/envs';
+
+// export function setupSwagger(app: INestApplication, useAuth = true) {
+//   if (useAuth) {
+//     // Añade la autenticación básica para el acceso a Swagger en producción
+//     app.use(
+//       [envConfig.SWAGGER_PATH, `${envConfig.SWAGGER_PATH}-json`],
+//       basicAuth({
+//         challenge: true,
+//         users: { admin: envConfig.SWAGGER_PASSWORD }
+//       })
+//     );
+//   }
+
+//   const config = new DocumentBuilder()
+//     .setTitle('Full Salud API')
+//     .setDescription('')
+//     .setVersion('1.0')
+//     .build();
+
+//   const document = SwaggerModule.createDocument(app, config);
+//   SwaggerModule.setup('api/docs', app, document, {
+//     customSiteTitle: 'Backend Generator',
+//     customfavIcon: 'https://avatars.githubusercontent.com/u/185267919?s=400&u=7d74f9c123b27391d3f11da2815de1e9a1031ca9&v=4',
+//     customJs: [
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-bundle.min.js',
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.js',
+//     ],
+//     customCssUrl: [
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.min.css',
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui-standalone-preset.min.css',
+//       'https://cdnjs.cloudflare.com/ajax/libs/swagger-ui/4.15.5/swagger-ui.css',
+//     ],
+//   });
+// }
