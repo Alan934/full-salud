@@ -1,7 +1,3 @@
-import { Express, Request } from 'express';
-
-// This is a hack to make Multer available in the Express namespace
-import { Multer } from 'multer';
 import {
   Controller,
   Post,
@@ -13,7 +9,8 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   Get,
-  Param
+  Param,
+  BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImageBase } from 'src/domain/entities/image-base.entity';
@@ -75,13 +72,34 @@ export class S3Controller<T extends ImageBase> {
   async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
+        validators: [new FileTypeValidator({ fileType: 'image/png|image/jpg|image/jpeg' })]
+      })
+    )
+    file: Express.Multer.File // Recibe el archivo como un objeto de Multer
+  ) {
+    if (!file) {
+      throw new BadRequestException('File is required');
+    }
+  
+    // Extrae buffer, nombre y tipo MIME del archivo
+    const fileBuffer = file.buffer;
+    const fileName = file.originalname;
+    const mimeType = file.mimetype;
+  
+    // Llama al servicio con los tres parámetros requeridos
+    return this.s3Service.uploadFile(fileBuffer, fileName, mimeType);
+  }
+  /*@UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
+    @UploadedFile(
+      new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
       })
     )
     file: Express.Multer.File
   ) {
     return this.s3Service.uploadFile(file);
-  }
+  }*/
 
   @Post('upload-multiple')
   @ApiOperation({ description: 'Subir múltiples imágenes' })
