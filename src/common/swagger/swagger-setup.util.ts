@@ -29,7 +29,7 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import basicAuth from 'express-basic-auth';
-import { envConfig } from '../config/envs';
+import { envConfig } from '../../config/envs';
 
 export function setupSwagger(app: INestApplication, useAuth = true) {
   if (useAuth) {
