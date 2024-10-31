@@ -21,8 +21,7 @@ export abstract class ImagesBaseService<T extends ImageBase> {
   ) {
     this.folderName = folderName;
   }
-
-  async uploadFile(file: Express.Multer.File): Promise<T> {
+  async uploadFile(file: Buffer, originalName: string): Promise<T> {
     try {
       if (!file) {
         throw new BadRequestException('No file provided');
@@ -41,7 +40,7 @@ export abstract class ImagesBaseService<T extends ImageBase> {
           }
         );
 
-        toStream(file.buffer).pipe(upload);
+        toStream(file).pipe(upload);
       });
 
       if ('error' in uploadResult) {
@@ -51,7 +50,7 @@ export abstract class ImagesBaseService<T extends ImageBase> {
       }
 
       const imageEntity: DeepPartial<T> = {
-        name: file.originalname,
+        name: originalName,
         url: uploadResult.secure_url,
         public_id: uploadResult.public_id
       } as DeepPartial<T>;
@@ -64,13 +63,13 @@ export abstract class ImagesBaseService<T extends ImageBase> {
     }
   }
 
-  async uploadFiles(files: Express.Multer.File[]): Promise<T[]> {
+  async uploadFiles(files: { buffer: Buffer; originalname: string }[]): Promise<T[]> {
     try {
       if (!files || files.length === 0) {
         throw new BadRequestException('No files provided');
       }
 
-      const uploadPromises = files.map((file) => this.uploadFile(file));
+      const uploadPromises = files.map((file) => this.uploadFile(file.buffer, file.originalname));
       return await Promise.all(uploadPromises);
     } catch (error) {
       throw new InternalServerErrorException(
@@ -78,6 +77,62 @@ export abstract class ImagesBaseService<T extends ImageBase> {
       );
     }
   }
+  // async uploadFile(file: Express.Multer.File): Promise<T> {
+  //   try {
+  //     if (!file) {
+  //       throw new BadRequestException('No file provided');
+  //     }
+
+  //     const uploadResult = await new Promise<
+  //       UploadApiResponse | UploadApiErrorResponse
+  //     >((resolve, reject) => {
+  //       const upload = cloudinary.uploader.upload_stream(
+  //         { folder: this.folderName },
+  //         (error, result) => {
+  //           if (error) {
+  //             return reject(error);
+  //           }
+  //           resolve(result);
+  //         }
+  //       );
+
+  //       toStream(file.buffer).pipe(upload);
+  //     });
+
+  //     if ('error' in uploadResult) {
+  //       throw new InternalServerErrorException(
+  //         `Failed to upload image: ${uploadResult.error.message}`
+  //       );
+  //     }
+
+  //     const imageEntity: DeepPartial<T> = {
+  //       name: file.originalname,
+  //       url: uploadResult.secure_url,
+  //       public_id: uploadResult.public_id
+  //     } as DeepPartial<T>;
+
+  //     return await this.repository.save(imageEntity as T);
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(
+  //       `An error occurred while uploading the image: ${(error as Error).message ?? 'Unknown error'}`
+  //     );
+  //   }
+  // }
+
+  // async uploadFiles(files: Express.Multer.File[]): Promise<T[]> {
+  //   try {
+  //     if (!files || files.length === 0) {
+  //       throw new BadRequestException('No files provided');
+  //     }
+
+  //     const uploadPromises = files.map((file) => this.uploadFile(file));
+  //     return await Promise.all(uploadPromises);
+  //   } catch (error) {
+  //     throw new InternalServerErrorException(
+  //       `An error occurred while uploading multiple images: ${(error as Error).message ?? 'Unknown error'}`
+  //     );
+  //   }
+  // }
 
   async getImage(id: string): Promise<T> {
     const image = await this.repository.findOne({ where: { id } } as any);
