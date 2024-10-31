@@ -1,17 +1,12 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "nest build",
-      "use": "@vercel/static-build",
-      "config": {
-        "buildCommand": "nest build"
-      }
-    }
-  ],
+
+
+
   "routes": [
     {
-      "src": "/(.)",
+      "src": "/api/(.*)",
+      "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       "dest": "dist/main.js"
     }
   ]

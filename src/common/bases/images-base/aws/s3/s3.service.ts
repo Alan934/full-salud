@@ -1,144 +1,73 @@
+import {
+  DeleteObjectCommand,
+  PutObjectCommand,
+  S3Client
+} from '@aws-sdk/client-s3';
+import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { envConfig } from 'src/config/envs';
 import { ImageBase } from 'src/domain/entities/image-base.entity';
 import { DeepPartial, Repository } from 'typeorm';
-import {
-  v2 as cloudinary,
-  UploadApiErrorResponse,
-  UploadApiResponse
-} from 'cloudinary';
-import toStream = require('buffer-to-stream');
-import {
-  NotFoundException,
-  InternalServerErrorException,
-  BadRequestException
-} from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
-export abstract class ImagesBaseService<T extends ImageBase> {
-  private folderName: string;
+export abstract class S3Service<T extends ImageBase> {
+  private bucketName;
+  private prefix: string;
 
   constructor(
+    protected readonly s3Client: S3Client,
     protected readonly repository: Repository<T>,
-    folderName: string
+    prefix: string
   ) {
-    this.folderName = folderName;
+    this.bucketName = envConfig.S3_BUCKET_NAME;
+    this.prefix = prefix;
   }
-  async uploadFile(file: Buffer, originalName: string): Promise<T> {
+
+  async uploadFile(file: Express.Multer.File): Promise<T> {
     try {
-      if (!file) {
-        throw new BadRequestException('No file provided');
-      }
+      const fileKey = `${this.prefix}/${uuidv4()}`;
+      const uploadParams = new PutObjectCommand({
+        Bucket: this.bucketName,
+        Key: fileKey,
+        Body: file.buffer,
+        ContentType: file.mimetype,
+        //ACL: 'private',
 
-      const uploadResult = await new Promise<
-        UploadApiResponse | UploadApiErrorResponse
-      >((resolve, reject) => {
-        const upload = cloudinary.uploader.upload_stream(
-          { folder: this.folderName },
-          (error, result) => {
-            if (error) {
-              return reject(error);
-            }
-            resolve(result);
-          }
-        );
-
-        toStream(file).pipe(upload);
+        Metadata: {
+          originalName: file.originalname
+        }
       });
 
-      if ('error' in uploadResult) {
-        throw new InternalServerErrorException(
-          `Failed to upload image: ${uploadResult.error.message}`
-        );
-      }
+      await this.s3Client.send(uploadParams);
 
       const imageEntity: DeepPartial<T> = {
-        name: originalName,
-        url: uploadResult.secure_url,
-        public_id: uploadResult.public_id
+        name: fileKey,
+        url: `https://${this.bucketName}.s3.${envConfig.S3_REGION}.amazonaws.com/${fileKey}`
       } as DeepPartial<T>;
 
       return await this.repository.save(imageEntity as T);
     } catch (error) {
-      throw new InternalServerErrorException(
-        `An error occurred while uploading the image: ${(error as Error).message ?? 'Unknown error'}`
-      );
+      throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async uploadFiles(files: { buffer: Buffer; originalname: string }[]): Promise<T[]> {
+  async uploadFiles(files: Express.Multer.File[]): Promise<T[]> {
     try {
       if (!files || files.length === 0) {
-        throw new BadRequestException('No files provided');
+        throw new ErrorManager('No files provided', 400);
       }
 
-      const uploadPromises = files.map((file) => this.uploadFile(file.buffer, file.originalname));
+      const uploadPromises = files.map((file) => this.uploadFile(file));
       return await Promise.all(uploadPromises);
     } catch (error) {
-      throw new InternalServerErrorException(
-        `An error occurred while uploading multiple images: ${(error as Error).message ?? 'Unknown error'}`
-      );
+      throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-  // async uploadFile(file: Express.Multer.File): Promise<T> {
-  //   try {
-  //     if (!file) {
-  //       throw new BadRequestException('No file provided');
-  //     }
-
-  //     const uploadResult = await new Promise<
-  //       UploadApiResponse | UploadApiErrorResponse
-  //     >((resolve, reject) => {
-  //       const upload = cloudinary.uploader.upload_stream(
-  //         { folder: this.folderName },
-  //         (error, result) => {
-  //           if (error) {
-  //             return reject(error);
-  //           }
-  //           resolve(result);
-  //         }
-  //       );
-
-  //       toStream(file.buffer).pipe(upload);
-  //     });
-
-  //     if ('error' in uploadResult) {
-  //       throw new InternalServerErrorException(
-  //         `Failed to upload image: ${uploadResult.error.message}`
-  //       );
-  //     }
-
-  //     const imageEntity: DeepPartial<T> = {
-  //       name: file.originalname,
-  //       url: uploadResult.secure_url,
-  //       public_id: uploadResult.public_id
-  //     } as DeepPartial<T>;
-
-  //     return await this.repository.save(imageEntity as T);
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(
-  //       `An error occurred while uploading the image: ${(error as Error).message ?? 'Unknown error'}`
-  //     );
-  //   }
-  // }
-
-  // async uploadFiles(files: Express.Multer.File[]): Promise<T[]> {
-  //   try {
-  //     if (!files || files.length === 0) {
-  //       throw new BadRequestException('No files provided');
-  //     }
-
-  //     const uploadPromises = files.map((file) => this.uploadFile(file));
-  //     return await Promise.all(uploadPromises);
-  //   } catch (error) {
-  //     throw new InternalServerErrorException(
-  //       `An error occurred while uploading multiple images: ${(error as Error).message ?? 'Unknown error'}`
-  //     );
-  //   }
-  // }
 
   async getImage(id: string): Promise<T> {
     const image = await this.repository.findOne({ where: { id } } as any);
 
     if (!image) {
-      throw new NotFoundException('Image not found');
+      throw new ErrorManager(`Image with id ${id} not found`, 404);
     }
 
     return image;
@@ -151,24 +80,25 @@ export abstract class ImagesBaseService<T extends ImageBase> {
       } as any);
 
       if (!image) {
-        throw new NotFoundException(`Image with id ${id} not found`);
+        throw new ErrorManager(`Image with id ${id} not found`, 404);
       }
 
-      const result = await cloudinary.uploader.destroy(image.public_id);
+      // Extraer la clave del archivo (fileKey) desde la URL almacenada
+      const fileKey = image.name;
 
-      if (result.result !== 'ok') {
-        throw new InternalServerErrorException(
-          `Failed to delete image from Cloudinary: ${result.result}`
-        );
-      }
+      const deleteParams = new DeleteObjectCommand({
+        Bucket: this.bucketName,
+        Key: fileKey
+      });
 
+      await this.s3Client.send(deleteParams);
+
+      // Eliminar la entrada en la base de datos
       await this.repository.delete(id);
 
-      return `Image with id ${id} deleted`;
+      return `Image with id ${id} deleted successfully`;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `An error occurred while deleting the image: ${(error as Error).message ?? 'Unknown error'}`
-      );
+      throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 }

@@ -4,7 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
+  ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from 'src/common/dtos';
@@ -27,31 +27,31 @@ export class CreateTurnDto {
   @IsString()
   @ApiProperty({
     example:
-      'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva',
+      'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva'
   })
   observation?: string;
 
-  // Recibe el id de patientUserConnection
+  //recibe el id de patientUserConnection
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   patientUserConnection: ShortBaseDto;
 
-  // Recibe un id de diagnostic
+  //recibe un id de diagnostic
   @IsOptional()
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   diagnostic: ShortBaseDto;
 
-  // Recibe el id del specialist
+  //recibe el id del specialist
   @ValidateNested()
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
   @IncompatableWith(['institution'])
   specialist?: ShortBaseDto;
 
-  // Recibe el id de institution
+  //recibe el id de institution
   @ValidateNested()
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
@@ -61,7 +61,7 @@ export class CreateTurnDto {
   @IsNotEmpty()
   @ApiProperty({
     description: 'Horarios y días que el paciente dispone para el turno',
-    example: 'Jueves de 07:00 a 09:00 y Lunes de 12:00 a 15:00',
+    example: 'Jueves de 07:00 a 09:00 y Lunes de 12:00 a 15:00'
   })
   availableTime: string;
 }
@@ -76,8 +76,8 @@ export class UpdateTurnDto extends PartialType(CreateTurnDto) {
       TurnStatus.COMPLETED,
       TurnStatus.NO_SHOW,
       TurnStatus.PENDING,
-      TurnStatus.UNDER_REVIEW,
-    ],
+      TurnStatus.UNDER_REVIEW
+    ]
   })
   status?: TurnStatus;
 }
@@ -92,8 +92,7 @@ export class CreateTurnDtoWithFiles {
     type: 'string',
     format: 'binary',
     required: false,
-    description: 'Imágenes de derivaciones en formato PNG, JPG o JPEG',
+    description: 'Imagénes de derivaciones en formato PNG, JPG o JPEG'
   })
-  // Cambiado para no usar Express ni Multer
-  derivationImages?: { buffer: Buffer; originalname: string }[];
+  derivationImages?: Express.Multer.File[];
 }
