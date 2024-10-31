@@ -9,15 +9,17 @@ import {
   UploadedFile,
   UseInterceptors
 } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Express } from 'express';
+import 'multer';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateUserDto,
   CreateUserDtoWithFiles,
   SerializerUserDto,
   UpdateUserDto,
   UserPaginationDto
-} from 'src/domain/dtos';
-import { User } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { User } from '../../domain/entities';
 import { AuthService } from './auth.service';
 import {
   ApiBody,
@@ -27,9 +29,9 @@ import {
   ApiTags
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { toDto, toDtoList } from 'src/common/util/transform-dto.util';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
-import { PaginationMetadata } from 'src/common/util/pagination-data.util';
+import { toDto, toDtoList } from '../../common/util/transform-dto.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { PaginationMetadata } from '../../common/util/pagination-data.util';
 
 @ApiTags('Auth')
 @Controller('auth')

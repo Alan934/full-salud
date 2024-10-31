@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { FullBaseDto, ShortBaseDto } from 'src/common/dtos';
-import { Day } from 'src/domain/enums';
-import { SerializerOfficeDto, SerializerShortOfficeDto } from 'src/domain/dtos';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
+import { Day } from '../../../domain/enums';
+import { SerializerOfficeDto, SerializerShortOfficeDto } from '../../../domain/dtos';
 
 export class ShortSerializerSpecialistAttentionHourDto extends ShortBaseDto {
   @Expose()

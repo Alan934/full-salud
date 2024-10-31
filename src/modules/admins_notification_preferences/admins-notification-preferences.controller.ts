@@ -1,13 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { AdminsNotificationPreferences } from 'src/domain/entities';
+import { AdminsNotificationPreferences } from '../../domain/entities';
 import {
   UpdateAdminsNotificationPreferencesDto,
   SerializerAdminsNotificationPreferencesDto,
   SerializerShortAdminsNotificationPreferencesDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { AdminsNotificationPreferencesService } from './admins-notification-preferences.service';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/notification-preferences-base-controller.factory';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/notification-preferences-base-controller.factory';
 
 @ApiTags("Admin's Notification Preferences")
 @Controller('admins-notification-preferences')

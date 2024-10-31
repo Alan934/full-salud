@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ExamplesService } from './examples.service';
-import { Examples } from 'src/domain/entities';
+import { Examples } from '../../domain/entities';
 import {
   CreateExampleDto,
   SerializerExampleDto,
   UpdateExampleDto
-} from 'src/domain/dtos';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+} from '../../domain/dtos';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import { ApiExcludeController } from '@nestjs/swagger';
 
 @ApiExcludeController()

@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SpecialistsSecretaryNotificationPreferences } from 'src/domain/entities';
+import { SpecialistsSecretaryNotificationPreferences } from '../../domain/entities';
 import {
   UpdateSpecialistsSecretaryNotificationPreferencesDto,
   SerializerShortSpecialistsSecretaryNotificationPreferencesDto,
   SerializerSpecialistsSecretaryNotificationPreferencesDto
-} from 'src/domain/dtos';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/notification-preferences-base-controller.factory';
+} from '../../domain/dtos';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/notification-preferences-base-controller.factory';
 import { SpecialistsSecretaryNotificationPreferencesService } from './specialists-secretary-notification-preferences.service';
 
 @ApiTags("Specialist's Secretary's Notification Preferences")

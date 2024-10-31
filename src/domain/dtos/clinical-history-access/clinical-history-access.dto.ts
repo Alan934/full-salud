@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsDate } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateClinicalHistoryAccessDto {
   @IsNotEmpty()

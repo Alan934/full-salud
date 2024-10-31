@@ -10,10 +10,12 @@ import {
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Express } from 'express';
+import 'multer';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { OmitFieldForRoles } from 'src/common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
-import { IsOptionalIf } from 'src/common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
-import { ShortBaseDto } from 'src/common/dtos';
+import { OmitFieldForRoles } from '../../../common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
+import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateUserDto {
   @IsNumberString()

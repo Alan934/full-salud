@@ -1,5 +1,5 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { PatientsNotificationPreferences } from 'src/domain/entities';
+import { PatientsNotificationPreferences } from '../../domain/entities';
 import { PatientsNotificationPreferencesController } from './patients-notification-preferences.controller';
 import { PatientsNotificationPreferencesService } from './patients-notification-preferences.service';
 import { Module } from '@nestjs/common';

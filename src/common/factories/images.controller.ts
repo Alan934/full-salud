@@ -9,9 +9,11 @@ import {
   ParseFilePipe,
   FileTypeValidator
 } from '@nestjs/common';
+import { Express } from 'express';
+import 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesBaseService } from '../bases/images-base/images-base.service';
-import { ImageBase } from 'src/domain/entities/image-base.entity';
+import { ImageBase } from '../../domain/entities/image-base.entity';
 
 export interface IImagesController<T extends ImageBase> {
   uploadFile(file: Express.Multer.File): Promise<T>;

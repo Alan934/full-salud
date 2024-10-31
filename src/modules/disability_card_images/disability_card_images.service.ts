@@ -1,8 +1,8 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { S3Service } from 'src/common/bases/images-base/aws/s3/s3.service';
-import { DisabilityCardImage } from 'src/domain/entities';
+import { S3Service } from '../../common/bases/images-base/aws/s3/s3.service';
+import { DisabilityCardImage } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

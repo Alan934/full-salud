@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateRelationshipDto,
   SerializerRelationshipDto,
   UpdateRelationshipDto
-} from 'src/domain/dtos';
-import { Relationship } from 'src/domain/entities/relationship.entity';
+} from '../../domain/dtos';
+import { Relationship } from '../../domain/entities/relationship.entity';
 import { RelationshipService } from './relationship.service';
 import { ApiTags } from '@nestjs/swagger';
 

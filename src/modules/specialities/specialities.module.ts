@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SpecialitiesService } from './specialities.service';
 import { SpecialitiesController } from './specialities.controller';
-import { Speciality } from 'src/domain/entities';
+import { Speciality } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

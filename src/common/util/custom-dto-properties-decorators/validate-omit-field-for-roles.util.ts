@@ -7,8 +7,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
-import { CreateUserDto } from 'src/domain/dtos';
-import { Role } from 'src/domain/enums';
+import { CreateUserDto } from '../../../domain/dtos';
+import { Role } from '../../../domain/enums';
 
 /**
  * Validation Arguments sobreescritos para el constraint personalizado

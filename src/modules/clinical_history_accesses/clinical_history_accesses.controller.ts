@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   SerializerClinicalHistoryAccessDto,
   CreateClinicalHistoryAccessDto,
   UpdateClinicalHistoryAccessDto
-} from 'src/domain/dtos';
-import { ClinicalHistoryAccess } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { ClinicalHistoryAccess } from '../../domain/entities';
 import { ClinicalHistoryAccessesService } from './clinical_history_accesses.service';
 import { ApiTags } from '@nestjs/swagger';
 

@@ -1,17 +1,17 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { SpecialistsService } from './specialists.service';
-import { Specialist } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Specialist } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateSpecialistDto,
   SerializerSpecialistDto,
   SpecialistFilteredPaginationDto,
   UpdateSpecialistDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
-import { toDtoList } from 'src/common/util/transform-dto.util';
-import { PaginationMetadata } from 'src/common/util/pagination-data.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { toDtoList } from '../../common/util/transform-dto.util';
+import { PaginationMetadata } from '../../common/util/pagination-data.util';
 
 @ApiTags('Specialists')
 @Controller('specialists')

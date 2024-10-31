@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import { SerializerUserApplicationDto } from '..';
 
 export class SerializerInstitutionApplicationDto extends FullBaseDto {

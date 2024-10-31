@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
+import { BaseService } from '../../common/bases/base.service';
 import {
   ChangeStatusApplicationDto,
   CreateInstitutionApplicationDto,
   UpdateInstitutionApplicationDto
-} from 'src/domain/dtos';
-import { Headquarters, InstitutionApplication } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Headquarters, InstitutionApplication } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { UserApplicationsService } from '../user_applications/user_applications.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { ApplicationStatus, Role } from 'src/domain/enums';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { ApplicationStatus, Role } from '../../domain/enums';
 import { AuthService } from '../auth/auth.service';
-import { generatedRandomPassword } from 'src/common/util/random-password.util';
+import { generatedRandomPassword } from '../../common/util/random-password.util';
 import { InstitutionsService } from '../institutions/institutions.service';
 import { InstitutionTypesService } from '../institution_types/institution_types.service';
 import { HeadquartersService } from '../headquarters/headquarters.service';

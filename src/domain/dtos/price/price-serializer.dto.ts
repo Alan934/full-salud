@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import { SerializerShortSpecialistDto, SerializerShortPracticeDto } from '..';
 import { Expose, Type } from 'class-transformer';
 

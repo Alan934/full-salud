@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { SpecialistAttentionHourService } from './specialist-attention-hour.service';
 import { SpecialistAttentionHourController } from './specialist-attention-hour.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SpecialistAttentionHour } from 'src/domain/entities';
+import { SpecialistAttentionHour } from '../../domain/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([SpecialistAttentionHour])],

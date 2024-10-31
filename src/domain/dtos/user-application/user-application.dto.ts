@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
-import { ApplicationStatus } from 'src/domain/enums';
+import { ApplicationStatus } from '../../../domain/enums';
 
 export class CreateUserApplicationDto {
   @IsNotEmpty()

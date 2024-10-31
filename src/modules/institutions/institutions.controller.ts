@@ -1,17 +1,17 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { InstitutionsService } from './institutions.service';
-import { Institution } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Institution } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateInstitutionDto,
   SerializerInstitutionDto,
   UpdateInstitutionDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
-import { InstitutionPaginationDto } from 'src/domain/dtos/institution/institution-filtered-pagination.dto';
-import { toDtoList } from 'src/common/util/transform-dto.util';
-import { PaginationMetadata } from 'src/common/util/pagination-data.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { InstitutionPaginationDto } from '../../domain/dtos/institution/institution-filtered-pagination.dto';
+import { toDtoList } from '../../common/util/transform-dto.util';
+import { PaginationMetadata } from '../../common/util/pagination-data.util';
 
 @ApiTags('Institutions')
 @Controller('institutions')

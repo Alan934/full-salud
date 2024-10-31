@@ -1,10 +1,10 @@
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import {
   SerializerFullPersonDto,
   SerializerShortPersonDto,
   SerializerOfficeDto,
   SerializerShortOfficeDto
-} from 'src/domain/dtos';
+} from '../../../domain/dtos';
 import { Expose, Type } from 'class-transformer';
 import { OmitType } from '@nestjs/swagger';
 

@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { CreatePrescriptionDto, UpdatePrescriptionDto } from 'src/domain/dtos';
-import { Prescription, Specialist } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { CreatePrescriptionDto, UpdatePrescriptionDto } from '../../domain/dtos';
+import { Prescription, Specialist } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()

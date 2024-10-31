@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateHeadquartersDto,
   SerializerHeadquartersDto,
   UpdateHeadquartersDto
-} from 'src/domain/dtos';
-import { Headquarters } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Headquarters } from '../../domain/entities';
 import { HeadquartersService } from './headquarters.service';
 
 @Controller('headquarters')

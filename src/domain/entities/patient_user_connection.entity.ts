@@ -7,7 +7,7 @@ import {
   ManyToOne
 } from 'typeorm';
 import { Address, PatientTurn, Relationship, User } from '.';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 
 @Entity('patients_users_connections')
 export class PatientUserConnection extends Base {

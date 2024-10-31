@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { SpecialistsService } from './specialists.service';
 import { SpecialistsController } from './specialists.controller';
-import { Specialist } from 'src/domain/entities';
+import { Specialist } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PersonsModule } from '../persons/persons.module';
 

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { LocationLoaderService } from './location-loader.service';
-import { Department, Country, Province, Locality } from 'src/domain/entities';
+import { Department, Country, Province, Locality } from '../../domain/entities';
 
 @Module({
   imports: [

@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   SerializerCommissionDto,
   CreateCommissionDto,
   UpdateCommissionDto
-} from 'src/domain/dtos';
-import { Commission } from 'src/domain/entities/commission.entity';
+} from '../../domain/dtos';
+import { Commission } from '../../domain/entities/commission.entity';
 import { CommissionsService } from './commissions.service';
 
 @ApiTags('Commissions')

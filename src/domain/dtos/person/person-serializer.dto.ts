@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { SerializerUserDto } from '..';
-import { Gender, DocumentType } from 'src/domain/enums';
+import { Gender, DocumentType } from '../../../domain/enums';
 import { Expose, Type } from 'class-transformer';
 
 export class SerializerShortPersonDto extends ShortBaseDto {

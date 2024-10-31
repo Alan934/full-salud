@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { PracticesService } from './practices.service';
-import { Practice } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Practice } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreatePracticeDto,
   SerializerPracticeDto,
   UpdatePracticeDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Practices')

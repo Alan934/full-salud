@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { SocialWorksService } from './social_works.service';
-import { SocialWork } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { SocialWork } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateSocialWorkDto,
   SerializerSocialWorkDto,
   UpdateSocialWorkDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Social Works')

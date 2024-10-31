@@ -5,17 +5,17 @@ import {
   ApiOperation,
   ApiTags
 } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   ChangeStatusApplicationDto,
   CreateSpecialistApplicationDto,
   SerializerSpecialistApplicationDto,
   SerializerSpecialistDto,
   UpdateSpecialistApplicationDto
-} from 'src/domain/dtos';
-import { SpecialistApplication } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { SpecialistApplication } from '../../domain/entities';
 import { SpecialistApplicationsService } from './specialist_applications.service';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Specialist Applications')
 @Controller('specialist-applications')

@@ -1,7 +1,7 @@
 import { IsDate, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { PatientTurn, Specialist } from 'src/domain/entities';
+import { PatientTurn, Specialist } from '../../../domain/entities';
 
 export class CreateDerivationDto {
   @IsNotEmpty()

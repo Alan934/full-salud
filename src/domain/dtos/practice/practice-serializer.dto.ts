@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { FullBaseDto, ShortBaseDto } from 'src/common/dtos';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 
 export class SerializerPracticeDto extends FullBaseDto {
   @Expose()

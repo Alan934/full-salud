@@ -6,12 +6,14 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator';
+import { Express } from 'express';
+import 'multer';
 import { Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { TurnStatus } from 'src/domain/enums';
-import { IsTime } from 'src/common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
-import { IncompatableWith } from 'src/common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
+import { TurnStatus } from '../../../domain/enums';
+import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
+import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
 
 export class CreateTurnDto {
   @IsOptional()

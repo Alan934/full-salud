@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ImagesBaseService } from 'src/common/bases/images-base/images-base.service';
-import { ProfileImage } from 'src/domain/entities';
+import { ImagesBaseService } from '../../common/bases/images-base/images-base.service';
+import { ProfileImage } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

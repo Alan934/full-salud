@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column } from 'typeorm';
 
 export abstract class ImageBase extends Base {

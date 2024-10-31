@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { SerializerShortSpecialistDto } from '../specialist/specialist-serializer.dto';
 import { SerializerShortPacientTurnDto } from '../patient-turn/patient-turn-serializer.dto';
 

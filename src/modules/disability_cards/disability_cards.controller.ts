@@ -14,16 +14,18 @@ import {
   ApiResponse,
   ApiTags
 } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Express } from 'express';
+import 'multer';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateDisabilityCardDto,
   UpdateDisabilityCardDto,
   SerializerDisabilityCardDto,
   CreateDisabilityCardDtoWithFiles
-} from 'src/domain/dtos';
-import { DisabilityCard } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { DisabilityCard } from '../../domain/entities';
 import { DisabilityCardsService } from './disability_cards.service';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { toDto } from '../../common/util/transform-dto.util';
 import { FilesInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Disability Cards')

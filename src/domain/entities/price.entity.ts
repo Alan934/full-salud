@@ -1,4 +1,4 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { Specialist } from './specialist.entity';
 import { Practice } from './practice.entity';

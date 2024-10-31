@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateInstitutionTypeDto,
   UpdateInstitutionTypeDto,
   SerializerInstitutionTypeDto
-} from 'src/domain/dtos';
-import { InstitutionType } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { InstitutionType } from '../../domain/entities';
 import { InstitutionTypesService } from './institution_types.service';
 import { ApiTags } from '@nestjs/swagger';
 

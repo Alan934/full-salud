@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ProvincesService } from './provinces.service';
 import { ProvincesController } from './provinces.controller';
-import { Province } from 'src/domain/entities';
+import { Province } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

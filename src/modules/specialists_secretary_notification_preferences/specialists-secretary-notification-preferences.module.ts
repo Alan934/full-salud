@@ -1,6 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { SpecialistsSecretaryNotificationPreferences } from 'src/domain/entities';
+import { SpecialistsSecretaryNotificationPreferences } from '../../domain/entities';
 import { SpecialistsSecretaryNotificationPreferencesController } from './specialists-secretary-notification-preferences.controller';
 import { SpecialistsSecretaryNotificationPreferencesService } from './specialists-secretary-notification-preferences.service';
 

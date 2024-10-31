@@ -1,6 +1,6 @@
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 import { Media } from '../enums/media.enum';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { User } from './user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 

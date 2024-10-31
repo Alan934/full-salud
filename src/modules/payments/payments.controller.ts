@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreatePaymentDto,
   UpdatePaymentDto,
   SerializerPaymentDto
-} from 'src/domain/dtos';
-import { Payment } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Payment } from '../../domain/entities';
 import { PaymentsService } from './payments.service';
 
 @ApiTags('Payments')

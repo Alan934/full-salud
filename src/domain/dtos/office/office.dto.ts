@@ -1,4 +1,4 @@
-import { CreateAddressDto, UpdateAddressDto } from 'src/domain/dtos';
+import { CreateAddressDto, UpdateAddressDto } from '../../../domain/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsNotEmpty,

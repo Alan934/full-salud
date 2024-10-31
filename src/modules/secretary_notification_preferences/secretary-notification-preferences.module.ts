@@ -1,6 +1,6 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Module } from '@nestjs/common';
-import { SecretaryNotificationPreferences } from 'src/domain/entities';
+import { SecretaryNotificationPreferences } from '../../domain/entities';
 import { SecretaryNotificationPreferencesController } from './secretary-notification-preferences.controller';
 import { SecretaryNotificationPreferencesService } from './secretary-notification-preferences.service';
 

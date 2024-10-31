@@ -1,4 +1,4 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Role } from '../enums/role.enum';
 import { ProfileImage } from '.';

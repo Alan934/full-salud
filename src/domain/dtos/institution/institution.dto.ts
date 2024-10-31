@@ -6,7 +6,7 @@ import {
   Length,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 

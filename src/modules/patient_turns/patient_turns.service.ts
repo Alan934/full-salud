@@ -1,26 +1,26 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   Conditions,
   DynamicQueryBuilder
-} from 'src/common/util/dynamic-query-builder.util';
+} from '../../common/util/dynamic-query-builder.util';
 import {
   getPagingData,
   PaginationMetadata
-} from 'src/common/util/pagination-data.util';
+} from '../../common/util/pagination-data.util';
 import {
   CreatePatientTurnDto,
   PatientTurnPaginationDto,
   UpdatePatientTurnDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import {
   ClinicalHistoryAccess,
   PatientTurn,
   PatientUserConnection
-} from 'src/domain/entities';
-import { Gender } from 'src/domain/enums';
+} from '../../domain/entities';
+import { Gender } from '../../domain/enums';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { PersonsService } from '../persons/persons.service';
 import { DisabilityCardsService } from '../disability_cards/disability_cards.service';

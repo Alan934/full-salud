@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
-import { PaginationDto } from 'src/common/dtos';
-import { Filter } from 'src/common/util/dynamic-query-builder.util';
-import { Role } from 'src/domain/enums';
+import { PaginationDto } from '../../../common/dtos';
+import { Filter } from '../../../common/util/dynamic-query-builder.util';
+import { Role } from '../../../domain/enums';
 
 export class UserPaginationDto extends PaginationDto implements Filter {
   @IsOptional()

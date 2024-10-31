@@ -1,17 +1,17 @@
 import { Controller, Get, Query } from '@nestjs/common';
 import { PatientTurnsService } from './patient_turns.service';
-import { PatientTurn } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { PatientTurn } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreatePatientTurnDto,
   PatientTurnPaginationDto,
   SerializerPatientTurnDto,
   UpdatePatientTurnDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { toDtoList } from 'src/common/util/transform-dto.util';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
-import { PaginationMetadata } from 'src/common/util/pagination-data.util';
+import { toDtoList } from '../../common/util/transform-dto.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { PaginationMetadata } from '../../common/util/pagination-data.util';
 
 @ApiTags('Patient Turns')
 @Controller('patient-turns')

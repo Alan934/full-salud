@@ -4,9 +4,9 @@ import {
   UpdateInstitutionsNotificationPreferencesDto,
   SerializerInstitutionsNotificationPreferencesDto,
   SerializerShortInstitutionsNotificationPreferencesDto
-} from 'src/domain/dtos';
-import { InstitutionsNotificationPreferences } from 'src/domain/entities';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/notification-preferences-base-controller.factory';
+} from '../../domain/dtos';
+import { InstitutionsNotificationPreferences } from '../../domain/entities';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/notification-preferences-base-controller.factory';
 import { InstitutionsNotificationPreferencesService } from './institutions-notification-preferences.service';
 
 @ApiTags("Institution's Notification Preferences")

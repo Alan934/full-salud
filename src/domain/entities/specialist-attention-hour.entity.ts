@@ -1,6 +1,6 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Day } from 'src/domain/enums';
+import { Day } from '../../domain/enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { Specialist, Office } from '.';
 

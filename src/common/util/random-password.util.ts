@@ -1,7 +1,7 @@
 import {
   InstitutionApplication,
   SpecialistApplication
-} from 'src/domain/entities';
+} from '../../domain/entities';
 import { Base } from '../bases/base.entity';
 import { ErrorManager } from '../exceptions/error.manager';
 

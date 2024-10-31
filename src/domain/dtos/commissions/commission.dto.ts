@@ -8,7 +8,7 @@ import {
   IsOptional,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateCommissionDto {
   @ApiProperty({ example: 15.5, description: 'Porcentaje de la comision' })

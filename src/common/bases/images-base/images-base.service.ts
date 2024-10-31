@@ -1,10 +1,13 @@
-import { ImageBase } from 'src/domain/entities/image-base.entity';
+import { ImageBase } from '../../../domain/entities/image-base.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import {
   v2 as cloudinary,
   UploadApiErrorResponse,
   UploadApiResponse
 } from 'cloudinary';
+import { Express } from 'express';
+import 'multer';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import toStream = require('buffer-to-stream');
 import {
   NotFoundException,

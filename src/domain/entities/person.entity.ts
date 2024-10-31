@@ -1,4 +1,4 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';

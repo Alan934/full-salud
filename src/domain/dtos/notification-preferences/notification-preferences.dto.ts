@@ -10,7 +10,7 @@ import {
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos/base-short.dto';
+import { ShortBaseDto } from '../../../common/dtos/base-short.dto';
 
 export class CreateNotificationPreferencesDto {
   constructor(media: Media, user: ShortBaseDto) {

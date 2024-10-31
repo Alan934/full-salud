@@ -1,7 +1,9 @@
 import { IsNotEmpty, IsString, IsDate, ValidateNested } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Express } from 'express';
+import 'multer';
 import { Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateDisabilityCardDto {
   @IsNotEmpty()

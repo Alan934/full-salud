@@ -1,4 +1,4 @@
-import { FullBaseDto, ShortBaseDto } from 'src/common/dtos';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import {
   SerializerFullPersonDto,
   SerializerMemberSocialWorkDto,

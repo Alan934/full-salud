@@ -6,8 +6,8 @@ import {
   IsUUID,
   Length
 } from 'class-validator';
-import { PaginationDto } from 'src/common/dtos';
-import { Filter } from 'src/common/util/dynamic-query-builder.util';
+import { PaginationDto } from '../../../common/dtos';
+import { Filter } from '../../../common/util/dynamic-query-builder.util';
 
 export class InstitutionPaginationDto extends PaginationDto implements Filter {
   @Length(11, 11)

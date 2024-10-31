@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { DiagnosticsService } from './diagnostics.service';
-import { Diagnostic } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Diagnostic } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateDiagnosticDto,
   SerializerDiagnosticDto,
   UpdateDiagnosticDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Diagnostics')

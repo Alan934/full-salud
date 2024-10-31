@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { CreateHeadquartersDto, UpdateHeadquartersDto } from 'src/domain/dtos';
-import { Address, AttentionHour, Headquarters } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { CreateHeadquartersDto, UpdateHeadquartersDto } from '../../domain/dtos';
+import { Address, AttentionHour, Headquarters } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 

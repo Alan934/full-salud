@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Commission } from 'src/domain/entities';
+import { Commission } from '../../domain/entities';
 import { CommissionsController } from './commissions.controller';
 import { CommissionsService } from './commissions.service';
 

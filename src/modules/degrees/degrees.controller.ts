@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateDegreeDto,
   SerializerDegreeDto,
   UpdateDegreeDto
-} from 'src/domain/dtos';
-import { Degree } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Degree } from '../../domain/entities';
 import { DegreesService } from './degrees.service';
 import { ApiTags } from '@nestjs/swagger';
 

@@ -10,7 +10,7 @@ import {
   IsUUID,
   ValidateIf
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateAddressDto {
   @IsNotEmpty()

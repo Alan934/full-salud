@@ -1,7 +1,7 @@
 import { DeepPartial } from 'typeorm';
 import { Body, Get, Param, ParseUUIDPipe, Patch, Type } from '@nestjs/common';
 import { AbstractValidationPipe } from '../pipes/abstract-validation.pipe';
-import { NotificationPreferences } from 'src/domain/entities/notification-preferences-abstract.entity';
+import { NotificationPreferences } from '../../domain/entities/notification-preferences-abstract.entity';
 import {
   ApiBadRequestResponse,
   ApiBody,

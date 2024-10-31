@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { LocalitiesService } from './localities.service';
 import { LocalitiesController } from './localities.controller';
-import { Locality } from 'src/domain/entities';
+import { Locality } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

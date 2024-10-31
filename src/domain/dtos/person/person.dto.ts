@@ -11,7 +11,7 @@ import {
   MaxLength,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 
 export class CreatePersonDto {

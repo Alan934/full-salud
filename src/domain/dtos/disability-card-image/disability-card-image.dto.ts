@@ -1,5 +1,5 @@
 import { PartialType } from '@nestjs/swagger';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CreateImageBaseDto } from '..';

@@ -5,18 +5,18 @@ import {
   ApiParam,
   ApiTags
 } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateDepartmentDto,
   SerializerDepartmentDto,
   SerializerShortDepartmentDto,
   UpdateDepartmentDto
-} from 'src/domain/dtos';
-import { Department } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Department } from '../../domain/entities';
 import { DepartmentsService } from './departments.service';
-import { PaginationDto } from 'src/common/dtos/pagination-common.dto';
-import { toDtoList } from 'src/common/util/transform-dto.util';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
+import { PaginationDto } from '../../common/dtos/pagination-common.dto';
+import { toDtoList } from '../../common/util/transform-dto.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
 
 @ApiTags('Departments')
 @ApiExtraModels(SerializerShortDepartmentDto) // Registrar el DTO en Swagger

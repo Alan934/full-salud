@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { IndicationDetailsService } from './indication-details.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { IndicationDetail } from 'src/domain/entities';
+import { IndicationDetail } from '../../domain/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([IndicationDetail])],

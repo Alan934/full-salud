@@ -9,10 +9,10 @@ import {
   IsUUID,
   MaxLength
 } from 'class-validator';
-import { PaginationDto } from 'src/common/dtos/pagination-common.dto';
-import { Filter } from 'src/common/util/dynamic-query-builder.util';
-import { TransformQueryBoolean } from 'src/common/util/custom-dto-properties-decorators/transform-boolean-decorator.util';
-import { Gender } from 'src/domain/enums';
+import { PaginationDto } from '../../../common/dtos/pagination-common.dto';
+import { Filter } from '../../../common/util/dynamic-query-builder.util';
+import { TransformQueryBoolean } from '../../../common/util/custom-dto-properties-decorators/transform-boolean-decorator.util';
+import { Gender } from '../../../domain/enums';
 
 export class SpecialistFilteredPaginationDto
   extends PaginationDto

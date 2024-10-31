@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { PatientsUsersConnectionsService } from './patients-users-connections.service';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import { PatientUserConnection } from 'src/domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
+import { PatientUserConnection } from '../../domain/entities';
 import {
   CreatePatientUserConnectionDto,
   SerializerPatientUserConnectionDto,
   UpdatePatientUserConnectionDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Patients Users Connections')

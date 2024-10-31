@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { IvaTypesService } from './iva_types.service';
-import { Iva } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import { CreateIvaDto, SerializerIvaDto, UpdateIvaDto } from 'src/domain/dtos';
+import { Iva } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
+import { CreateIvaDto, SerializerIvaDto, UpdateIvaDto } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('IVA Types')

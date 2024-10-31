@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PrescriptionsService } from './prescriptions.service';
 import { PrescriptionsController } from './prescriptions.controller';
-import { Prescription } from 'src/domain/entities';
+import { Prescription } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

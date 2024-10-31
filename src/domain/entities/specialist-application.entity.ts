@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { DocumentType, Gender } from '../enums';
 import { UserApplication } from '.';

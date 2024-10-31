@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from 'src/domain/entities';
+import { User } from '../../domain/entities';
 import { AuthController } from './auth.controller';
 import { PatientsNotificationPreferencesModule } from '../patients_notification_preferences/patients-notification-preferences.module';
 import { SpecialistsNotificationPreferencesModule } from '../specialists_notification_preferences/specialists-notification-preferences.module';

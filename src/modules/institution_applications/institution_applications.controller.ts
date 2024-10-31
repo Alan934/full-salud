@@ -5,17 +5,17 @@ import {
   ApiOperation,
   ApiTags
 } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   ChangeStatusApplicationDto,
   CreateInstitutionApplicationDto,
   SerializerHeadquartersDto,
   SerializerInstitutionApplicationDto,
   UpdateInstitutionApplicationDto
-} from 'src/domain/dtos';
-import { InstitutionApplication } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { InstitutionApplication } from '../../domain/entities';
 import { InstitutionApplicationsService } from './institution_applications.service';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Institution Applications')
 @Controller('institution-applications')

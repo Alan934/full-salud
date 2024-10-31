@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { FullBaseDto, ShortBaseDto } from 'src/common/dtos';
-import { Day } from 'src/domain/enums';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
+import { Day } from '../../../domain/enums';
 
 export class SerializerAttentionHourDto extends FullBaseDto {
   @Expose()

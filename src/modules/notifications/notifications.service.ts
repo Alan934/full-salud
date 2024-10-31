@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { CreateNotificationDto, UpdateNotificatioDto } from 'src/domain/dtos';
-import { Notification } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { CreateNotificationDto, UpdateNotificatioDto } from '../../domain/dtos';
+import { Notification } from '../../domain/entities';
 import { Repository, EntityManager } from 'typeorm';
 
 @Injectable()

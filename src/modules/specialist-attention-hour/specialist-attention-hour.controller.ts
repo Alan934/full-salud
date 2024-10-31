@@ -1,13 +1,13 @@
 import { Controller } from '@nestjs/common';
 import { SpecialistAttentionHourService } from './specialist-attention-hour.service';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateSpecialistAttentionHourDto,
   UpdateSpecialistAttentionHourDto,
   SerializerSpecialistAttentionHourDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
-import { SpecialistAttentionHour } from 'src/domain/entities';
+import { SpecialistAttentionHour } from '../../domain/entities';
 
 @Controller('specialist-attention-hour')
 @ApiTags('Specialist Attention Hour')

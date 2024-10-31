@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
+import { BaseService } from '../../common/bases/base.service';
 import {
   CreateSpecialistAttentionHourDto,
   UpdateSpecialistAttentionHourDto
-} from 'src/domain/dtos';
-import { SpecialistAttentionHour } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { SpecialistAttentionHour } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

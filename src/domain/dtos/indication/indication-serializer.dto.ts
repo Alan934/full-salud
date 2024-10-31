@@ -1,6 +1,6 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
-import { FullBaseDto, ShortBaseDto } from 'src/common/dtos';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import {
   SerializerMedicineDto,
   SerializerShortPrescriptionDto,

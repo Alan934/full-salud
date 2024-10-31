@@ -1,5 +1,5 @@
 import { Expose, Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { SerializerCountryDto } from '..';
 import { ApiProperty } from '@nestjs/swagger';
 

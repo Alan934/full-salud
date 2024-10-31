@@ -1,8 +1,8 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Day } from 'src/domain/enums';
+import { Day } from '../../domain/enums';
 import { ApiProperty } from '@nestjs/swagger';
-import { Headquarters } from 'src/domain/entities';
+import { Headquarters } from '../../domain/entities';
 
 @Entity('attention_hours')
 export class AttentionHour extends Base {

@@ -1,7 +1,7 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { DisabilityCard, MemberSocialWork, Person } from '.';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 
 @Entity('patient_turns')
 export class PatientTurn extends Base {

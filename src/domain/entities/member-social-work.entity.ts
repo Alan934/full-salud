@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToOne } from 'typeorm';
 import { PatientTurn, SocialWork } from '.';
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 
 @Entity('members_social_works')
 export class MemberSocialWork extends Base {

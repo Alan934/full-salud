@@ -11,15 +11,17 @@ import {
   UploadedFiles,
   UseInterceptors
 } from '@nestjs/common';
+import { Express } from 'express';
+import 'multer';
 import { TurnsService } from './turns.service';
-import { Turn } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Turn } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateTurnDto,
   CreateTurnDtoWithFiles,
   SerializerTurnDto,
   UpdateTurnDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import {
   ApiBody,
   ApiConsumes,
@@ -31,8 +33,8 @@ import {
   ApiParam
 } from '@nestjs/swagger';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { TurnStatus } from 'src/domain/enums';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { TurnStatus } from '../../domain/enums';
+import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Turns')
 @Controller('turns')

@@ -1,18 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
+import { BaseService } from '../../common/bases/base.service';
 import {
   ChangeStatusApplicationDto,
   CreateSpecialistApplicationDto,
   UpdateSpecialistApplicationDto
-} from 'src/domain/dtos';
-import { Specialist, SpecialistApplication } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Specialist, SpecialistApplication } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { UserApplicationsService } from '../user_applications/user_applications.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import { AuthService } from '../auth/auth.service';
-import { ApplicationStatus, Role } from 'src/domain/enums';
-import { generatedRandomPassword } from 'src/common/util/random-password.util';
+import { ApplicationStatus, Role } from '../../domain/enums';
+import { generatedRandomPassword } from '../../common/util/random-password.util';
 import { SpecialistsService } from '../specialists/specialists.service';
 import { SpecialitiesService } from '../specialities/specialities.service';
 import { DegreesService } from '../degrees/degrees.service';

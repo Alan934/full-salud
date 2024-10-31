@@ -1,29 +1,29 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
+import { BaseService } from '../../common/bases/base.service';
 import {
   getPagingData,
   PaginationMetadata
-} from 'src/common/util/pagination-data.util';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+} from '../../common/util/pagination-data.util';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   Conditions,
   DynamicQueryBuilder
-} from 'src/common/util/dynamic-query-builder.util';
+} from '../../common/util/dynamic-query-builder.util';
 import {
   CreateSpecialistDto,
   SpecialistFilteredPaginationDto,
   UpdateSpecialistDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import {
   Prescription,
   Price,
   Specialist,
   SpecialistAttentionHour,
   Turn
-} from 'src/domain/entities';
+} from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
-import { Gender } from 'src/domain/enums';
+import { Gender } from '../../domain/enums';
 import { PersonsService } from '../persons/persons.service';
 
 @Injectable()

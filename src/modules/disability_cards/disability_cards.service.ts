@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
+import { BaseService } from '../../common/bases/base.service';
 import {
   CreateDisabilityCardDto,
   UpdateDisabilityCardDto
-} from 'src/domain/dtos';
-import { DisabilityCard } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Express } from 'express';
+import 'multer';
+import { DisabilityCard } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 import { DisabilityCardImagesService } from '../disability_card_images/disability_card_images.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 
 @Injectable()
 export class DisabilityCardsService extends BaseService<

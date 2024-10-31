@@ -1,14 +1,14 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { PaginationDto } from 'src/common/dtos/pagination-common.dto';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { BaseService } from '../../common/bases/base.service';
+import { PaginationDto } from '../../common/dtos/pagination-common.dto';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   getPagingData,
   PaginationMetadata
-} from 'src/common/util/pagination-data.util';
-import { CreateLocalityDto, UpdateLocalityDto } from 'src/domain/dtos';
-import { Locality } from 'src/domain/entities';
+} from '../../common/util/pagination-data.util';
+import { CreateLocalityDto, UpdateLocalityDto } from '../../domain/dtos';
+import { Locality } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

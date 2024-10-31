@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { Day } from 'src/domain/enums';
+import { Day } from '../../../domain/enums';
 import {
   IsEnum,
   IsNotEmpty,
@@ -8,8 +8,8 @@ import {
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsTime } from 'src/common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
-import { ShortBaseDto } from 'src/common/dtos';
+import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateAttentionHourDto {
   @IsNotEmpty()

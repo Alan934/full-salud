@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { PersonsService } from './persons.service';
-import { Person } from 'src/domain/entities';
+import { Person } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 

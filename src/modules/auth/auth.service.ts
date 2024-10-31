@@ -1,16 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   CreateNotificationPreferencesDto,
   CreateUserDto,
   UpdateUserDto,
   UserPaginationDto
-} from 'src/domain/dtos';
-import { PatientUserConnection, User } from 'src/domain/entities';
-import { Media } from 'src/domain/enums/media.enum';
-import { Role } from 'src/domain/enums/role.enum';
+} from '../../domain/dtos';
+import { Express } from 'express';
+import 'multer';
+import { PatientUserConnection, User } from '../../domain/entities';
+import { Media } from '../../domain/enums/media.enum';
+import { Role } from '../../domain/enums/role.enum';
 import {
   DeepPartial,
   EntityManager,
@@ -28,11 +30,11 @@ import { ProfileImagesService } from '../profile_images/profile_images.service';
 import {
   getPagingData,
   PaginationMetadata
-} from 'src/common/util/pagination-data.util';
+} from '../../common/util/pagination-data.util';
 import {
   Conditions,
   DynamicQueryBuilder
-} from 'src/common/util/dynamic-query-builder.util';
+} from '../../common/util/dynamic-query-builder.util';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()

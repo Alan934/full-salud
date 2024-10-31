@@ -1,7 +1,7 @@
 import { Expose, Type } from 'class-transformer';
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import { SerializerUserApplicationDto } from '../user-application/user-application-serializer.dto';
-import { Gender, DocumentType } from 'src/domain/enums';
+import { Gender, DocumentType } from '../../../domain/enums';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class SerializerSpecialistApplicationDto extends FullBaseDto {

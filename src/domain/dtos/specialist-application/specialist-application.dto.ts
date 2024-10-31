@@ -9,7 +9,7 @@ import {
   IsUUID,
   ValidateNested
 } from 'class-validator';
-import { Gender, DocumentType } from 'src/domain/enums';
+import { Gender, DocumentType } from '../../../domain/enums';
 import { CreateUserApplicationDto } from '../user-application/user-application.dto';
 
 export class CreateSpecialistApplicationDto {

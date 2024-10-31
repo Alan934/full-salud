@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InstitutionApplication } from 'src/domain/entities';
+import { InstitutionApplication } from '../../domain/entities';
 import { InstitutionApplicationsController } from './institution_applications.controller';
 import { InstitutionApplicationsService } from './institution_applications.service';
 import { UserApplicationsModule } from '../user_applications/user_applications.module';

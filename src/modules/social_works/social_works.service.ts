@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { CreateSocialWorkDto, UpdateSocialWorkDto } from 'src/domain/dtos';
-import { SocialWork } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { CreateSocialWorkDto, UpdateSocialWorkDto } from '../../domain/dtos';
+import { SocialWork } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { SpecialistSecretary } from 'src/domain/entities';
+import { SpecialistSecretary } from '../../domain/entities';
 import { SpecialistSecretariesService } from './specialist-secretary.service';
 import { SpecialistSecretariesController } from './specialist-secretary.controller';
 

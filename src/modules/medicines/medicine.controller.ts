@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateMedicineDto,
   SerializerMedicineDto,
   UpdateMedicineDto
-} from 'src/domain/dtos';
-import { Medicine } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Medicine } from '../../domain/entities';
 import { MedicineService } from './medicine.service';
 
 @ApiTags('Medicines')

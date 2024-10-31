@@ -1,10 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { CreateTurnDto, UpdateTurnDto } from 'src/domain/dtos';
-import { PatientUserConnection, Turn } from 'src/domain/entities';
-import { TurnStatus } from 'src/domain/enums';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { CreateTurnDto, UpdateTurnDto } from '../../domain/dtos';
+import { PatientUserConnection, Turn } from '../../domain/entities';
+import { TurnStatus } from '../../domain/enums';
+import { Express } from 'express';
+import 'multer';
 import { EntityManager, Repository } from 'typeorm';
 import { DerivationImagesService } from '../derivation_images/derivation_images.service';
 

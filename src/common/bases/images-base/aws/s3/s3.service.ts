@@ -3,9 +3,11 @@ import {
   PutObjectCommand,
   S3Client
 } from '@aws-sdk/client-s3';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { envConfig } from 'src/config/envs';
-import { ImageBase } from 'src/domain/entities/image-base.entity';
+import { Express } from 'express';
+import 'multer';
+import { ErrorManager } from '../../../../../common/exceptions/error.manager';
+import { envConfig } from '../../../../../config/envs';
+import { ImageBase } from '../../../../../domain/entities/image-base.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 

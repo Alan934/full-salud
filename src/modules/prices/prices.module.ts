@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { PricesService } from './prices.service';
 import { PricesController } from './prices.controller';
-import { Price } from 'src/domain/entities';
+import { Price } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

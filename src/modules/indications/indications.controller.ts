@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateIndicationDto,
   SerializerIndicationDto,
   UpdateIndicationDto
-} from 'src/domain/dtos';
-import { Indication } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Indication } from '../../domain/entities';
 import { IndicationsService } from './indications.service';
 
 @ApiTags('Indications')

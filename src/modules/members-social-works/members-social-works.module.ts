@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MembersSocialWorksService } from './members-social-works.service';
-import { MemberSocialWork } from 'src/domain/entities';
+import { MemberSocialWork } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ExamplesService } from './examples.service';
 import { ExamplesController } from './examples.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Examples } from 'src/domain/entities';
+import { Examples } from '../../domain/entities';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Examples])],

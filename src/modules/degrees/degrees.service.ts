@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { CreateDegreeDto, UpdateDegreeDto } from 'src/domain/dtos';
-import { Degree } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { CreateDegreeDto, UpdateDegreeDto } from '../../domain/dtos';
+import { Degree } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

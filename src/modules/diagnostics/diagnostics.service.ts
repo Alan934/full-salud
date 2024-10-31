@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { CreateDiagnosticDto, UpdateDiagnosticDto } from 'src/domain/dtos';
-import { Diagnostic } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { CreateDiagnosticDto, UpdateDiagnosticDto } from '../../domain/dtos';
+import { Diagnostic } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

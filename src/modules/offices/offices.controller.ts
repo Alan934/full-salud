@@ -1,11 +1,11 @@
 import { Controller } from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateOfficeDto,
   SerializerOfficeDto,
   UpdateOfficeDto
-} from 'src/domain/dtos';
-import { Office } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Office } from '../../domain/entities';
 import { OfficesService } from './offices.service';
 import { ApiTags } from '@nestjs/swagger';
 

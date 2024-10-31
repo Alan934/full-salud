@@ -1,21 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   Conditions,
   DynamicQueryBuilder
-} from 'src/common/util/dynamic-query-builder.util';
+} from '../../common/util/dynamic-query-builder.util';
 import {
   getPagingData,
   PaginationMetadata
-} from 'src/common/util/pagination-data.util';
+} from '../../common/util/pagination-data.util';
 import {
   CreateInstitutionDto,
   UpdateInstitutionDto,
   InstitutionPaginationDto
-} from 'src/domain/dtos';
-import { Institution, Turn } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Institution, Turn } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 import { HeadquartersService } from '../headquarters/headquarters.service';

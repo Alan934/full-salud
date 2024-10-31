@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   CreateSpecialistSecretaryDto,
   UpdateSpecialistSecretaryDto
-} from 'src/domain/dtos';
-import { Person, SpecialistSecretary, User } from 'src/domain/entities';
+} from '../../domain/dtos';
+import { Person, SpecialistSecretary, User } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()

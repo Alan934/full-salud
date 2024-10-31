@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
-import { CreatePersonDto, UpdatePersonDto } from 'src/domain/dtos';
-import { Person } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
+import { CreatePersonDto, UpdatePersonDto } from '../../domain/dtos';
+import { Person } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
 

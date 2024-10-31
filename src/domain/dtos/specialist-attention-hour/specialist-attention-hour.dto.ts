@@ -6,9 +6,9 @@ import {
   IsOptional,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
-import { IsTime } from 'src/common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
-import { Day } from 'src/domain/enums';
+import { ShortBaseDto } from '../../../common/dtos';
+import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
+import { Day } from '../../../domain/enums';
 import { CreateOfficeWithIdDto } from '../office/office.dto';
 
 export class CreateSpecialistAttentionHourDto {

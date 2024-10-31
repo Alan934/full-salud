@@ -1,12 +1,12 @@
 import { Controller } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import { Notification } from 'src/domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
+import { Notification } from '../../domain/entities';
 import {
   CreateNotificationDto,
   SerializerNotificationDto,
   UpdateNotificatioDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Notifications')

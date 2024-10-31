@@ -1,5 +1,5 @@
-import { ShortBaseDto } from 'src/common/dtos';
-import { CreatePersonDto, UpdatePersonDto } from 'src/domain/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
+import { CreatePersonDto, UpdatePersonDto } from '../../../domain/dtos';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';

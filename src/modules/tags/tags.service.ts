@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { CreateTagDto, UpdateTagDto } from 'src/domain/dtos';
-import { Tag } from 'src/domain/entities';
+import { BaseService } from '../../common/bases/base.service';
+import { CreateTagDto, UpdateTagDto } from '../../domain/dtos';
+import { Tag } from '../../domain/entities';
 import { Repository } from 'typeorm';
 
 @Injectable()

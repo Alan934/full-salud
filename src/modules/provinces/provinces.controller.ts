@@ -1,22 +1,22 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProvincesService } from './provinces.service';
-import { Province } from 'src/domain/entities';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
+import { Province } from '../../domain/entities';
+import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateProvinceDto,
   SerializerProvinceDto,
   SerializerShortProvinceDto,
   UpdateProvinceDto
-} from 'src/domain/dtos';
+} from '../../domain/dtos';
 import {
   ApiExtraModels,
   ApiOperation,
   ApiParam,
   ApiTags
 } from '@nestjs/swagger';
-import { PaginationDto } from 'src/common/dtos/pagination-common.dto';
-import { toDtoList } from 'src/common/util/transform-dto.util';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
+import { PaginationDto } from '../../common/dtos/pagination-common.dto';
+import { toDtoList } from '../../common/util/transform-dto.util';
+import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
 
 @ApiTags('Provinces')
 @ApiExtraModels(SerializerShortProvinceDto) // Registrar el DTO en Swagger

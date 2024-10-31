@@ -1,4 +1,4 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Entity, JoinColumn, OneToOne } from 'typeorm';
 import { Office, Person } from '.';
 

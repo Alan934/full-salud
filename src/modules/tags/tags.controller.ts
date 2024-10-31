@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { TagsService } from './tags.service';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import { Tag } from 'src/domain/entities';
-import { CreateTagDto, SerializerTagDto, UpdateTagDto } from 'src/domain/dtos';
+import { ControllerFactory } from '../../common/factories/controller.factory';
+import { Tag } from '../../domain/entities';
+import { CreateTagDto, SerializerTagDto, UpdateTagDto } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 
 @Controller('tags')

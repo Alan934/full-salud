@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { IvaTypesService } from './iva_types.service';
 import { IvaTypesController } from './iva_types.controller';
-import { Iva } from 'src/domain/entities';
+import { Iva } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

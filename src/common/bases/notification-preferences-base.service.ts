@@ -1,4 +1,4 @@
-import { NotificationPreferences } from 'src/domain/entities/notification-preferences-abstract.entity';
+import { NotificationPreferences } from '../../domain/entities/notification-preferences-abstract.entity';
 import {
   DeepPartial,
   EntityManager,

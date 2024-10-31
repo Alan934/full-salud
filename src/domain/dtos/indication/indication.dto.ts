@@ -5,7 +5,7 @@ import {
   IsOptional
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { CreateIndicationDetailDto } from '../indication-detail/indication-detail.dto';
 
