@@ -9,10 +9,10 @@ import {
   ParseFilePipe,
   FileTypeValidator,
   Get,
-  Param
+  Param,
+  BadRequestException
 } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ImagesBaseService } from './images-base.service';
 import { ImageBase } from 'src/domain/entities/image-base.entity';
 import {
   ApiBadRequestResponse,
@@ -24,11 +24,12 @@ import {
   ApiOkResponse,
   ApiOperation
 } from '@nestjs/swagger';
+import { S3Service } from './s3.service';
 
 @ApiBadRequestResponse({ description: 'Error: Bad Request' })
 @Controller()
-export class ImagesBaseController<T extends ImageBase> {
-  constructor(private readonly imagesService: ImagesBaseService<T>) {}
+export class S3Controller<T extends ImageBase> {
+  constructor(private readonly s3Service: S3Service<T>) {}
 
   @Post('upload')
   @ApiOperation({ description: 'Subir una imagen' })
@@ -58,7 +59,7 @@ export class ImagesBaseController<T extends ImageBase> {
         url: {
           type: 'string',
           example:
-            'https://res.cloudinary.com/<cloud_name>/<asset_type>/<delivery_type>/<transformations>/<version>/<public_id>.<extension>'
+            'https://<bucket_name>.s3.<region>.amazonaws.com/<prefix>/<uuid>'
         },
         public_id: {
           type: 'string',
@@ -69,6 +70,19 @@ export class ImagesBaseController<T extends ImageBase> {
   })
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(
+    fileBuffer: Buffer, // Buffer del archivo
+    fileName: string, // Nombre del archivo
+    mimeType: string // Tipo MIME del archivo
+  ) {
+    if (!fileBuffer || !fileName || !mimeType) {
+      throw new BadRequestException('File, fileName, and mimeType are required');
+    }
+  
+    // Llama al servicio con los tres parámetros requeridos
+    return this.s3Service.uploadFile(fileBuffer, fileName, mimeType);
+  }
+  /*@UseInterceptors(FileInterceptor('file'))
+  async uploadImage(
     @UploadedFile(
       new ParseFilePipe({
         validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
@@ -76,8 +90,8 @@ export class ImagesBaseController<T extends ImageBase> {
     )
     file: Express.Multer.File
   ) {
-    return this.imagesService.uploadFile(file);
-  }
+    return this.s3Service.uploadFile(file);
+  }*/
 
   @Post('upload-multiple')
   @ApiOperation({ description: 'Subir múltiples imágenes' })
@@ -113,7 +127,7 @@ export class ImagesBaseController<T extends ImageBase> {
           url: {
             type: 'string',
             example:
-              'https://res.cloudinary.com/<cloud_name>/<asset_type>/<delivery_type>/<transformations>/<version>/<public_id>.<extension>'
+              'https://<bucket_name>.s3.<region>.amazonaws.com/<prefix>/<uuid>'
           },
           public_id: {
             type: 'string',
@@ -125,14 +139,17 @@ export class ImagesBaseController<T extends ImageBase> {
   })
   @UseInterceptors(FilesInterceptor('files'))
   async uploadMultipleImages(
-    @UploadedFiles(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: '.png|jpg|jpeg' })]
-      })
-    )
-    files: Express.Multer.File[]
+    files: { buffer: Buffer; name: string; mimeType: string }[] // Recibe un arreglo de objetos con buffer, nombre y tipo MIME
   ) {
-    return this.imagesService.uploadFiles(files);
+    if (!files || files.length === 0) {
+      throw new BadRequestException('No files provided');
+    }
+  
+    // Llama al servicio con los datos de cada archivo
+    const uploadPromises = files.map(({ buffer, name, mimeType }) =>
+      this.s3Service.uploadFile(buffer, name, mimeType)
+    );
+    return Promise.all(uploadPromises);
   }
 
   @Get(':id')
@@ -150,7 +167,7 @@ export class ImagesBaseController<T extends ImageBase> {
         url: {
           type: 'string',
           example:
-            'https://res.cloudinary.com/<cloud_name>/<asset_type>/<delivery_type>/<transformations>/<version>/<public_id>.<extension>'
+            'https://<bucket_name>.s3.<region>.amazonaws.com/<prefix>/<uuid>'
         },
         public_id: {
           type: 'string',
@@ -160,7 +177,7 @@ export class ImagesBaseController<T extends ImageBase> {
     }
   })
   async getImage(@Param('id', ParseUUIDPipe) id: string) {
-    return this.imagesService.getImage(id);
+    return this.s3Service.getImage(id);
   }
 
   @Delete(':id')
@@ -171,6 +188,6 @@ export class ImagesBaseController<T extends ImageBase> {
   })
   @ApiOkResponse({ description: 'Image successfully deleted' })
   async deleteImage(@Param('id', ParseUUIDPipe) id: string) {
-    return this.imagesService.deleteImage(id);
+    return this.s3Service.deleteImage(id);
   }
 }
