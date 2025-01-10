@@ -10,7 +10,7 @@ import {
 export class SerializerIndicationDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '2024-09-12' })
-  start: Date;
+  start: string;
 
   @Expose()
   @Type(() => SerializerMedicineDto)
@@ -27,7 +27,7 @@ export class SerializerIndicationDto extends FullBaseDto {
 
 export class SerializerShortIndicationDto extends ShortBaseDto {
   @Expose()
-  start: Date;
+  start: string;
 
   @Expose()
   @Type(() => SerializerMedicineDto)

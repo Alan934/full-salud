@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsDate, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Express } from 'express';
 import 'multer';
@@ -12,10 +12,10 @@ export class CreateDisabilityCardDto {
   cardNumber: string;
 
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
+  @Type(() => String)
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
-  expirationDate: Date;
+  expirationDate: string;
 
   //recibe el id del PacietTurn con el que se relaciona
   @IsNotEmpty()

@@ -10,7 +10,7 @@ import { Expose, Type } from 'class-transformer';
 export class SerializerPrescriptionDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '1970-12-07' })
-  date: Date;
+  date: string;
 
   @Expose()
   @Type(() => SerializerShortPacientTurnDto)
@@ -27,7 +27,7 @@ export class SerializerPrescriptionDto extends FullBaseDto {
 export class SerializerShortPrescriptionDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '1970-12-07' })
-  date: Date;
+  date: string;
 
   @Expose()
   @Type(() => SerializerShortPacientTurnDto)

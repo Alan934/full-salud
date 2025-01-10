@@ -8,9 +8,9 @@ export class FullBaseDto {
 
   @Expose()
   @ApiProperty({ example: null, nullable: true })
-  deletedAt!: Date;
+  deletedAt!: string;
 
   @Expose()
   @ApiProperty({ example: '2024-08-15 12:50:39.147274' })
-  createdAt!: Date;
+  createdAt!: string;
 }

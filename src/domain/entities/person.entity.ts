@@ -1,15 +1,16 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, OneToOne } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
 import { User } from './user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Address } from './address.entity';
 
-@Entity('persons')
-export class Person extends Base {
+
+export abstract class Person extends Base {
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
     length: 50
   })
   @ApiProperty({ example: 'David' })
@@ -17,7 +18,7 @@ export class Person extends Base {
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
     name: 'last_name',
     length: 50
   })
@@ -27,16 +28,19 @@ export class Person extends Base {
   @Column({
     type: 'enum',
     enum: Gender,
-    nullable: false
+    nullable: true
   })
   @ApiProperty({
     examples: [Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.RATHER_NOT_SAY]
   })
   gender: Gender;
 
-  @Column({ type: 'date' })
+  @Column({ 
+    type: 'varchar',
+    nullable: true, 
+  })
   @ApiProperty({ example: '2000-08-21' })
-  birth: Date;
+  birth: string;
 
   @Column({
     type: 'enum',
@@ -48,18 +52,30 @@ export class Person extends Base {
 
   @Column({
     type: 'varchar',
-    nullable: false,
+    nullable: true,
     unique: true
   })
   @ApiProperty({ examples: ['42.098.163', 'A0123456'] })
   dni: string;
 
-  @OneToOne(() => User, {
-    onDelete: 'CASCADE',
-    orphanedRowAction: 'soft-delete',
-    cascade: true,
-    eager: true
+  @Column({
+    type: 'varchar',
+    nullable: true,
+    unique: true
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  @ApiProperty({ example: '2615836294' })
+  phone?: string;
+
+    @JoinTable({
+      name: 'person_addresses',
+      joinColumn: {
+        name: 'person_id',
+        referencedColumnName: 'id'
+      },
+      inverseJoinColumn: {
+        name: 'address_id',
+        referencedColumnName: 'id'
+      }
+    })
+    addresses: Address[];
 }

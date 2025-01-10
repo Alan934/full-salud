@@ -14,10 +14,10 @@ export abstract class Base {
     name: 'deleted_at'
   })
   @ApiProperty({ example: null })
-  deletedAt!: Date;
+  deletedAt!: string;
 
   @CreateDateColumn({
     name: 'created_at'
   })
-  createdAt!: Date;
+  createdAt!: string;
 }

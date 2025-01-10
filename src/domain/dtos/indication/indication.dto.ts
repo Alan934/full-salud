@@ -1,8 +1,8 @@
 import {
-  IsDate,
   IsNotEmpty,
   ValidateNested,
-  IsOptional
+  IsOptional,
+  IsString
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
@@ -11,10 +11,10 @@ import { CreateIndicationDetailDto } from '../indication-detail/indication-detai
 
 export class CreateIndicationDto {
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
+  @Type(() => String)
   @ApiProperty({ example: '2024-12-07' })
-  start?: Date;
+  start?: string;
 
   @IsNotEmpty()
   @ValidateNested()

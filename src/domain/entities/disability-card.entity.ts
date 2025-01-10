@@ -16,7 +16,7 @@ export class DisabilityCard extends Base {
     nullable: false,
     name: 'expiration_date'
   })
-  expirationDate: Date;
+  expirationDate: string;
 
   @OneToOne(() => PatientTurn, (patientTurn) => patientTurn.disabilityCard, {
     lazy: true

@@ -7,12 +7,10 @@ import { ApiProperty } from '@nestjs/swagger';
 @Entity('users')
 export class User extends Base {
   @Column({
-    type: 'varchar',
-    nullable: true,
-    unique: true
+    type: 'varchar'
   })
-  @ApiProperty({ example: '2615836294' })
-  phone?: string;
+  @ApiProperty({ example: 'password1234' })
+  password?: string;
 
   @Column({
     type: 'varchar',

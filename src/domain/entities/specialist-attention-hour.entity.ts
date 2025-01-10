@@ -11,14 +11,14 @@ export class SpecialistAttentionHour extends Base {
     name: 'start_hour',
     nullable: true
   })
-  startHour: Date;
+  startHour: string;
 
   @Column({
     type: 'time',
     name: 'end_hour',
     nullable: true
   })
-  endHour: Date;
+  endHour: string;
 
   @Column({
     type: 'enum',

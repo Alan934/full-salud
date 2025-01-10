@@ -2,10 +2,10 @@ import { Type } from 'class-transformer';
 import {
   IsAlphanumeric,
   IsBoolean,
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsUUID,
   MaxLength
 } from 'class-validator';
@@ -50,9 +50,9 @@ export class SpecialistFilteredPaginationDto
 
   @IsOptional()
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  birth?: Date;
+  @IsString()
+  @Type(() => String)
+  birth?: string;
 
   @IsOptional()
   @IsNotEmpty()

@@ -20,11 +20,12 @@ import {
   Price,
   Specialist,
   SpecialistAttentionHour,
+  Speciality,
   Turn
 } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender } from '../../domain/enums';
-import { PersonsService } from '../persons/persons.service';
+// import { PersonsService } from '../persons/persons.service';
 
 @Injectable()
 export class SpecialistsService extends BaseService<
@@ -34,9 +35,24 @@ export class SpecialistsService extends BaseService<
 > {
   constructor(
     @InjectRepository(Specialist) protected repository: Repository<Specialist>,
-    @Inject() protected personService: PersonsService
+    //@Inject() protected personService: PersonsService
+    @InjectRepository(Speciality) private readonly specialityRepository: Repository<Speciality>,
   ) {
     super(repository);
+  }
+
+  async create(createSpecialistDto: CreateSpecialistDto): Promise<Specialist> {
+    const { specialities, degree, ...specialistData } = createSpecialistDto;
+
+    const specialityEntities = await this.specialityRepository.findByIds(specialities.map(s => s.id));
+
+    const specialist = this.repository.create({
+      ...specialistData,
+      degree,
+      specialities: specialityEntities, 
+    });
+
+    return this.repository.save(specialist);
   }
 
   //condiciones que se agregarán al query builder para filtrar los patient turn
@@ -141,7 +157,7 @@ export class SpecialistsService extends BaseService<
           await manager.delete(SpecialistAttentionHour, { specialist: entity });
           await manager.delete(Price, { specialist: entity });
           await manager.remove(Specialist, entity);
-          await this.personService.removeWithManager(entity.person.id, manager);
+          //await this.personService.removeWithManager(entity.person.id, manager);
           return `Entity with id ${id} deleted`;
         }
       );
@@ -156,10 +172,10 @@ export class SpecialistsService extends BaseService<
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
           await manager.softDelete(Price, { specialist: entity });
-          await this.personService.softRemoveWithManager(
-            entity.person.id,
-            manager
-          );
+          // await this.personService.softRemoveWithManager(
+          //   entity.person.id,
+          //   manager
+          // );
           await manager.softRemove(entity);
           return `Entity with id ${id} soft deleted`;
         }
@@ -178,10 +194,10 @@ export class SpecialistsService extends BaseService<
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
           const recovered = await manager.recover(entity);
-          await this.personService.restoreWithManager(
-            entity.person.id,
-            manager
-          );
+          // await this.personService.restoreWithManager(
+          //   entity.person.id,
+          //   manager
+          // );
           await manager.restore(Price, { specialist: entity });
           return recovered;
         }
@@ -190,4 +206,44 @@ export class SpecialistsService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+
+  async findAllWithTurns(): Promise<Specialist[]> {
+    try {
+      return await this.repository
+        .createQueryBuilder('specialist')
+        .leftJoinAndSelect('specialist.person', 'person')
+        .leftJoinAndSelect('specialist.specialistAttentionHour', 'specialistAttentionHour')
+        .leftJoinAndSelect('specialist.degree', 'degree')
+        .leftJoinAndSelect('specialist.speciality', 'speciality')
+        .leftJoinAndSelect('specialist.acceptedSocialWorks', 'social_work')
+        .leftJoinAndSelect('specialist.turns', 'turn')
+        //.leftJoinAndSelect('turn.Patient', 'Patient') // Opcional: otras relaciones de Turn
+        .getMany();
+    } catch (error) {
+      console.error('Error fetching specialists with turns:', error);
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  // async findTurnsBySpecialistId(specialistId: string): Promise<Turn[]> {
+  //   try {
+  //     const specialist = await this.repository
+  //       .createQueryBuilder('specialist')
+  //       .leftJoinAndSelect('specialist.turns', 'turn')
+  //       .leftJoinAndSelect('turn.Patient', 'Patient')
+  //       .where('specialist.id = :id', { id: specialistId })
+  //       .getOne();
+  
+  //     if (!specialist) {
+  //       throw new ErrorManager.createSignatureError(
+  //         `Specialist with id ${specialistId} not found`
+  //       );
+  //     }
+  
+  //     return specialist.turns;
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
+  
 }

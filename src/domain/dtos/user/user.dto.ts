@@ -18,12 +18,12 @@ import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorat
 import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateUserDto {
-  @IsNumberString()
-  @IsOptionalIf((dto) => dto.role == Role.SECRETARY)
-  //phone no es pasado cuando se crea secretary
-  @OmitFieldForRoles([Role.SECRETARY])
-  @ApiProperty({ example: '2615836294' })
-  phone: string;
+  // @IsNumberString()
+  // @IsOptionalIf((dto) => dto.role == Role.SECRETARY)
+  // //phone no es pasado cuando se crea secretary
+  // @OmitFieldForRoles([Role.SECRETARY])
+  // @ApiProperty({ example: '2615836294' })
+  // phone: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -32,29 +32,30 @@ export class CreateUserDto {
 
   @IsString()
   //si se crea secretary, specialist o institution, el nombre de usuario es opcional
-  @IsOptionalIf(
-    (dto) =>
-      dto.role == Role.SECRETARY ||
-      dto.role == Role.SPECIALIST ||
-      dto.role == Role.INSTITUTION
-  )
+  // @IsOptionalIf(
+  //   (dto) =>
+  //     dto.role == Role.SECRETARY ||
+  //     dto.role == Role.SPECIALIST ||
+  //     dto.role == Role.INSTITUTION
+  // )
+  @IsOptional()
   @ApiProperty({ example: 'juan123' })
   username: string;
 
   @IsString()
-  @IsStrongPassword(
-    {
-      minLength: 6,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1
-    },
-    {
-      message:
-        'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
-    }
-  )
+  // @IsStrongPassword(
+  //   {
+  //     minLength: 6,
+  //     minLowercase: 1,
+  //     minUppercase: 1,
+  //     minNumbers: 1,
+  //     minSymbols: 1
+  //   },
+  //   {
+  //     message:
+  //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
+  //   }
+  // )
   //si se crea secretary, specialist o institution, la contraseña es opcional
   @IsOptionalIf(
     (dto) =>
@@ -83,7 +84,6 @@ export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, [
     'role',
     'profileImage',
-    'phone',
     'username',
     'password'
   ] as const)
@@ -99,19 +99,19 @@ export class UpdateUserDto extends PartialType(
   username?: string;
 
   @IsString()
-  @IsStrongPassword(
-    {
-      minLength: 6,
-      minLowercase: 1,
-      minUppercase: 1,
-      minNumbers: 1,
-      minSymbols: 1
-    },
-    {
-      message:
-        'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
-    }
-  )
+  // @IsStrongPassword(
+  //   {
+  //     minLength: 6,
+  //     minLowercase: 1,
+  //     minUppercase: 1,
+  //     minNumbers: 1,
+  //     minSymbols: 1
+  //   },
+  //   {
+  //     message:
+  //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
+  //   }
+  // )
   @IsOptional()
   @ApiProperty({ example: 'Clave1*' })
   password?: string;

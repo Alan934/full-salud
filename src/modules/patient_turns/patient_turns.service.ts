@@ -18,13 +18,13 @@ import {
 import {
   ClinicalHistoryAccess,
   PatientTurn,
-  PatientUserConnection
+  Patient
 } from '../../domain/entities';
 import { Gender } from '../../domain/enums';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
-import { PersonsService } from '../persons/persons.service';
 import { DisabilityCardsService } from '../disability_cards/disability_cards.service';
 import { TurnsService } from '../turns/turns.service';
+import { PatientService } from '../patients/patients.service';
 
 @Injectable()
 export class PatientTurnsService extends BaseService<
@@ -35,7 +35,7 @@ export class PatientTurnsService extends BaseService<
   constructor(
     @InjectRepository(PatientTurn)
     protected repository: Repository<PatientTurn>,
-    @Inject() protected readonly personService: PersonsService,
+    @Inject() protected readonly patientService: PatientService,
     @Inject() protected readonly disabilityCardService: DisabilityCardsService,
     @Inject() protected readonly turnsService: TurnsService
   ) {
@@ -145,7 +145,7 @@ export class PatientTurnsService extends BaseService<
             entity.id,
             manager
           ); //elimina turnos
-          await this.personService.removeWithManager(entity.person.id, manager);
+          await this.patientService.removeWithManager(entity.id, manager);
           await manager.remove(entity);
           return `Entity with id ${id} deleted`;
         }
@@ -155,51 +155,51 @@ export class PatientTurnsService extends BaseService<
     }
   }
 
-  override async softRemove(id: string): Promise<string> {
-    try {
-      const entity = await this.findOne(id);
-      return this.repository.manager.transaction(
-        async (manager: EntityManager) => {
-          await this.personService.softRemoveWithManager(
-            entity.person.id,
-            manager
-          );
-          await manager.softDelete(ClinicalHistoryAccess, {
-            patientTurn: entity
-          });
-          await manager.softDelete(PatientUserConnection, {
-            patientTurn: entity
-          });
-          await manager.softRemove(entity);
-          return `Entity with id ${id} soft deleted`;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
+  // override async softRemove(id: string): Promise<string> {
+  //   try {
+  //     const entity = await this.findOne(id);
+  //     return this.repository.manager.transaction(
+  //       async (manager: EntityManager) => {
+  //         await this.patientService.softRemoveWithManager(
+  //           entity.person.id,
+  //           manager
+  //         );
+  //         await manager.softDelete(ClinicalHistoryAccess, {
+  //           patientTurn: entity
+  //         });
+  //         await manager.softDelete(Patient, {
+  //           patientTurn: entity
+  //         });
+  //         await manager.softRemove(entity);
+  //         return `Entity with id ${id} soft deleted`;
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
 
-  override async restore(id: string): Promise<PatientTurn> {
-    try {
-      const entity = await this.repository.findOne({
-        where: { id },
-        withDeleted: true
-      });
+  // override async restore(id: string): Promise<PatientTurn> {
+  //   try {
+  //     const entity = await this.repository.findOne({
+  //       where: { id },
+  //       withDeleted: true
+  //     });
 
-      return this.repository.manager.transaction(
-        async (manager: EntityManager) => {
-          const recovered = await manager.recover(entity);
-          await this.personService.restoreWithManager(
-            entity.person.id,
-            manager
-          );
-          await manager.restore(ClinicalHistoryAccess, { patientTurn: entity });
-          await manager.restore(PatientUserConnection, { patientTurn: entity });
-          return recovered;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
+  //     return this.repository.manager.transaction(
+  //       async (manager: EntityManager) => {
+  //         const recovered = await manager.recover(entity);
+  //         await this.patientService.restoreWithManager(
+  //           entity.person.id,
+  //           manager
+  //         );
+  //         await manager.restore(ClinicalHistoryAccess, { patientTurn: entity });
+  //         await manager.restore(Patient, { patientTurn: entity });
+  //         return recovered;
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
 }

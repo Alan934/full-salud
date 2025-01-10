@@ -1,5 +1,6 @@
 import {
   ArrayUnique,
+  IsArray,
   IsBoolean,
   IsNotEmpty,
   IsOptional,
@@ -7,44 +8,38 @@ import {
   ValidateNested
 } from 'class-validator';
 import {
-  CreatePersonDto,
   CreateSpecialistAttentionHourDto,
-  UpdatePersonDto
+  CreateSpecialityDto,
+  UpdateSpecialityDto,
 } from '..';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { PersonBaseDto } from '../person/person.dto';
+import { Speciality } from 'src/domain/entities';
 
-export class CreateSpecialistDto {
+export class CreateSpecialistDto extends PersonBaseDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ example: '123456-M-BA' })
   license: string;
 
-  //recibe el id de un degree elegido
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   degree: ShortBaseDto;
 
-  //recibe un array con los id de las especialidades
-  @IsNotEmpty()
-  @ValidateNested()
+  @ApiProperty({ type: [ShortBaseDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => ShortBaseDto)
-  speciality: ShortBaseDto;
+  specialities: ShortBaseDto[];
 
-  //recibe un array con los id de las obras sociales que acepta
   @IsOptional()
   @ArrayUnique()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   acceptedSocialWorks?: ShortBaseDto[];
-
-  //recibe un create dto de person
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => CreatePersonDto)
-  person: CreatePersonDto;
 
   @IsOptional()
   @IsBoolean()
@@ -57,16 +52,9 @@ export class CreateSpecialistDto {
   specialistAttentionHour?: CreateSpecialistAttentionHourDto[];
 }
 
+
 //"reescribe" person
-export class UpdateSpecialistDto extends PartialType(
-  OmitType(CreateSpecialistDto, ['person'] as const)
-) {
-  //recibe un update dto de person
-  @IsOptional()
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => UpdatePersonDto)
-  person?: UpdatePersonDto;
+export class UpdateSpecialistDto extends PartialType((CreateSpecialistDto)) {
 
   @IsOptional()
   @ArrayUnique()

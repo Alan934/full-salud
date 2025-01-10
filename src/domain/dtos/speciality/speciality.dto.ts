@@ -7,15 +7,14 @@ import {
   IsString,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from '../../../common/dtos';
+import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 
-export class CreateSpecialityDto {
-  @IsNotEmpty()
+export class CreateSpecialityDto extends FullBaseDto{
+  
   @IsString()
   @ApiProperty({ example: 'Medicina Clínica' })
   name: string;
 
-  @IsNotEmpty()
   @IsBoolean()
   @ApiProperty({ example: true })
   canPrescribe: boolean;

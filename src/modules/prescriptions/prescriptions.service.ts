@@ -26,26 +26,26 @@ export class PrescriptionsService extends BaseService<
     try {
       return await this.repository.manager.transaction(
         async (entityManager: EntityManager) => {
-          //obtener el especialista de la base de datos según el id pasado en el dto
-          const specialist: Specialist = await entityManager.findOne(
-            Specialist,
-            {
-              where: { id: createDto.specialist.id }
-            }
-          );
-
-          //valido si en la especialidad del especialista obtenido el atributo canPrescribe es true
-          if (specialist.speciality.canPrescribe) {
-            //validar si indications y observations no existen en createDto, debe existir al menos una de las dos
+          const specialist: Specialist = await entityManager.findOne(Specialist, {
+            where: { id: createDto.specialist.id },
+            relations: ['specialities'], // Asegúrate de incluir la relación
+          });
+  
+          if (!specialist || !specialist.specialities || specialist.specialities.length === 0) {
+            throw new ErrorManager(
+              'Specialist does not have any specialities assigned',
+              HttpStatus.BAD_REQUEST
+            );
+          }
+  
+          if (specialist.specialities.some((speciality) => speciality.canPrescribe)) {
             if (!createDto.indications && !createDto.observations) {
               throw new ErrorManager(
                 'Either indications field or observations field must not be empty',
                 HttpStatus.BAD_REQUEST
               );
             }
-            //si canPrescribe es false
           } else {
-            //validar si indications existe y si observations no existe
             if (createDto.indications) {
               throw new ErrorManager(
                 'Specialist is not authorized to prescribe medicine',
@@ -58,8 +58,7 @@ export class PrescriptionsService extends BaseService<
               );
             }
           }
-
-          //crear prescription
+  
           const newPrescription = entityManager.create(Prescription, createDto);
           return await entityManager.save(newPrescription);
         }
@@ -68,4 +67,5 @@ export class PrescriptionsService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+  
 }

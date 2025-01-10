@@ -2,10 +2,10 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Media } from '../../enums/media.enum';
 import {
   IsBoolean,
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsUUID,
   ValidateNested
 } from 'class-validator';
@@ -19,16 +19,16 @@ export class CreateNotificationPreferencesDto {
   }
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
+  @Type(() => String)
   @ApiProperty({ examples: ['2024-08-27T08:30:00'] })
-  startHour?: Date;
+  startHour?: string;
 
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
+  @Type(() => String)
   @ApiProperty({ examples: ['2024-08-27T12:30:00'] })
-  endHour?: Date;
+  endHour?: string;
 
   @IsNotEmpty()
   @IsEnum(Media)

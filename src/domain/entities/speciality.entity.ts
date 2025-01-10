@@ -20,7 +20,7 @@ export class Speciality extends Base {
   })
   canPrescribe: boolean;
 
-  @OneToMany(() => Specialist, (specialist) => specialist.speciality)
+  @ManyToMany(() => Specialist, (specialist) => specialist.specialities)
   specialists: Specialist[];
 
   @ManyToMany(() => Tag, {

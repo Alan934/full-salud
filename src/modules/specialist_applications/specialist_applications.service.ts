@@ -14,7 +14,7 @@ import { AuthService } from '../auth/auth.service';
 import { ApplicationStatus, Role } from '../../domain/enums';
 import { generatedRandomPassword } from '../../common/util/random-password.util';
 import { SpecialistsService } from '../specialists/specialists.service';
-import { SpecialitiesService } from '../specialities/specialities.service';
+import { SpecialitiesService } from '../speciality/specialities.service';
 import { DegreesService } from '../degrees/degrees.service';
 
 @Injectable()
@@ -40,19 +40,19 @@ export class SpecialistApplicationsService extends BaseService<
     createDto: CreateSpecialistApplicationDto
   ): Promise<SpecialistApplication> {
     try {
-      // Comprobar que no haya un usuario registrado con el mismo número
-      const phones = await this.authService.findAll({
-        phone: createDto.userApplication.phone,
-        page: 1,
-        limit: 10
-      });
+      // // Comprobar que no haya un usuario registrado con el mismo número
+      // const phones = await this.authService.findAll({
+      //   phone: createDto.userApplication.phone,
+      //   page: 1,
+      //   limit: 10
+      // });
 
-      if (phones.data.length > 0) {
-        throw new ErrorManager(
-          'A user with this phone number already exists.',
-          409
-        );
-      }
+      // if (phones.data.length > 0) {
+      //   throw new ErrorManager(
+      //     'A user with this phone number already exists.',
+      //     409
+      //   );
+      // }
 
       // Comprobar que no haya un usuario registrado con el mismo email
       const emails = await this.authService.findAll({
@@ -226,90 +226,91 @@ export class SpecialistApplicationsService extends BaseService<
     }
   }
 
-  async changeStatus(
-    id: string,
-    changeStatusApplicationDto: ChangeStatusApplicationDto
-  ): Promise<SpecialistApplication | Specialist> {
-    try {
-      const specialistApplication = await this.findOne(id);
+  //Verificar que hacer con esto despues
 
-      const { status } = changeStatusApplicationDto;
+  // async changeStatus(
+  //   id: string,
+  //   changeStatusApplicationDto: ChangeStatusApplicationDto
+  // ): Promise<SpecialistApplication | Specialist> {
+  //   try {
+  //     const specialistApplication = await this.findOne(id);
 
-      const applicationStatus =
-        specialistApplication.userApplication.applicationStatus;
+  //     const { status } = changeStatusApplicationDto;
 
-      // Verifica si el estado ya es el mismo, si es así, no se hacen cambios
-      if (applicationStatus === status) {
-        return specialistApplication;
-      }
+  //     const applicationStatus =
+  //       specialistApplication.userApplication.applicationStatus;
 
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          // Si se aprueba la solicitud, se crea el usuario y se elimina la solicitud
-          if (status === ApplicationStatus.APPROVED) {
-            // Desestructuración para obtener los valores
-            const {
-              degreeId,
-              specialityId,
-              license,
-              userApplication: { phone, email },
-              name,
-              lastName,
-              dni,
-              gender,
-              birth,
-              documentType
-            } = specialistApplication;
-            const password = generatedRandomPassword(specialistApplication);
+  //     // Verifica si el estado ya es el mismo, si es así, no se hacen cambios
+  //     if (applicationStatus === status) {
+  //       return specialistApplication;
+  //     }
 
-            // Crear usuario
-            const user = await this.authService.create({
-              role: Role.SPECIALIST,
-              phone,
-              email,
-              username: `${Role.SPECIALIST.toLowerCase()}_${Date.now()}`,
-              password
-            });
+  //     return await this.repository.manager.transaction(
+  //       async (transactionalEntityManager) => {
+  //         // Si se aprueba la solicitud, se crea el usuario y se elimina la solicitud
+  //         if (status === ApplicationStatus.APPROVED) {
+  //           // Desestructuración para obtener los valores
+  //           const {
+  //             degreeId,
+  //             specialityId,
+  //             license,
+  //             userApplication: { phone, email },
+  //             name,
+  //             lastName,
+  //             dni,
+  //             gender,
+  //             birth,
+  //             documentType
+  //           } = specialistApplication;
+  //           const password = generatedRandomPassword(specialistApplication);
 
-            // Crear especialista
-            const specialist = this.specialistsService.create({
-              license,
-              degree: { id: degreeId },
-              speciality: { id: specialityId },
-              person: { name, lastName, dni, gender, documentType, birth, user }
-            });
+  //           // Crear usuario
+  //           const user = await this.authService.create({
+  //             role: Role.SPECIALIST,
+  //             email,
+  //             username: `${Role.SPECIALIST.toLowerCase()}_${Date.now()}`,
+  //             password
+  //           });
 
-            // Eliminar solicitud
-            this.remove(specialistApplication.id);
+  //           // Crear especialista
+  //           const specialist = this.specialistsService.create({
+  //             license,
+  //             degree: { id: degreeId },
+  //             speciality: { id: specialityId, },
+  //             person: { name, lastName, dni, gender, documentType, birth, user }
+  //           });
 
-            // Enviar email AcceptedApplication
-            /*emailer.sendAcceptedApplicationMail(
-              applicantName: specialistApplication.name+" "+specialistApplication.lastName, 
-              user: user, 
-              password: password
-            );
-            */
+  //           // Eliminar solicitud
+  //           this.remove(specialistApplication.id);
 
-            return specialist;
-          } else if (status === ApplicationStatus.REJECTED) {
-            // Obtener la razón por la que se rechazó la solicitud
-            //const { reason } = changeStatusApplicationDto;
-            // Si se rechaza la solicitud, enviar un mail RejectedApplication
-            /*emailer.sendRejectedApplicationMail(
-              applicantName: specialistApplication.name+" "+specialistApplication.lastName, 
-              reason: reason, 
-              applicantMail: specialistApplication.email,
-            );*/
-          }
+  //           // Enviar email AcceptedApplication
+  //           /*emailer.sendAcceptedApplicationMail(
+  //             applicantName: specialistApplication.name+" "+specialistApplication.lastName, 
+  //             user: user, 
+  //             password: password
+  //           );
+  //           */
 
-          // Asigna el nuevo status
-          specialistApplication.userApplication.applicationStatus = status;
+  //           return specialist;
+  //         } else if (status === ApplicationStatus.REJECTED) {
+  //           // Obtener la razón por la que se rechazó la solicitud
+  //           //const { reason } = changeStatusApplicationDto;
+  //           // Si se rechaza la solicitud, enviar un mail RejectedApplication
+  //           /*emailer.sendRejectedApplicationMail(
+  //             applicantName: specialistApplication.name+" "+specialistApplication.lastName, 
+  //             reason: reason, 
+  //             applicantMail: specialistApplication.email,
+  //           );*/
+  //         }
 
-          return await transactionalEntityManager.save(specialistApplication);
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
+  //         // Asigna el nuevo status
+  //         specialistApplication.userApplication.applicationStatus = status;
+
+  //         return await transactionalEntityManager.save(specialistApplication);
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
 }

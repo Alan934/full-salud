@@ -41,18 +41,18 @@ export class InstitutionApplicationsService extends BaseService<
   ): Promise<InstitutionApplication> {
     try {
       // Comprobar que no haya un usuario registrado con el mismo número
-      const phones = await this.authService.findAll({
-        phone: createDto.userApplication.phone,
-        page: 1,
-        limit: 10
-      });
+      // const phones = await this.authService.findAll({
+      //   phone: createDto.userApplication.phone,
+      //   page: 1,
+      //   limit: 10
+      // });
 
-      if (phones.data.length > 0) {
-        throw new ErrorManager(
-          'A user with this phone number already exists.',
-          409
-        );
-      }
+      // if (phones.data.length > 0) {
+      //   throw new ErrorManager(
+      //     'A user with this phone number already exists.',
+      //     409
+      //   );
+      // }
 
       // Comprobar que no haya un usuario registrado con el mismo email
       const emails = await this.authService.findAll({
@@ -223,7 +223,6 @@ export class InstitutionApplicationsService extends BaseService<
             // Crear usuario
             const user = await this.authService.create({
               role,
-              phone,
               email,
               username: `${role.toLowerCase()}_${Date.now()}`,
               password

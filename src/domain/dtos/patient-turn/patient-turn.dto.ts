@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateMemberSocialWorkDto, CreatePersonDto } from '..';
+import { CreateMemberSocialWorkDto, CreatePatientDto } from '..';
 
 export class CreatePatientTurnDto {
   @IsOptional()
@@ -27,9 +27,9 @@ export class CreatePatientTurnDto {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => CreatePersonDto)
+  @Type(() => CreatePatientDto)
   @ValidateIf((o) => !o.id)
-  person: CreatePersonDto;
+  person: CreatePatientDto;
 }
 
 export class UpdatePatientTurnDto extends PartialType(CreatePatientTurnDto) {}

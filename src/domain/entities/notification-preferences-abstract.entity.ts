@@ -11,7 +11,7 @@ export abstract class NotificationPreferences extends Base {
     nullable: true
   })
   @ApiProperty({ examples: ['2024-08-27T08:30:00'] })
-  startHour: Date;
+  startHour: string;
 
   @Column({
     type: 'timestamp',
@@ -19,7 +19,7 @@ export abstract class NotificationPreferences extends Base {
     nullable: true
   })
   @ApiProperty({ examples: ['2024-08-27T12:30:00'] })
-  endHour: Date;
+  endHour: string;
 
   @Column({
     type: 'enum',

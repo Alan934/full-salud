@@ -1,46 +1,41 @@
-import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import {
+  Base,
+} from '../../common/bases/base.entity';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+} from 'typeorm';
 import {
   Diagnostic,
   Specialist,
-  Institution,
+  Patient,
   DerivationImage,
-  PatientUserConnection
+  AttentionHourPatient
 } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 import { TurnStatus } from '../enums/turn-status.enum';
 
-@Entity('turns')
+@Entity('turn')
 export class Turn extends Base {
-  @Column({ type: 'date' })
-  date: Date;
+  @Column({ type: 'varchar' })
+  date: string;
 
-  @Column({ type: 'time' })
-  hour: Date;
+  @Column({ type: 'varchar' })
+  hour: string;
 
   @Column({
     type: 'varchar',
     nullable: true
   })
   @ApiProperty({
-    example:
-      'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva'
+    example: 'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva'
   })
   observation?: string;
-
-  @Column({
-    type: 'date',
-    default: null
-  })
-  estimatedPaymentDate: Date;
-
-  @Column({
-    type: 'boolean',
-    nullable: false,
-    name: 'paid_work_social',
-    default: false
-  })
-  paidWorkSocial: boolean = false;
 
   @Column({
     type: 'enum',
@@ -61,30 +56,43 @@ export class Turn extends Base {
   })
   status: TurnStatus;
 
-  @ManyToOne(() => Diagnostic, {
-    nullable: true,
-    eager: true
+  // Relación con Patient: un paciente puede tener muchos turnos, pero cada turno pertenece a un solo paciente
+  @ManyToOne(() => Patient, (patient) => patient, {
+    eager: false,
+    nullable: false,
+    onDelete: 'CASCADE',
   })
-  @JoinColumn({
-    name: 'diagnostic_id'
+  @JoinColumn({ name: 'patient_id' })
+  patient: Patient;
+  
+  @ManyToMany(() => Specialist, (specialist) => specialist, {
+    eager: false,
   })
-  diagnostic?: Diagnostic | null;
+  @JoinTable({
+    name: 'turns_specialists',
+    joinColumn: {
+      name: 'turn_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'specialist_id',
+      referencedColumnName: 'id',
+    },
+  })
+  specialists: Specialist[];
 
-  @ManyToOne(() => Specialist, {
-    eager: true,
-    nullable: true
-  })
-  @JoinColumn({ name: 'specialist_id' })
-  specialist?: Specialist;
-
-  @ManyToOne(() => Institution, {
-    eager: true,
-    nullable: true
-  })
-  @JoinColumn({
-    name: 'institution_id'
-  })
-  institution?: Institution;
+  @OneToMany(
+    () => AttentionHourPatient,
+    (attentionHour) => attentionHour.turn,
+    {
+      eager: true,
+      cascade: true,
+      nullable: true,
+      orphanedRowAction: 'soft-delete',
+      onUpdate: 'CASCADE'
+    }
+  )
+  attentionHourPatient: AttentionHourPatient[];
 
   @OneToMany(() => DerivationImage, (derivationImage) => derivationImage.turn, {
     orphanedRowAction: 'soft-delete',
@@ -92,24 +100,5 @@ export class Turn extends Base {
     eager: true
   })
   derivationImages?: DerivationImage[];
-
-  @ManyToOne(() => PatientUserConnection, {
-    eager: true,
-    onDelete: 'RESTRICT' // No permite eliminar PatientUserConnection
-  })
-  @JoinColumn({
-    name: 'patient_user_connection_id'
-  })
-  patientUserConnection: PatientUserConnection;
-
-  @Column({
-    name: 'available_time',
-    nullable: true,
-    type: 'varchar'
-  })
-  @ApiProperty({
-    description: 'Horarios y días que el paciente dispone para el turno',
-    example: 'Jueves de 07:00 a 09:00 y Lunes de 12:00 a 15:00'
-  })
-  availableTime: string;
 }
+

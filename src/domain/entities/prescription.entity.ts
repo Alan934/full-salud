@@ -7,7 +7,7 @@ export class Prescription extends Base {
   @Column({
     type: 'date'
   })
-  date: Date;
+  date: string;
 
   @ManyToOne(() => PatientTurn, {
     eager: true,

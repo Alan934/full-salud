@@ -1,9 +1,9 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsNotEmpty,
   IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested
 } from 'class-validator';
@@ -12,9 +12,9 @@ import { CreateIndicationDto } from '..';
 
 export class CreatePrescriptionDto {
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  date: Date;
+  @IsString()
+  @Type(() => String)
+  date: string;
 
   //recibe el id del paciente
   @IsNotEmpty()

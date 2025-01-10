@@ -7,7 +7,7 @@ import { SerializerSpecialistDto } from '../specialist/specialist-serializer.dto
 export class SerializerDerivationDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
-  date: Date;
+  date: string;
 
   @Expose()
   @ApiProperty({ example: 'Detalles de la derivación' })
@@ -31,7 +31,7 @@ export class SerializerDerivationDto extends FullBaseDto {
 export class ShortDerivationDto extends ShortBaseDto {
   @Expose()
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
-  date: Date;
+  date: string;
 
   @Expose()
   @ApiProperty({ example: 'Cardiología' })

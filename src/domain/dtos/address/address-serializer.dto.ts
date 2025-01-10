@@ -40,9 +40,9 @@ export class SerializerAddressDto extends FullBaseDto {
 export class SerializerShortAddressDto extends SerializerAddressDto {
   @Exclude()
   @ApiHideProperty()
-  deletedAt!: Date;
+  deletedAt!: string;
 
   @Exclude()
   @ApiHideProperty()
-  createdAt!: Date;
+  createdAt!: string;
 }

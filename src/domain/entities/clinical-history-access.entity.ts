@@ -9,7 +9,7 @@ export class ClinicalHistoryAccess extends Base {
     nullable: false,
     name: 'expiration_date'
   })
-  expirationDate: Date;
+  expirationDate: string;
 
   @ManyToOne(() => Specialist, {
     eager: true

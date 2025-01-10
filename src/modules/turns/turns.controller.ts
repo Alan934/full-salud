@@ -9,7 +9,8 @@ import {
   ParseFilePipe,
   Post,
   UploadedFiles,
-  UseInterceptors
+  UseInterceptors,
+  Get
 } from '@nestjs/common';
 import { Express } from 'express';
 import 'multer';
@@ -48,6 +49,20 @@ export class TurnsController extends ControllerFactory<
     super();
   }
 
+  @Post()
+  @ApiOperation({ description: 'Crear un turno' })
+  @ApiCreatedResponse({
+    description: 'Turno creado exitosamente',
+    type: SerializerTurnDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  async createTurn(@Body() createTurnDto: CreateTurnDto): Promise<SerializerTurnDto> {
+    const turn = await this.service.createTurn(createTurnDto);
+    console.log(turn);
+    return toDto(SerializerTurnDto, turn);
+  }
+  
+
   // Ruta multipart/form-data que permite crear turno y subir imágenes.
   @Post('with-derivation-images')
   @ApiOperation({
@@ -81,8 +96,8 @@ export class TurnsController extends ControllerFactory<
     @Body() createTurnDto: CreateTurnDto,
     @UploadedFiles(
       new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /png|jpg|jpeg/ })], // Valida el tipo de archivo
-        fileIsRequired: false // Indica que el archivo es opcional
+        validators: [new FileTypeValidator({ fileType: /png|jpg|jpeg/ })],
+        fileIsRequired: false
       })
     )
     derivationImages?: Express.Multer.File[] | null
@@ -91,7 +106,7 @@ export class TurnsController extends ControllerFactory<
       createTurnDto,
       derivationImages
     );
-    return toDto(SerializerTurnDto, data); // Parsea la entidad a dto
+    return toDto(SerializerTurnDto, data);
   }
 
   @Patch('change-status/:id/:status')
@@ -114,5 +129,16 @@ export class TurnsController extends ControllerFactory<
     const data = await this.service.changeStatus(id, status);
 
     return toDto(SerializerTurnDto, data);
+  }
+
+  @Get('specialist/:id')
+  @ApiOperation({ description: 'Obtener todos los turnos de un especialista específico' })
+  @ApiParam({ name: 'id', description: 'ID del especialista', type: 'string' })
+  @ApiResponse({ status: 200, description: 'Listado de turnos', type: [Turn] })
+  @ApiResponse({ status: 404, description: 'No turns found for specialist' })
+  async getTurnsBySpecialist(
+    @Param('id', new ParseUUIDPipe()) specialistId: string
+  ): Promise<Turn[]> {
+    return await this.service.getTurnsBySpecialist(specialistId);
   }
 }

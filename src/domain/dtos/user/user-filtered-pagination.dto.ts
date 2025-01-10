@@ -6,11 +6,6 @@ import { Role } from '../../../domain/enums';
 
 export class UserPaginationDto extends PaginationDto implements Filter {
   @IsOptional()
-  @IsNumberString()
-  @ApiProperty({ example: '2615836294' })
-  phone?: string;
-
-  @IsOptional()
   @IsString()
   @ApiProperty({
     description: 'Fracción o email completo del usuario',

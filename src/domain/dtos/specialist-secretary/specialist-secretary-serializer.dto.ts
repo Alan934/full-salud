@@ -1,17 +1,17 @@
 import { FullBaseDto } from '../../../common/dtos';
 import {
-  SerializerFullPersonDto,
-  SerializerShortPersonDto,
   SerializerOfficeDto,
-  SerializerShortOfficeDto
+  SerializerShortOfficeDto,
+  SerializerShortSpecialistDto,
+  SerializerSpecialistDto,
 } from '../../../domain/dtos';
 import { Expose, Type } from 'class-transformer';
 import { OmitType } from '@nestjs/swagger';
 
 export class SerializerSpecialistSecretaryDto extends FullBaseDto {
   @Expose()
-  @Type(() => SerializerFullPersonDto)
-  person: SerializerFullPersonDto;
+  @Type(() => SerializerSpecialistDto)
+  person: SerializerSpecialistDto;
 
   @Expose()
   @Type(() => SerializerOfficeDto)
@@ -23,8 +23,8 @@ export class SerializerShortSpecialistSecretaryDto extends OmitType(
   ['createdAt', 'deletedAt'] as const
 ) {
   @Expose()
-  @Type(() => SerializerShortPersonDto)
-  person: SerializerShortPersonDto;
+  @Type(() => SerializerShortSpecialistDto)
+  person: SerializerShortSpecialistDto;
 
   @Expose()
   @Type(() => SerializerShortOfficeDto)

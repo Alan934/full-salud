@@ -33,32 +33,34 @@ export class SpecialistApplicationsController extends ControllerFactory<
   constructor(protected service: SpecialistApplicationsService) {
     super();
   }
+ 
+  //Verificar que hacer con esto despues
 
-  @Patch('change-status/:id')
-  @ApiOperation({
-    description: 'Cambiar el estado de la solicitud'
-  })
-  @ApiCreatedResponse({
-    description: 'Solicitud aprobada: se crea especialista y usuario',
-    type: SerializerSpecialistDto
-  })
-  @ApiOkResponse({
-    description: 'Record found',
-    type: SerializerSpecialistApplicationDto
-  })
-  async changeStatus(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() changeStatusApplicationDto: ChangeStatusApplicationDto
-  ) {
-    const data = await this.service.changeStatus(
-      id,
-      changeStatusApplicationDto
-    );
+  // @Patch('change-status/:id')
+  // @ApiOperation({
+  //   description: 'Cambiar el estado de la solicitud'
+  // })
+  // @ApiCreatedResponse({
+  //   description: 'Solicitud aprobada: se crea especialista y usuario',
+  //   type: SerializerSpecialistDto
+  // })
+  // @ApiOkResponse({
+  //   description: 'Record found',
+  //   type: SerializerSpecialistApplicationDto
+  // })
+  // async changeStatus(
+  //   @Param('id', new ParseUUIDPipe()) id: string,
+  //   @Body() changeStatusApplicationDto: ChangeStatusApplicationDto
+  // ) {
+  //   const data = await this.service.changeStatus(
+  //     id,
+  //     changeStatusApplicationDto
+  //   );
 
-    if (data instanceof SpecialistApplication) {
-      return toDto(SerializerSpecialistApplicationDto, data);
-    }
+  //   if (data instanceof SpecialistApplication) {
+  //     return toDto(SerializerSpecialistApplicationDto, data);
+  //   }
 
-    return toDto(SerializerSpecialistDto, data);
-  }
+  //   return toDto(SerializerSpecialistDto, data);
+  // }
 }

@@ -4,19 +4,20 @@ import {
   SerializerDiagnosticDto,
   SerializerShortSpecialistDto,
   SerializerInstitutionDto,
-  SerializerShortPatientUserConnectionDto
+  SerializerShortPatientDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
 import { Role, TurnStatus } from 'src/domain/enums';
+import { SerializerAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient-serializer.dto';
 
 export class SerializerTurnDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '14:29:17' })
-  date: Date;
+  date: string;
 
   @Expose()
   @ApiProperty({ example: '14:29:17' })
-  hour: Date;
+  hour: string;
 
   @Expose()
   @ApiProperty({
@@ -25,14 +26,14 @@ export class SerializerTurnDto extends FullBaseDto {
   })
   observation: string;
 
-  @Expose({ groups: [Role.ADMIN, Role.SECRETARY] }) // Se expone solo para los roles dados
+  @Expose({ groups: [Role.ADMIN, Role.SECRETARY] })
   @ApiProperty({
     description:
       'Fecha estimada de pago por parte de la obra social. Corresponde a la fecha del turno más el tiempo que tarda la obra social en realizar el pago al proveedor de salud. En caso de pago particular, coincide con la fecha del turno.'
   })
-  estimatedPaymentDate: Date;
+  estimatedPaymentDate: string;
 
-  @Expose({ groups: [Role.ADMIN, Role.SECRETARY] }) // Se expone solo para los roles dados
+  @Expose({ groups: [Role.ADMIN, Role.SECRETARY] })
   @ApiProperty({
     description:
       "Indica si se ha cobrado o no la comisión por derivación a la obra social. En caso de ser 'true', la comisión ya ha sido cobrada.",
@@ -46,9 +47,10 @@ export class SerializerTurnDto extends FullBaseDto {
   })
   status: TurnStatus;
 
+  // Usamos DTOs simplificados para evitar ciclos
   @Expose()
-  @Type(() => SerializerShortPatientUserConnectionDto)
-  patientUserConnection: SerializerShortPatientUserConnectionDto;
+  @Type(() => SerializerShortPatientDto)
+  patient?: SerializerShortPatientDto;
 
   @Expose()
   @Type(() => SerializerDiagnosticDto)
@@ -56,9 +58,10 @@ export class SerializerTurnDto extends FullBaseDto {
 
   @Expose()
   @Type(() => SerializerShortSpecialistDto)
-  specialist?: SerializerShortSpecialistDto;
+  specialists?: SerializerShortSpecialistDto[];
 
   @Expose()
-  @Type(() => SerializerInstitutionDto)
-  institution?: SerializerInstitutionDto;
+  @Type(() => SerializerAttentionHourPatientDto)
+  attentionHourPatient: SerializerAttentionHourPatientDto[];
 }
+

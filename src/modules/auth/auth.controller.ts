@@ -3,6 +3,8 @@ import {
   Controller,
   FileTypeValidator,
   Get,
+  HttpCode,
+  HttpStatus,
   ParseFilePipe,
   Post,
   Query,
@@ -103,5 +105,38 @@ export class AuthController extends ControllerFactory<
     const { data, meta } = await this.service.findAll(paginationDto);
     const serializedData = toDtoList(SerializerUserDto, data);
     return { data: serializedData, meta };
+  }
+
+  @Post('create')
+  @ApiOperation({ summary: 'Crear un nuevo usuario' })
+  @ApiBody({ type: CreateUserDto })
+  @ApiResponse({ type: SerializerUserDto })
+  async create(@Body() createUserDto: CreateUserDto): Promise<SerializerUserDto> {
+    const data = await this.service.create(createUserDto);
+    return toDto(SerializerUserDto, data);
+  }
+
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Iniciar sesión' })
+  @ApiBody({
+    description: 'Credenciales de login',
+    type: Object,
+    examples: {
+      success: {
+        value: { email: 'juan@example.com', password: 'Clave1*' }
+      }
+    }
+  })
+  @ApiResponse({ description: 'Login exitoso', type: SerializerUserDto })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Credenciales inválidas'
+  })
+  async login(
+    @Body() loginDto: { email: string; password: string }
+  ): Promise<SerializerUserDto> {
+    const user = await this.service.login(loginDto.email, loginDto.password);
+    return toDto(SerializerUserDto, user);
   }
 }

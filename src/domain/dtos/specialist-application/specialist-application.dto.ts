@@ -1,7 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -49,9 +48,9 @@ export class CreateSpecialistApplicationDto {
   gender: Gender;
 
   @IsNotEmpty()
-  @IsDateString()
+  @IsString()
   @ApiProperty({ example: '1990-01-01' })
-  birth: Date;
+  birth: string;
 
   @IsNotEmpty()
   @IsUUID()

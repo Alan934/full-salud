@@ -6,12 +6,12 @@ import { SerializerShortImageBaseDto } from '..';
 
 export class SerializerUserDto extends FullBaseDto {
   @Expose()
-  @ApiProperty({ example: '2615836294' })
-  phone: string;
+  @ApiProperty({ example: 'juan@gmail.com' })
+  email: string;
 
   @Expose()
-  @ApiProperty({ example: 'juan@example.com' })
-  email: string;
+  @ApiProperty({ example: 'password1234' })
+  password: string;
 
   @Expose()
   @ApiProperty({ example: 'juan123' })

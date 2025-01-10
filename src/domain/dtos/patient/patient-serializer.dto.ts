@@ -7,7 +7,7 @@ import {
   SerializerShortUserDto
 } from '..';
 
-export class SerializerPatientUserConnectionDto {
+export class SerializerPatientDto {
   @Expose()
   @ApiProperty({ example: '2615836294' })
   phone: string;
@@ -29,7 +29,7 @@ export class SerializerPatientUserConnectionDto {
   addresses: SerializerShortAddressDto[];
 }
 
-export class SerializerShortPatientUserConnectionDto extends SerializerPatientUserConnectionDto {
+export class SerializerShortPatientDto extends SerializerPatientDto {
   @Exclude()
   @Type(() => SerializerShortAddressDto)
   addresses: SerializerShortAddressDto[];

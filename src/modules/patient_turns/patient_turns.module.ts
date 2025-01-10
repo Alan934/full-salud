@@ -3,14 +3,14 @@ import { PatientTurnsService } from './patient_turns.service';
 import { PatientTurnsController } from './patient_turns.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PatientTurn } from '../../domain/entities';
-import { PersonsModule } from '../persons/persons.module';
 import { DisabilityCardsModule } from '../disability_cards/disability_cards.module';
 import { TurnsModule } from '../turns/turns.module';
+import { PatientModule } from '../patients/patients.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([PatientTurn]),
-    PersonsModule,
+    PatientModule,
     DisabilityCardsModule,
     TurnsModule
   ],

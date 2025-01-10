@@ -5,7 +5,7 @@ import { SerializerShortPacientTurnDto } from '../patient-turn/patient-turn-seri
 
 export class SerializerClinicalHistoryAccessDto extends ShortBaseDto {
   @Expose()
-  expirationDate: Date;
+  expirationDate: string;
 
   @Expose()
   @Type(() => SerializerShortSpecialistDto)

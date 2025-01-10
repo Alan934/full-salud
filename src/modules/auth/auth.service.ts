@@ -10,7 +10,7 @@ import {
 } from '../../domain/dtos';
 import { Express } from 'express';
 import 'multer';
-import { PatientUserConnection, User } from '../../domain/entities';
+import { Patient, User } from '../../domain/entities';
 import { Media } from '../../domain/enums/media.enum';
 import { Role } from '../../domain/enums/role.enum';
 import {
@@ -36,6 +36,7 @@ import {
   DynamicQueryBuilder
 } from '../../common/util/dynamic-query-builder.util';
 import { NotificationsService } from '../notifications/notifications.service';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class AuthService extends BaseService<
@@ -80,19 +81,60 @@ export class AuthService extends BaseService<
   }
 
   //Override del método create genérico
+  // override async create(createDto: CreateUserDto): Promise<User> {
+  //   try {
+  //     return await this.repository.manager.transaction(
+  //       async (transactionalEntityManager) => {
+  //         const newUser: User = await transactionalEntityManager.save(
+  //           User,
+  //           createDto
+  //         ); //guarda el usuario obtenido
+  //         //obtiene el servicio de preferencias de notificaciones que corresponde al rol del usuario
+  //         const notificationPreferencesService =
+  //           this.getNotificationPreferenceServiceByRole(newUser.role);
+
+  //         //crea en la base de datos dos preferencias de notificaciones para el usuario, una para contener las preferencias de email y otra para las de whatsapp
+  //         await notificationPreferencesService.create(
+  //           new CreateNotificationPreferencesDto(Media.EMAIL, {
+  //             id: newUser.id
+  //           }),
+  //           transactionalEntityManager
+  //         );
+  //         await notificationPreferencesService.create(
+  //           new CreateNotificationPreferencesDto(Media.WHATSAPP, {
+  //             id: newUser.id
+  //           }),
+  //           transactionalEntityManager
+  //         );
+  //         return newUser; //devuelve el usuario creado
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
   override async create(createDto: CreateUserDto): Promise<User> {
     try {
+      const existingUser = await this.repository.findOne({ where: { email: createDto.email } });
+
+      if (existingUser) {
+        throw ErrorManager.createSignatureError('Email is already in use');
+      }
+      
+      const hashedPassword = await bcrypt.hash(createDto.password, 10);
+      createDto.password = hashedPassword;
+
       return await this.repository.manager.transaction(
         async (transactionalEntityManager) => {
           const newUser: User = await transactionalEntityManager.save(
             User,
             createDto
-          ); //guarda el usuario obtenido
-          //obtiene el servicio de preferencias de notificaciones que corresponde al rol del usuario
+          );
+          // Obtiene el servicio de preferencias de notificaciones que corresponde al rol del usuario
           const notificationPreferencesService =
             this.getNotificationPreferenceServiceByRole(newUser.role);
 
-          //crea en la base de datos dos preferencias de notificaciones para el usuario, una para contener las preferencias de email y otra para las de whatsapp
+          // Crea en la base de datos dos preferencias de notificaciones para el usuario
           await notificationPreferencesService.create(
             new CreateNotificationPreferencesDto(Media.EMAIL, {
               id: newUser.id
@@ -105,9 +147,29 @@ export class AuthService extends BaseService<
             }),
             transactionalEntityManager
           );
-          return newUser; //devuelve el usuario creado
+          return newUser;
         }
       );
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async login(email: string, password: string): Promise<User | null> {
+    try {
+      const user = await this.repository.findOne({ where: { email } });
+
+      if (!user) {
+        throw ErrorManager.createSignatureError('Invalid email or password');
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (!isPasswordValid) {
+        throw ErrorManager.createSignatureError('Invalid email or password');
+      }
+
+      return user;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
@@ -14,58 +13,68 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { TurnStatus } from '../../../domain/enums';
 import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
 import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
+import { CreateAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient.dto';
+import { CreateSpecialistDto } from '../specialist/specialist.dto';
 
 export class CreateTurnDto {
   @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  date?: Date;
+  @IsString()
+  @Type(() => String)
+  date?: string;
 
-  @IsTime('hour')
   @IsOptional()
   hour?: string;
 
   @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => CreateAttentionHourPatientDto)
+  attentionHourPatient?: CreateAttentionHourPatientDto[];
+
+  @IsOptional()
   @IsString()
   @ApiProperty({
-    example:
-      'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva'
+    example: 'dolor de pecho opresivo que se irradia hacia el brazo izquierdo, dificultad para respirar y sudoración excesiva'
   })
   observation?: string;
 
-  //recibe el id de patientUserConnection
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  patientUserConnection: ShortBaseDto;
+  // @IsNotEmpty()
+  // @ValidateNested()
+  // @Type(() => ShortBaseDto)
+  // patient: ShortBaseDto;
 
-  //recibe un id de diagnostic
-  @IsOptional()
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  diagnostic: ShortBaseDto;
-
-  //recibe el id del specialist
-  @ValidateNested()
-  @IsNotEmpty()
-  @Type(() => ShortBaseDto)
-  @IncompatableWith(['institution'])
-  specialist?: ShortBaseDto;
-
-  //recibe el id de institution
-  @ValidateNested()
-  @IsNotEmpty()
-  @Type(() => ShortBaseDto)
-  @IncompatableWith(['specialist'])
-  institution?: ShortBaseDto;
+  // @IsNotEmpty()
+  // //@ValidateNested()
+  // patientId: string; // Cambiado de patient a patientId
 
   @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: '20a05b0e-d872-4fe5-bf9f-4b6b010b443d' })
+  patientId: string; // Usamos solo el ID
+
+  @IsNotEmpty()
+  @ValidateNested({ each: true })
+  @Type(() => ShortBaseDto)
   @ApiProperty({
-    description: 'Horarios y días que el paciente dispone para el turno',
-    example: 'Jueves de 07:00 a 09:00 y Lunes de 12:00 a 15:00'
+    example: [{ id: '7c715f1e-09b9-4138-814a-00959681b541' }],
+    type: [ShortBaseDto],
   })
-  availableTime: string;
+  specialists: ShortBaseDto[];
+
+  // @ValidateNested({ each: true })
+  // @IsNotEmpty()
+  // @Type(() => ShortBaseDto)
+  // specialists: ShortBaseDto[];
+
+
+  // @ValidateNested({ each: true })
+  // @IsNotEmpty()
+  // @Type(() => ShortBaseDto)
+  // specialists: ShortBaseDto[];
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ShortBaseDto)
+  diagnostic?: ShortBaseDto;
 }
 
 export class UpdateTurnDto extends PartialType(CreateTurnDto) {

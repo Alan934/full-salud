@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import { DisabilityCard, MemberSocialWork, Person } from '.';
+import { DisabilityCard, MemberSocialWork, Patient } from '.';
 import { Base } from '../../common/bases/base.entity';
 
 @Entity('patient_turns')
@@ -14,15 +14,7 @@ export class PatientTurn extends Base {
   @ApiProperty({ examples: ['false', 'true'] })
   isDisabled: boolean;
 
-  @OneToOne(() => Person, {
-    orphanedRowAction: 'delete',
-    cascade: true,
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-    eager: true
-  })
-  @JoinColumn({ name: 'person_id' })
-  person: Person;
+
 
   @OneToOne(
     () => MemberSocialWork,

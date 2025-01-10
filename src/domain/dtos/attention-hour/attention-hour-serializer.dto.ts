@@ -6,11 +6,11 @@ import { Day } from '../../../domain/enums';
 export class SerializerAttentionHourDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '09:00' })
-  openingHour: Date;
+  openingHour: string;
 
   @Expose()
   @ApiProperty({ example: '13:30' })
-  closeHour: Date;
+  closeHour: string;
 
   @Expose()
   @ApiProperty({
@@ -22,11 +22,11 @@ export class SerializerAttentionHourDto extends FullBaseDto {
 export class SerializerShortAttentionHourDto extends ShortBaseDto {
   @Expose()
   @ApiProperty({ example: '09:00' })
-  openingHour: Date;
+  openingHour: string;
 
   @Expose()
   @ApiProperty({ example: '13:30' })
-  closeHour: Date;
+  closeHour: string;
 
   @Expose()
   @ApiProperty({

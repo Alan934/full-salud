@@ -11,14 +11,14 @@ export class AttentionHour extends Base {
     name: 'opening_hour',
     nullable: true
   })
-  openingHour: Date;
+  openingHour: string;
 
   @Column({
     type: 'time',
     name: 'close_hour',
     nullable: true
   })
-  closeHour: Date;
+  closeHour: string;
 
   @Column({
     type: 'enum',

@@ -32,7 +32,7 @@ export class SerializerSpecialistApplicationDto extends FullBaseDto {
 
   @Expose()
   @ApiProperty({ example: '1990-01-01' })
-  birth: Date;
+  birth: string;
 
   @Expose()
   @Type(() => SerializerUserApplicationDto)

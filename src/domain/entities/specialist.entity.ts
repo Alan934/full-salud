@@ -14,12 +14,14 @@ import {
   Person,
   Speciality,
   SocialWork,
-  SpecialistAttentionHour
+  SpecialistAttentionHour,
+  Turn,
+  User
 } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('specialists')
-export class Specialist extends Base {
+export class Specialist extends Person {
   @Column({
     type: 'varchar',
     nullable: false
@@ -47,19 +49,22 @@ export class Specialist extends Base {
   @JoinColumn({ name: 'degree_id' })
   degree: Degree;
 
-  @ManyToOne(() => Speciality, (speciality) => speciality.specialists, {
-    eager: true
-  })
-  @JoinColumn({ name: 'speciality_id' })
-  speciality: Speciality;
-
-  @OneToOne(() => Person, {
+  @ManyToMany(() => Speciality, (speciality) => speciality.specialists, {
+    eager: true,
     cascade: true,
-    orphanedRowAction: 'soft-delete',
-    eager: true
   })
-  @JoinColumn({ name: 'person_id' })
-  person: Person;
+  @JoinTable({
+    name: 'specialists_specialities', // Nombre de la tabla de relación
+    joinColumn: {
+      name: 'specialist_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'speciality_id',
+      referencedColumnName: 'id',
+    },
+  })
+  specialities: Speciality[];
 
   @ManyToMany(() => SocialWork, (socialWork) => socialWork.specialists)
   @JoinTable({
@@ -89,3 +94,4 @@ export class Specialist extends Base {
   )
   specialistAttentionHour: SpecialistAttentionHour[];
 }
+

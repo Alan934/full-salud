@@ -8,7 +8,7 @@ export class Derivation extends Base {
     type: 'time',
     nullable: false
   })
-  date: Date;
+  date: string;
 
   @Column({
     type: 'varchar'

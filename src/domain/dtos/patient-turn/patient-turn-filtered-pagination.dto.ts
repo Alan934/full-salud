@@ -3,10 +3,10 @@ import { Type } from 'class-transformer';
 import {
   IsAlphanumeric,
   IsBoolean,
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  IsString,
   IsUUID,
   MaxLength
 } from 'class-validator';
@@ -54,13 +54,13 @@ export class PatientTurnPaginationDto extends PaginationDto implements Filter {
 
   @IsOptional()
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
+  @IsString()
+  @Type(() => String)
   @ApiProperty({
     description: 'Fecha de nacimiento del paciente, búsqueda exacta',
     example: '1998-10-22'
   })
-  birth?: Date;
+  birth?: string;
 
   @IsOptional()
   @IsNotEmpty()

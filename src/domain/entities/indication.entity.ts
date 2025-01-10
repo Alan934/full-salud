@@ -9,7 +9,7 @@ export class Indication extends Base {
     default: null,
     nullable: true
   })
-  start: Date;
+  start: string;
 
   @ManyToOne(() => Prescription, (prescription) => prescription.indications, {
     onDelete: 'CASCADE'

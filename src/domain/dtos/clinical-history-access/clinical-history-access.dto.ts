@@ -1,13 +1,14 @@
-import { IsNotEmpty, IsDate } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
+import { string } from 'joi';
 
 export class CreateClinicalHistoryAccessDto {
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  expirationDate: Date;
+  @IsString()
+  @Type(() => string)
+  expirationDate: string;
 
   //Recbie el id del especialista que va a pertenecer al historial
   @IsNotEmpty()

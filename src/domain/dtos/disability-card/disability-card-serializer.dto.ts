@@ -13,7 +13,7 @@ export class SerializerDisabilityCardDto extends ShortBaseDto {
 
   @Expose()
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
-  expirationDate: Date;
+  expirationDate: string;
 
   // Expone el campo patientTurns en la salida serializada como un array de SerializerPatientTurnDto
   @Exclude()
@@ -33,7 +33,7 @@ export class SerializerShortDisabilityCardDto extends ShortBaseDto {
 
   @Expose()
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
-  expirationDate: Date;
+  expirationDate: string;
 
   @Expose()
   @Type(() => SerializerDisabilityCardImageDto)

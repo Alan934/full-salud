@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import {
-  SerializerFullPersonDto,
+  // SerializerFullPersonDto,
   SerializerDegreeDto,
-  SerializerShortPersonDto,
+  // SerializerShortPersonDto,
   SerializerShortSpecialityDto,
   SerializerShortSocialWorkDto,
-  ShortSerializerSpecialistAttentionHourDto
+  ShortSerializerSpecialistAttentionHourDto,
+  SerializerTurnDto,
+  SerializerShortUserDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
 
@@ -24,28 +26,27 @@ export class SerializerSpecialistDto extends FullBaseDto {
   homeService: boolean;
 
   @Expose()
-  @Type(() => SerializerShortSpecialityDto)
-  speciality: SerializerShortSpecialityDto;
+  @Type(() => SerializerShortUserDto)
+  user: SerializerShortUserDto;
 
+  @Expose()
+  @Type(() => SerializerShortSpecialityDto)
+  specialities: SerializerShortSpecialityDto[];
   @Expose()
   @Type(() => SerializerShortSocialWorkDto)
   acceptedSocialWorks: SerializerShortSocialWorkDto[];
 
   @Expose()
-  @Type(() => SerializerFullPersonDto)
-  person: SerializerFullPersonDto;
-
-  @Expose()
   @Type(() => ShortSerializerSpecialistAttentionHourDto)
   specialistAttentionHour: ShortSerializerSpecialistAttentionHourDto[];
+
+  @Expose()
+  @Type(() => SerializerTurnDto)
+  turns: SerializerTurnDto[];
 }
 
 export class SerializerShortSpecialistDto extends ShortBaseDto {
   @Expose()
-  @Type(() => SerializerShortPersonDto)
-  person: SerializerShortPersonDto;
-
-  @Expose()
   @Type(() => SerializerShortSpecialityDto)
-  speciality: SerializerShortSpecialityDto;
+  specialities: SerializerShortSpecialityDto[];
 }

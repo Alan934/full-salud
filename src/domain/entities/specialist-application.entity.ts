@@ -68,7 +68,7 @@ export class SpecialistApplication extends Base {
     nullable: false
   })
   @ApiProperty({ example: '1990-01-01' })
-  birth: Date;
+  birth: string;
 
   @Column({
     type: 'uuid',

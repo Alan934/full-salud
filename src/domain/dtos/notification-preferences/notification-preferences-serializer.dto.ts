@@ -7,11 +7,11 @@ import { ApiProperty, OmitType } from '@nestjs/swagger';
 export class SerializerNotificationPreferencesDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ examples: ['2024-08-27T08:30:00'] })
-  startHour?: Date;
+  startHour?: string;
 
   @Expose()
   @ApiProperty({ examples: ['2024-08-27T12:30:00'] })
-  endHour?: Date;
+  endHour?: string;
 
   @Expose()
   @ApiProperty({ examples: [Media.EMAIL, Media.WHATSAPP] })
