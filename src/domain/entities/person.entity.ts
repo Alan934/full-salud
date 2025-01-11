@@ -1,5 +1,5 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinColumn, JoinTable, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToOne, OneToOne } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
 import { User } from './user.entity';
@@ -66,16 +66,23 @@ export abstract class Person extends Base {
   @ApiProperty({ example: '2615836294' })
   phone?: string;
 
-    @JoinTable({
-      name: 'person_addresses',
-      joinColumn: {
-        name: 'person_id',
-        referencedColumnName: 'id'
-      },
-      inverseJoinColumn: {
-        name: 'address_id',
-        referencedColumnName: 'id'
-      }
-    })
-    addresses: Address[];
+  @JoinTable({
+    name: 'person_addresses',
+    joinColumn: {
+      name: 'person_id',
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'address_id',
+      referencedColumnName: 'id'
+    }
+  })
+  addresses: Address[];
+
+  @ManyToOne(() => User, {
+    onDelete: 'SET NULL', // Si se elimina el usuario, se marcará la relación en null pero no se eliminará la tabla Patient
+    eager: true
+  })
+  @JoinColumn({ name: 'user_id' })
+  user: User;
 }

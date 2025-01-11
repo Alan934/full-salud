@@ -1,4 +1,3 @@
-import { Base } from '../../common/bases/base.entity';
 import {
   Column,
   Entity,
@@ -7,7 +6,6 @@ import {
   ManyToMany,
   ManyToOne,
   OneToMany,
-  OneToOne
 } from 'typeorm';
 import {
   Degree,
@@ -16,7 +14,6 @@ import {
   SocialWork,
   SpecialistAttentionHour,
   Turn,
-  User
 } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 

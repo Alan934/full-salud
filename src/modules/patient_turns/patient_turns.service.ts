@@ -129,31 +129,31 @@ export class PatientTurnsService extends BaseService<
     }
   }
 
-  override async remove(id: string): Promise<string> {
-    try {
-      const entity = await this.findOne(id);
-      return this.repository.manager.transaction(
-        async (manager: EntityManager) => {
-          if (entity.disabilityCard) {
-            //elimina el carnet de discapacidad
-            await this.disabilityCardService.removeWithManager(
-              entity.disabilityCard.id,
-              manager
-            );
-          }
-          await this.turnsService.removeByPatientWithManager(
-            entity.id,
-            manager
-          ); //elimina turnos
-          await this.patientService.removeWithManager(entity.id, manager);
-          await manager.remove(entity);
-          return `Entity with id ${id} deleted`;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
+  // override async remove(id: string): Promise<string> {
+  //   try {
+  //     const entity = await this.findOne(id);
+  //     return this.repository.manager.transaction(
+  //       async (manager: EntityManager) => {
+  //         if (entity.disabilityCard) {
+  //           //elimina el carnet de discapacidad
+  //           await this.disabilityCardService.removeWithManager(
+  //             entity.disabilityCard.id,
+  //             manager
+  //           );
+  //         }
+  //         await this.turnsService.removeByPatientWithManager(
+  //           entity.id,
+  //           manager
+  //         ); //elimina turnos
+  //         await this.patientService.removeWithManager(entity.id, manager);
+  //         await manager.remove(entity);
+  //         return `Entity with id ${id} deleted`;
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
 
   // override async softRemove(id: string): Promise<string> {
   //   try {

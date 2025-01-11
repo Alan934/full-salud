@@ -10,13 +10,13 @@ import {
 import {
   CreateSpecialistAttentionHourDto,
   CreateSpecialityDto,
+  UpdateSpecialistAttentionHourDto,
   UpdateSpecialityDto,
 } from '..';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { PersonBaseDto } from '../person/person.dto';
-import { Speciality } from 'src/domain/entities';
 
 export class CreateSpecialistDto extends PersonBaseDto {
   @IsNotEmpty()
@@ -52,13 +52,18 @@ export class CreateSpecialistDto extends PersonBaseDto {
   specialistAttentionHour?: CreateSpecialistAttentionHourDto[];
 }
 
-
 //"reescribe" person
-export class UpdateSpecialistDto extends PartialType((CreateSpecialistDto)) {
-
+export class UpdateSpecialistDto extends PartialType(
+  OmitType(CreateSpecialistDto, ['specialistAttentionHour', 'addresses'] as const),
+) {
   @IsOptional()
   @ArrayUnique()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   acceptedSocialWorks?: ShortBaseDto[];
+
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @Type(() => UpdateSpecialistAttentionHourDto)
+  specialistAttentionHour?: UpdateSpecialistAttentionHourDto[];
 }

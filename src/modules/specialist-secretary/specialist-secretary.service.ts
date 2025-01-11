@@ -30,7 +30,7 @@ export class SpecialistSecretariesService extends BaseService<
           if (entity) {
             await manager.delete(SpecialistSecretary, id);
             await manager.delete(Specialist, entity.person);
-            //await manager.delete(User, entity.person.user);
+            await manager.delete(User, entity.person.user);
             return `Entity with id ${id} deleted`;
           }
         }
