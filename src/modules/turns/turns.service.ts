@@ -95,7 +95,7 @@ export class TurnsService extends BaseService<
   async getOne(id: string): Promise<Turn> {
     try {
       const turn = await this.repository.findOne({
-        where: { id },
+        where: { id, deletedAt: null },
         relations: ['patient', 'specialists'],
       });
 
@@ -112,6 +112,9 @@ export class TurnsService extends BaseService<
   async getAll(): Promise<Turn[]> {
     try {
       return await this.repository.find({
+        where: {
+          deletedAt: null,
+        },
         relations: ['patient', 'specialists'],
       });
     } catch (error) {
@@ -127,6 +130,7 @@ export class TurnsService extends BaseService<
           specialists: {
             id: specialistId,
           },
+          deletedAt: null,
         },
         relations: ['patient', 'specialists'],
       });
@@ -151,6 +155,7 @@ export class TurnsService extends BaseService<
           patient: {
             id: patientId,
           },
+          deletedAt: null,
         },
         relations: ['patient', 'specialists'],
       });
@@ -166,7 +171,80 @@ export class TurnsService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+    
+  //Obtener turnos completados por el ID del paciente (historial).
+  async getCompletedTurnsByPatient(patientId: string): Promise<Turn[]> {
+    try {
+      const turns = await this.repository.find({
+        where: {
+          patient: { id: patientId },
+          status: TurnStatus.COMPLETED,
+          deletedAt: null,
+        },
+        relations: ['patient', 'specialists'],
+      });
+
+      if (!turns.length) {
+        throw new NotFoundException(`No completed turns found for patient ID ${patientId}`);
+      }
+
+      return turns;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  //Soft delete para eliminar un turno.
+  async removeTurn(id: string): Promise<{ message: string; deletedTurn: Turn }> {
+    try {
+      const turn = await this.repository.findOne({ where: { id, deletedAt: null } });
   
+      if (!turn) {
+        throw new NotFoundException(`Turn with ID ${id} not found`);
+      }
+  
+      const deletedTurn = await this.repository.softRemove(turn);
+  
+      return {
+        message: 'Turn deleted successfully',
+        deletedTurn,
+      };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  //Recover para restaurar un turno eliminado.
+  async recoverTurn(id: string): Promise<Turn> {
+    try {
+      const turn = await this.repository.findOne({ withDeleted: true, where: { id } });
+
+      if (!turn) {
+        throw new NotFoundException(`Turn with ID ${id} not found`);
+      }
+
+      await this.repository.recover(turn);
+      return turn;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  //Actualizar un turno.
+  async updateTurn(id: string, updateTurnDto: UpdateTurnDto): Promise<Turn> {
+    try {
+      const turn = await this.repository.findOne({ where: { id, deletedAt: null } });
+
+      if (!turn) {
+        throw new NotFoundException(`Turn with ID ${id} not found`);
+      }
+
+      Object.assign(turn, updateTurnDto);
+      return await this.repository.save(turn);
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
 
   // // Método que sube imágenes y se las asigna al nuevo turno
   // async createWithDerivationImages(

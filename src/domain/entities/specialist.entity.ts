@@ -48,7 +48,6 @@ export class Specialist extends Person {
 
   @ManyToMany(() => Speciality, (speciality) => speciality.specialists, {
     eager: true,
-    cascade: true,
   })
   @JoinTable({
     name: 'specialists_specialities', // Nombre de la tabla de relación

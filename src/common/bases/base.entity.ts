@@ -11,13 +11,15 @@ export abstract class Base {
   id: string;
 
   @DeleteDateColumn({
-    name: 'deleted_at'
+    name: 'deleted_at',
+    type: 'varchar',
   })
   @ApiProperty({ example: null })
   deletedAt!: string;
 
   @CreateDateColumn({
-    name: 'created_at'
+    name: 'created_at',
+    type: 'varchar',
   })
   createdAt!: string;
 }

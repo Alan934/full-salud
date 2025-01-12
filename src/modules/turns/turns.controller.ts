@@ -106,6 +106,54 @@ export class TurnsController extends ControllerFactory<
     return turns.map((turn) => toDto(SerializerTurnDto, turn));
   }
 
+  @Get('completed/patient/:patientId')
+  @ApiOperation({ description: 'Obtener turnos completados por el ID de un paciente y turnos completados' })
+  @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
+  @ApiResponse({ status: 200, description: 'Turnos completados encontrados', type: [SerializerTurnDto] })
+  @ApiResponse({ status: 404, description: 'No se encontraron turnos completados para el paciente' })
+  async getCompletedTurnsByPatient(
+    @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
+  ): Promise<SerializerTurnDto[]> {
+    const turns = await this.service.getCompletedTurnsByPatient(patientId);
+    return turns.map((turn) => toDto(SerializerTurnDto, turn));
+  }
+
+  @Patch('/remove/:id')
+  @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
+  @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
+  @ApiResponse({ status: 200, description: 'Turno eliminado correctamente', schema: { example: { message: 'Turn deleted successfully', deletedTurn: { /* ejemplo del turno */ } } } })
+  @ApiResponse({ status: 404, description: 'Turno no encontrado' })
+  async removeTurn(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<{ message: string; deletedTurn: Turn }> {
+    return this.service.removeTurn(id);
+  }
+
+  @Patch('/recover/:id')
+  @ApiOperation({ description: 'Recuperar un turno eliminado' })
+  @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
+  @ApiResponse({ status: 200, description: 'Turno recuperado correctamente', type: SerializerTurnDto })
+  @ApiResponse({ status: 404, description: 'Turno no encontrado' })
+  async recoverTurn(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<SerializerTurnDto> {
+    const turn = await this.service.recoverTurn(id);
+    return toDto(SerializerTurnDto, turn);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ description: 'Actualizar un turno' })
+  @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
+  @ApiBody({ type: UpdateTurnDto })
+  @ApiResponse({ status: 200, description: 'Turno actualizado correctamente', type: SerializerTurnDto })
+  @ApiResponse({ status: 404, description: 'Turno no encontrado' })
+  async updateTurn(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+    @Body() updateTurnDto: UpdateTurnDto,
+  ): Promise<SerializerTurnDto> {
+    const turn = await this.service.updateTurn(id, updateTurnDto);
+    return toDto(SerializerTurnDto, turn);
+  }
 
   // // Ruta multipart/form-data que permite crear turno y subir imágenes.
   // @Post('with-derivation-images')

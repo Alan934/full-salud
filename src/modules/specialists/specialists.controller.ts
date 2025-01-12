@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { SpecialistsService } from './specialists.service';
 import { Specialist, Turn } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
@@ -31,14 +31,56 @@ export class SpecialistsController extends ControllerFactory<
     super();
   }
 
+  // @Post()
+  // @ApiOperation({
+  //   description: 'Crear un nuevo especialista'
+  // })
+  // async create(@Body() createSpecialistDto: CreateSpecialistDto): Promise<SerializerSpecialistDto> {
+  //   const specialist = await this.service.create(createSpecialistDto);
+  //   return plainToClass(SerializerSpecialistDto, specialist);
+  // }
+
   @Post()
-  @ApiOperation({
-    description: 'Crear un nuevo especialista'
-  })
+  @ApiOperation({ description: 'Crear un nuevo especialista' })
   async create(@Body() createSpecialistDto: CreateSpecialistDto): Promise<SerializerSpecialistDto> {
     const specialist = await this.service.create(createSpecialistDto);
-    
     return plainToClass(SerializerSpecialistDto, specialist);
+  }
+
+  @Get()
+  @ApiOperation({ description: 'Obtener todos los especialistas' })
+  async getAll(): Promise<SerializerSpecialistDto[]> {
+    const specialists = await this.service.getAll();
+    return plainToClass(SerializerSpecialistDto, specialists);
+  }
+
+  @Get(':id')
+  @ApiOperation({ description: 'Obtener un especialista por ID' })
+  async getOne(@Param('id') id: string): Promise<SerializerSpecialistDto> {
+    const specialist = await this.service.getOne(id);
+    return plainToClass(SerializerSpecialistDto, specialist);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ description: 'Actualizar un especialista' })
+  async update(
+    @Param('id') id: string,
+    @Body() updateSpecialistDto: UpdateSpecialistDto,
+  ): Promise<SerializerSpecialistDto> {
+    const specialist = await this.service.update(id, updateSpecialistDto);
+    return plainToClass(SerializerSpecialistDto, specialist);
+  }
+
+  @Patch('soft-delete/:id')
+  @ApiOperation({ description: 'Eliminar un especialista (soft delete)' })
+  async softDelete(@Param('id') id: string): Promise<{ message: string }> {
+    return this.service.softDelete(id);
+  }
+
+  @Patch('recover/:id')
+  @ApiOperation({ description: 'Recuperar un especialista eliminado' })
+  async recover(@Param('id') id: string): Promise<{ message: string }> {
+    return this.service.recover(id);
   }
 
   @Get()

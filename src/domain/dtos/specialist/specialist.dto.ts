@@ -17,17 +17,23 @@ import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { PersonBaseDto } from '../person/person.dto';
+import { Degree } from 'src/domain/entities';
 
 export class CreateSpecialistDto extends PersonBaseDto {
-  @IsNotEmpty()
+  
+  @IsOptional()
   @IsString()
   @ApiProperty({ example: '123456-M-BA' })
-  license: string;
+  license?: string;
 
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  degree: ShortBaseDto;
+  // @IsNotEmpty()
+  // @ValidateNested()
+  // @Type(() => ShortBaseDto)
+  // degree: ShortBaseDto;
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'f0d50580-e7ca-4860-ba4e-7c4809153ae7' })
+  degreeId?: string;
 
   @ApiProperty({ type: [ShortBaseDto] })
   @IsArray()

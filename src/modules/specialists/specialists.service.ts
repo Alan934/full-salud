@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import {
@@ -16,6 +16,7 @@ import {
   UpdateSpecialistDto
 } from '../../domain/dtos';
 import {
+  Degree,
   Prescription,
   Price,
   Specialist,
@@ -42,17 +43,148 @@ export class SpecialistsService extends BaseService<
   }
 
   async create(createSpecialistDto: CreateSpecialistDto): Promise<Specialist> {
-    const { specialities, degree, ...specialistData } = createSpecialistDto;
+    try {
+      const { specialities, degreeId, license, dni, phone, ...specialistData } = createSpecialistDto;
+  
+      const existingDni = await this.repository.findOne({ where: { dni } });
+      if (existingDni) {
+        throw new ErrorManager(`DNI "${dni}" already exists`, 400);
+      }
+  
+      const existingPhone = await this.repository.findOne({ where: { phone } });
+      if (existingPhone) {
+        throw new ErrorManager(`Phone "${phone}" already exists`, 400);
+      }
+  
+      const existingLicense = await this.repository.findOne({ where: { license } });
+      if (existingLicense) {
+        throw new ErrorManager(`License number "${license}" already exists`, 400);
+      }
+  
+      const specialityEntities = await this.specialityRepository.findByIds(
+        specialities.map((s) => s.id)
+      );
+      if (specialityEntities.length !== specialities.length) {
+        throw new ErrorManager('Some specialties not found', 400);
+      }
 
-    const specialityEntities = await this.specialityRepository.findByIds(specialities.map(s => s.id));
+      const degreeEntity = await this.repository.manager.findOne(Degree, {
+        where: { id: degreeId },
+      });
+      if (!degreeEntity) {
+        throw new ErrorManager(`Degree with id "${degreeId}" not found`, 400);
+      }
+  
+      const specialist = this.repository.create({
+        ...specialistData,
+        license,
+        dni,
+        degree: degreeEntity,
+        specialities: specialityEntities,
+      });
+  
+      return await this.repository.save(specialist);
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
 
-    const specialist = this.repository.create({
-      ...specialistData,
-      degree,
-      specialities: specialityEntities, 
-    });
+  // Obtener todos los especialistas
+  async getAll(): Promise<Specialist[]> {
+    try {
+      return await this.repository.find({ where: { deletedAt: null } });
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
 
-    return this.repository.save(specialist);
+  // Obtener un especialista por ID
+  async getOne(id: string): Promise<Specialist> {
+    try {
+      const specialist = await this.repository.findOne({
+        where: { id, deletedAt: null },
+        relations: ['specialities', 'degree'],
+      });
+
+      if (!specialist) {
+        throw new NotFoundException(`Specialist with ID ${id} not found`);
+      }
+
+      return specialist;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  // Actualizar un especialista
+  async update(id: string, updateSpecialistDto: UpdateSpecialistDto): Promise<Specialist> {
+    try {
+      const specialist = await this.getOne(id);
+
+      const { specialities, degreeId, ...specialistData } = updateSpecialistDto;
+
+      if (specialities) {
+        const specialityEntities = await this.specialityRepository.findByIds(
+          specialities.map((s) => s.id)
+        );
+
+        if (specialityEntities.length !== specialities.length) {
+          throw new ErrorManager('Some specialties not found', 400);
+        }
+
+        specialist.specialities = specialityEntities;
+      }
+
+      if (degreeId) {
+        const degreeEntity = await this.repository.manager.findOne(Degree, {
+          where: { id: degreeId },
+        });
+        if (!degreeEntity) {
+          throw new ErrorManager(`Degree with id "${degreeId}" not found`, 400);
+        }
+  
+        specialist.degree = degreeEntity;
+      }
+
+      Object.assign(specialist, specialistData);
+
+      return await this.repository.save(specialist);
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  // Eliminar especialista (soft delete)
+  async softDelete(id: string): Promise<{ message: string }> {
+    try {
+      const specialist = await this.getOne(id);
+
+      await this.repository.softRemove(specialist);
+
+      return { message: 'Specialist soft deleted successfully' };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  // Recuperar un especialista eliminado
+  async recover(id: string): Promise<{ message: string }> {
+    try {
+      const specialist = await this.repository.findOne({
+        where: { id },
+        withDeleted: true,
+      });
+
+      if (!specialist || !specialist.deletedAt) {
+        throw new NotFoundException(`Specialist with ID ${id} not found or not deleted`);
+      }
+
+      await this.repository.recover(specialist);
+
+      return { message: 'Specialist recovered successfully' };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
   }
 
   //condiciones que se agregarán al query builder para filtrar los patient turn
