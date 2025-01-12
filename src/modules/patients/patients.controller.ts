@@ -10,7 +10,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Patients')
-@Controller('patients')
+@Controller('patient')
 export class PatientController extends ControllerFactory<
   Patient,
   CreatePatientDto,
@@ -34,11 +34,11 @@ export class PatientController extends ControllerFactory<
     return patient;
   }
 
-  @Post('/create-patient')
-  async createPatient(
-    @Body() createPatientDto: CreatePatientDto
-  ) {
-    const patient = await this.service.create(createPatientDto);
-    return patient;
-  }
+  // @Post('/create-patient')
+  // async createPatient(
+  //   @Body() createPatientDto: CreatePatientDto
+  // ) {
+  //   const patient = await this.service.create(createPatientDto);
+  //   return patient;
+  // }
 }

@@ -4,22 +4,25 @@ import {
   ArrayUnique,
   IsBoolean,
   IsNotEmpty,
+  IsOptional,
   IsString,
   ValidateNested
 } from 'class-validator';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 
-export class CreateSpecialityDto extends FullBaseDto{
+export class CreateSpecialityDto {
   
   @IsString()
   @ApiProperty({ example: 'Medicina Clínica' })
   name: string;
 
+  @IsOptional()
   @IsBoolean()
   @ApiProperty({ example: true })
-  canPrescribe: boolean;
+  canPrescribe?: boolean;
 
   @ArrayUnique()
+  @IsOptional()
   @ValidateNested()
   @Type(() => ShortBaseDto)
   tags?: ShortBaseDto[];

@@ -9,6 +9,7 @@ import { Patient } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
 import { AuthService } from '../auth/auth.service';
+import { Role } from 'src/domain/enums';
 
 
 @Injectable()
@@ -20,19 +21,21 @@ export class PatientService extends BaseService<
   constructor(
     @InjectRepository(Patient) protected patientRepository: Repository<Patient>,
     @Inject(forwardRef(() => AuthService))
-    protected authService: AuthService // Crear el metodo de crear usuario y paciente aca
+    protected authService: AuthService,
   ) {
     super(patientRepository);
   }
 
-  async create(createPatientDto: CreatePatientDto): Promise<Patient> {
+
+  override async create(createPatientDto: CreatePatientDto): Promise<Patient> {
     try {
-      const newPatient = this.patientRepository.create(createPatientDto);
-      return await this.patientRepository.save(newPatient);
+      // Llama al servicio de auth para crear usuario y paciente en una transacción
+      return await this.authService.createUserWithPatient(createPatientDto);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+
 
   async getOne(id: string): Promise<Patient> {
     try {

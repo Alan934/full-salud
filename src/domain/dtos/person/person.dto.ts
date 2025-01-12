@@ -10,6 +10,7 @@ import { Type } from 'class-transformer';
 import { Gender } from '../../enums/gender.enum';
 import { DocumentType } from '../../enums/document-type.enum';
 import { ShortBaseDto } from '../../../common/dtos';
+import { CreateUserDto } from '../user/user.dto';
 
 export class PersonBaseDto {
 
@@ -55,4 +56,8 @@ export class PersonBaseDto {
   @Type(() => ShortBaseDto)
   @ApiProperty({ type: [ShortBaseDto] })
   addresses?: ShortBaseDto[];
+
+  @ValidateNested()
+  @Type(() => CreateUserDto)
+  user: CreateUserDto;
 }

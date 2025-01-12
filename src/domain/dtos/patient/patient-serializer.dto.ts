@@ -6,8 +6,13 @@ import {
   SerializerShortAddressDto,
   SerializerShortUserDto
 } from '..';
+import { FullBaseDto } from 'src/common/dtos';
 
-export class SerializerPatientDto {
+export class SerializerPatientDto extends FullBaseDto {
+  @Expose()
+  @ApiProperty({ example: 'Pepe' })
+  name: string;
+
   @Expose()
   @ApiProperty({ example: '2615836294' })
   phone: string;

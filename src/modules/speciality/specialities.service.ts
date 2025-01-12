@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { CreateSpecialityDto, UpdateSpecialityDto } from '../../domain/dtos';
@@ -20,7 +20,7 @@ export class SpecialitiesService extends BaseService<
     super(specialityRepository);
   }
 
-  async create(createSpecialityDto: CreateSpecialityDto): Promise<Speciality> {
+  async createSpeciality(createSpecialityDto: CreateSpecialityDto): Promise<Speciality> {
     try {
       const newSpeciality = this.specialityRepository.create(createSpecialityDto);
       return await this.specialityRepository.save(newSpeciality);
@@ -32,11 +32,12 @@ export class SpecialitiesService extends BaseService<
   async getOne(id: string): Promise<Speciality> {
     try {
       const speciality = await this.specialityRepository.findOne({
-        where: { id },
+        where: { id, deletedAt: null },
+        relations: ['tags'],
       });
 
       if (!speciality) {
-        throw ErrorManager.createSignatureError(`Speciality with id ${id} not found`);
+        throw new NotFoundException(`Speciality with ID ${id} not found`);
       }
 
       return speciality;
@@ -47,46 +48,48 @@ export class SpecialitiesService extends BaseService<
 
   async getAll(): Promise<Speciality[]> {
     try {
-      return await this.specialityRepository.find();
+      return await this.specialityRepository.find({
+        where: { deletedAt: null },
+        relations: ['tags'],
+      });
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async update(id: string, updateSpecialityDto: UpdateSpecialityDto): Promise<Speciality> {
+  async updateSpeciality(id: string, updateSpecialityDto: UpdateSpecialityDto): Promise<Speciality> {
     try {
       const speciality = await this.getOne(id);
 
-      const updatedSpeciality = this.specialityRepository.merge(speciality, updateSpecialityDto);
-      return await this.specialityRepository.save(updatedSpeciality);
+      Object.assign(speciality, updateSpecialityDto);
+      return await this.specialityRepository.save(speciality);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async softDelete(id: string): Promise<string> {
+  async softDelete(id: string): Promise<void> {
     try {
       const speciality = await this.getOne(id);
-
       await this.specialityRepository.softRemove(speciality);
-      return `Speciality with id ${id} has been soft deleted`;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async restoreSpeciality(id: string, manager: EntityManager): Promise<Speciality> {
+  async recoverSpeciality(id: string): Promise<Speciality> {
     try {
-      const speciality = await manager.findOne(Speciality, {
+      const speciality = await this.specialityRepository.findOne({
         where: { id },
         withDeleted: true,
       });
 
       if (!speciality) {
-        throw ErrorManager.createSignatureError(`Speciality with id ${id} not found or not deleted`);
+        throw new NotFoundException(`Speciality with ID ${id} not found or not deleted`);
       }
 
-      return await manager.recover(Speciality, speciality);
+      await this.specialityRepository.recover(speciality);
+      return speciality;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

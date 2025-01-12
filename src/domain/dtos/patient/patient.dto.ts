@@ -6,11 +6,7 @@ import { CreateAddressWithIdDto, CreatePatientTurnWithIdDto } from '..';
 import { PersonBaseDto } from '../person/person.dto';
 
 export class CreatePatientDto extends PersonBaseDto{
-
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  user?: ShortBaseDto;
-
+  
   @ValidateNested()
   @Type(() => CreatePatientTurnWithIdDto)
   patientTurn?: CreatePatientTurnWithIdDto;

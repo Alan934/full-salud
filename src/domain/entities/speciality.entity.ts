@@ -15,7 +15,7 @@ export class Speciality extends Base {
 
   @Column({
     type: 'boolean',
-    nullable: false,
+    nullable: true,
     name: 'can_prescribe'
   })
   canPrescribe: boolean;

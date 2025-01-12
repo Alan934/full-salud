@@ -7,6 +7,7 @@ import {
   IsOptional,
   IsString,
   IsStrongPassword,
+  IsUUID,
   ValidateNested
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -18,12 +19,11 @@ import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorat
 import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateUserDto {
-  // @IsNumberString()
-  // @IsOptionalIf((dto) => dto.role == Role.SECRETARY)
-  // //phone no es pasado cuando se crea secretary
-  // @OmitFieldForRoles([Role.SECRETARY])
-  // @ApiProperty({ example: '2615836294' })
-  // phone: string;
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({ example: '50436717-8608-4bff-bf41-373f14a8b888' })
+  id?: string;
 
   @IsNotEmpty()
   @IsEmail()
@@ -56,21 +56,22 @@ export class CreateUserDto {
   //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
   //   }
   // )
-  //si se crea secretary, specialist o institution, la contraseña es opcional
+  //si se crea secretary, patient o institution, la contraseña es opcional
   @IsOptionalIf(
     (dto) =>
       dto.role == Role.INSTITUTION ||
       dto.role == Role.SECRETARY ||
-      dto.role == Role.SPECIALIST
+      dto.role == Role.PATIENT
   )
   @ApiProperty({ example: 'Clave1*' })
-  password: string;
+  password?: string;
 
+  @IsOptional()
   @IsEnum(Role)
   @ApiProperty({
     examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST]
   })
-  role: Role;
+  role?: Role;
 
   //recibe un id de profile image ya creado
   @IsOptional()
@@ -83,15 +84,14 @@ export class CreateUserDto {
 export class UpdateUserDto extends PartialType(
   OmitType(CreateUserDto, [
     'role',
-    'profileImage',
     'username',
     'password'
   ] as const)
 ) {
-  @IsNumberString()
-  @IsOptional()
-  @ApiProperty({ example: '2615836294' })
-  phone?: string;
+  // @IsNumberString()
+  // @IsOptional()
+  // @ApiProperty({ example: '2615836294' })
+  // phone?: string;
 
   @IsString()
   @IsOptional()

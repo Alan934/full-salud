@@ -4,6 +4,7 @@ import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   CreateNotificationPreferencesDto,
+  CreatePatientDto,
   CreateUserDto,
   UpdateUserDto,
   UserPaginationDto
@@ -14,6 +15,7 @@ import { Patient, User } from '../../domain/entities';
 import { Media } from '../../domain/enums/media.enum';
 import { Role } from '../../domain/enums/role.enum';
 import {
+  DataSource,
   DeepPartial,
   EntityManager,
   FindManyOptions,
@@ -53,7 +55,8 @@ export class AuthService extends BaseService<
     protected readonly secretaryNotificationPreferencesService: SecretaryNotificationPreferencesService,
     protected readonly specialistsSecretaryNotificationPreferencesService: SpecialistsSecretaryNotificationPreferencesService,
     protected readonly profileImagesService: ProfileImagesService,
-    protected readonly notificationsService: NotificationsService
+    protected readonly notificationsService: NotificationsService,
+    private readonly dataSource: DataSource
   ) {
     super(repository);
   }
@@ -113,6 +116,7 @@ export class AuthService extends BaseService<
   //     throw ErrorManager.createSignatureError((error as Error).message);
   //   }
   // }
+ 
   override async create(createDto: CreateUserDto): Promise<User> {
     try {
       const existingUser = await this.repository.findOne({ where: { email: createDto.email } });
@@ -120,7 +124,7 @@ export class AuthService extends BaseService<
       if (existingUser) {
         throw ErrorManager.createSignatureError('Email is already in use');
       }
-      
+
       const hashedPassword = await bcrypt.hash(createDto.password, 10);
       createDto.password = hashedPassword;
 
@@ -154,6 +158,73 @@ export class AuthService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+  async createUserWithPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction(); 
+    try {
+      const { email, password } = createPatientDto.user;
+  
+      // Asignar el rol de paciente al usuario
+      createPatientDto.user.role = Role.PATIENT;
+  
+      // Validar si el email ya está en uso
+      const existingUser = await queryRunner.manager.findOne(User, { where: { email } });
+      if (existingUser) {
+        throw ErrorManager.createSignatureError('Email is already in use');
+      }
+  
+      // Validar si el DNI ya está en uso
+      if (createPatientDto.dni) {
+        const existingDni = await queryRunner.manager.findOne(Patient, { where: { dni: createPatientDto.dni } });
+        if (existingDni) {
+          throw ErrorManager.createSignatureError('DNI is already in use');
+        }
+      }
+  
+      // Validar si el teléfono ya está en uso
+      if (createPatientDto.phone) {
+        const existingPhone = await queryRunner.manager.findOne(Patient, { where: { phone: createPatientDto.phone } });
+        if (existingPhone) {
+          throw ErrorManager.createSignatureError('Phone number is already in use');
+        }
+      }
+  
+      // Hashear la contraseña
+      const hashedPassword = await bcrypt.hash(password, 10);
+      createPatientDto.user.password = hashedPassword;
+  
+      // Crear y guardar el usuario
+      const newUser: User = queryRunner.manager.create(User, createPatientDto.user);
+      const savedUser = await queryRunner.manager.save(User, newUser);
+  
+      // Crear preferencias de notificación
+      const notificationPreferencesService = this.getNotificationPreferenceServiceByRole(savedUser.role);
+      await notificationPreferencesService.create(
+        new CreateNotificationPreferencesDto(Media.EMAIL, { id: savedUser.id }),
+        queryRunner.manager
+      );
+      await notificationPreferencesService.create(
+        new CreateNotificationPreferencesDto(Media.WHATSAPP, { id: savedUser.id }),
+        queryRunner.manager
+      );
+  
+      // Asociar el usuario creado al paciente
+      createPatientDto.user.id = savedUser.id;
+      const newPatient = queryRunner.manager.create(Patient, createPatientDto);
+      const savedPatient = await queryRunner.manager.save(Patient, newPatient);
+  
+      // Confirmar la transacción
+      await queryRunner.commitTransaction();
+      return savedPatient;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw ErrorManager.createSignatureError((error as Error).message);
+    } finally {
+      await queryRunner.release();
+    }
+  }
+  
 
   async login(email: string, password: string): Promise<User | null> {
     try {
