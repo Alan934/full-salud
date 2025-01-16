@@ -1,8 +1,7 @@
 export * from './example.entity';
-export * from './user.entity';
 export * from './turn.entity';
 export * from './address.entity';
-export * from './person.entity';
+export * from './user.entity';
 export * from './attention-hour.entity';
 export * from './country.entity';
 export * from './degree.entity';
@@ -21,7 +20,6 @@ export * from './social-work.entity';
 export * from './specialist.entity';
 export * from './speciality.entity';
 export * from './turn.entity';
-export * from './user.entity';
 export * from './derivation-image.entity';
 export * from './relationship.entity';
 export * from './institution-type.entity';

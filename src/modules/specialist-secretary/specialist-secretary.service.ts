@@ -6,7 +6,7 @@ import {
   CreateSpecialistSecretaryDto,
   UpdateSpecialistSecretaryDto
 } from '../../domain/dtos';
-import { Person, Specialist, SpecialistSecretary, Speciality, User } from '../../domain/entities';
+import { SpecialistSecretary } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -29,8 +29,8 @@ export class SpecialistSecretariesService extends BaseService<
         async (manager: EntityManager) => {
           if (entity) {
             await manager.delete(SpecialistSecretary, id);
-            await manager.delete(Specialist, entity.person);
-            await manager.delete(User, entity.person.user);
+            // await manager.delete(Specialist, entity);
+            // await manager.delete(User, entity.person.user);
             return `Entity with id ${id} deleted`;
           }
         }

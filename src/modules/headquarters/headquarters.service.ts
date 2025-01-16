@@ -5,7 +5,6 @@ import { ErrorManager } from '../../common/exceptions/error.manager';
 import { CreateHeadquartersDto, UpdateHeadquartersDto } from '../../domain/dtos';
 import { Address, AttentionHour, Headquarters } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class HeadquartersService extends BaseService<
@@ -16,7 +15,6 @@ export class HeadquartersService extends BaseService<
   constructor(
     @InjectRepository(Headquarters)
     protected repository: Repository<Headquarters>,
-    @Inject() protected readonly authService: AuthService
   ) {
     super(repository);
   }
@@ -27,7 +25,7 @@ export class HeadquartersService extends BaseService<
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
           await manager.remove(Headquarters, entity);
-          await this.authService.removeWithManager(entity.user.id, manager);
+          // await this.authService.removeWithManager(entity.id, manager);
           return `Entity with id ${id} deleted`;
         }
       );
@@ -42,7 +40,7 @@ export class HeadquartersService extends BaseService<
       await manager.delete(AttentionHour, { headquarters: entity });
       await manager.delete(Address, { id: entity.address.id });
       await manager.remove(Headquarters, entity);
-      await this.authService.removeWithManager(entity.user.id, manager);
+      // await this.authService.removeWithManager(entity.id, manager);
       return `Entity with id ${id} deleted`;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
@@ -54,7 +52,7 @@ export class HeadquartersService extends BaseService<
       const entity = await this.findOne(id);
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
-          await this.authService.softRemoveWithManager(entity.user.id, manager);
+          // await this.authService.softRemoveWithManager(entity.id, manager);
           await manager.softRemove(entity);
           return `Entity with id ${id} soft deleted`;
         }
@@ -70,7 +68,7 @@ export class HeadquartersService extends BaseService<
   ): Promise<string> {
     try {
       const entity = await manager.findOne(Headquarters, { where: { id } });
-      await this.authService.softRemoveWithManager(entity.user.id, manager);
+      // await this.authService.softRemoveWithManager(entity.id, manager);
       await manager.softRemove(entity);
       return `Entity with id ${id} soft deleted`;
     } catch (error) {
@@ -93,7 +91,7 @@ export class HeadquartersService extends BaseService<
 
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
-          await this.authService.restoreWithManager(entity.user.id, manager);
+          // await this.authService.restoreWithManager(entity.id, manager);
           return await manager.recover(entity);
         }
       );
@@ -118,7 +116,7 @@ export class HeadquartersService extends BaseService<
         throw new ErrorManager(`Entity with id ${id} not found`, 404);
       }
 
-      await this.authService.restoreWithManager(entity.user.id, manager);
+      // await this.authService.restoreWithManager(entity.id, manager);
       return await manager.recover(entity);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

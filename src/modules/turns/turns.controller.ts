@@ -61,6 +61,21 @@ export class TurnsController extends ControllerFactory<
     console.log(turn);
     return toDto(SerializerTurnDto, turn);
   }
+
+  @Post('with-patient')
+  @ApiOperation({ description: 'Crear un turno y un paciente si no existe' })
+  @ApiCreatedResponse({
+    description: 'Turno creado exitosamente con un paciente asociado',
+    type: SerializerTurnDto,
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 404, description: 'Especialista no encontrado' })
+  async createTurnWithPatient(
+    @Body() createTurnDto: CreateTurnDto,
+  ): Promise<SerializerTurnDto> {
+    const turn = await this.service.createTurnWithPatient(createTurnDto);
+    return toDto(SerializerTurnDto, turn);
+  }
   
   @Get(':id')
   @ApiOperation({ description: 'Obtener un turno por su ID' })

@@ -31,11 +31,9 @@ export class SpecialistsController extends ControllerFactory<
     super();
   }
 
-  // @Post()
-  // @ApiOperation({
-  //   description: 'Crear un nuevo especialista'
-  // })
-  // async create(@Body() createSpecialistDto: CreateSpecialistDto): Promise<SerializerSpecialistDto> {
+  // @Post('create')
+  // @ApiOperation({ description: 'Create a new specialist' })
+  // async createSpecialist(@Body() createSpecialistDto: CreateSpecialistDto): Promise<SerializerSpecialistDto> {
   //   const specialist = await this.service.create(createSpecialistDto);
   //   return plainToClass(SerializerSpecialistDto, specialist);
   // }
@@ -48,21 +46,21 @@ export class SpecialistsController extends ControllerFactory<
   }
 
   @Get()
-  @ApiOperation({ description: 'Obtener todos los especialistas' })
+  @ApiOperation({ description: 'Get all specialists' })
   async getAll(): Promise<SerializerSpecialistDto[]> {
     const specialists = await this.service.getAll();
     return plainToClass(SerializerSpecialistDto, specialists);
   }
 
   @Get(':id')
-  @ApiOperation({ description: 'Obtener un especialista por ID' })
+  @ApiOperation({ description: 'Get a specialist by ID' })
   async getOne(@Param('id') id: string): Promise<SerializerSpecialistDto> {
     const specialist = await this.service.getOne(id);
     return plainToClass(SerializerSpecialistDto, specialist);
   }
 
   @Patch(':id')
-  @ApiOperation({ description: 'Actualizar un especialista' })
+  @ApiOperation({ description: 'Update a specialist' })
   async update(
     @Param('id') id: string,
     @Body() updateSpecialistDto: UpdateSpecialistDto,
@@ -106,11 +104,4 @@ export class SpecialistsController extends ControllerFactory<
     return toDtoList(SerializerSpecialistDto, specialists);
   }
 
-  // @Get('/with-turns/:id')
-  // @ApiOperation({
-  //   description: 'Obtener todos los turnos para un especialista específico por ID'
-  // })
-  // async findTurnsBySpecialistId(@Param('id') id: string): Promise<Turn[]> {
-  //   return await this.service.findTurnsBySpecialistId(id);
-  // }
 }

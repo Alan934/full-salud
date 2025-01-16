@@ -11,7 +11,6 @@ import { Repository } from 'typeorm';
 import { UserApplicationsService } from '../user_applications/user_applications.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { ApplicationStatus, Role } from '../../domain/enums';
-import { AuthService } from '../auth/auth.service';
 import { generatedRandomPassword } from '../../common/util/random-password.util';
 import { InstitutionsService } from '../institutions/institutions.service';
 import { InstitutionTypesService } from '../institution_types/institution_types.service';
@@ -27,7 +26,6 @@ export class InstitutionApplicationsService extends BaseService<
     @InjectRepository(InstitutionApplication)
     protected repository: Repository<InstitutionApplication>,
     private readonly userApplicationService: UserApplicationsService,
-    private readonly authService: AuthService,
     private readonly institutionTypesService: InstitutionTypesService,
     private readonly institutionsService: InstitutionsService,
     private readonly headquartersService: HeadquartersService
@@ -55,18 +53,18 @@ export class InstitutionApplicationsService extends BaseService<
       // }
 
       // Comprobar que no haya un usuario registrado con el mismo email
-      const emails = await this.authService.findAll({
-        email: createDto.userApplication.email,
-        page: 1,
-        limit: 10
-      });
+      // const emails = await this.authService.findAll({
+      //   email: createDto.userApplication.email,
+      //   page: 1,
+      //   limit: 10
+      // });
 
-      if (emails.data.length > 0) {
-        throw new ErrorManager(
-          'A user with this email address already exists.',
-          409
-        );
-      }
+      // if (emails.data.length > 0) {
+      //   throw new ErrorManager(
+      //     'A user with this email address already exists.',
+      //     409
+      //   );
+      // }
 
       // Comprobar que el id de institution types corresponde a un registro existente
       await this.institutionTypesService.findOne(createDto.institutionTypeId);
@@ -186,91 +184,91 @@ export class InstitutionApplicationsService extends BaseService<
     }
   }
 
-  async changeStatus(
-    id: string,
-    changeStatusApplicationDto: ChangeStatusApplicationDto
-  ): Promise<InstitutionApplication | Headquarters> {
-    try {
-      const institutionApplication = await this.findOne(id);
+  // async changeStatus(
+  //   id: string,
+  //   changeStatusApplicationDto: ChangeStatusApplicationDto
+  // ): Promise<InstitutionApplication | Headquarters> {
+  //   try {
+  //     const institutionApplication = await this.findOne(id);
 
-      const { status } = changeStatusApplicationDto;
+  //     const { status } = changeStatusApplicationDto;
 
-      const applicationStatus =
-        institutionApplication.userApplication.applicationStatus;
+  //     const applicationStatus =
+  //       institutionApplication.userApplication.applicationStatus;
 
-      // Verifica si el estado ya es el mismo, si es así, no se hacen cambios
-      if (applicationStatus === status) {
-        return institutionApplication;
-      }
+  //     // Verifica si el estado ya es el mismo, si es así, no se hacen cambios
+  //     if (applicationStatus === status) {
+  //       return institutionApplication;
+  //     }
 
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          // Si se aprueba la solicitud, se crea el usuario y se elimina la solicitud
-          if (status === ApplicationStatus.APPROVED) {
-            // Desestructuración para obtener los valores
-            const {
-              institutionTypeId,
-              cuit,
-              businessName,
-              userApplication: { phone, email }
-            } = institutionApplication;
-            const password = await generatedRandomPassword(
-              institutionApplication
-            );
+  //     return await this.repository.manager.transaction(
+  //       async (transactionalEntityManager) => {
+  //         // Si se aprueba la solicitud, se crea el usuario y se elimina la solicitud
+  //         if (status === ApplicationStatus.APPROVED) {
+  //           // Desestructuración para obtener los valores
+  //           const {
+  //             institutionTypeId,
+  //             cuit,
+  //             businessName,
+  //             userApplication: { phone, email }
+  //           } = institutionApplication;
+  //           const password = await generatedRandomPassword(
+  //             institutionApplication
+  //           );
 
-            const role = Role.INSTITUTION;
+  //           const role = Role.INSTITUTION;
 
-            // Crear usuario
-            const user = await this.authService.create({
-              role,
-              email,
-              username: `${role.toLowerCase()}_${Date.now()}`,
-              password
-            });
+  //           // Crear usuario
+  //           const user = await this.authService.create({
+  //             role,
+  //             email,
+  //             username: `${role.toLowerCase()}_${Date.now()}`,
+  //             password
+  //           });
 
-            // Obtener institution type
-            const institutionType =
-              await this.institutionTypesService.findOne(institutionTypeId);
+  //           // Obtener institution type
+  //           const institutionType =
+  //             await this.institutionTypesService.findOne(institutionTypeId);
 
-            // Crear institución
-            const institution = await this.institutionsService.create({
-              cuit,
-              businessName,
-              institutionType,
-              commissions: null
-            });
+  //           // Crear institución
+  //           const institution = await this.institutionsService.create({
+  //             cuit,
+  //             businessName,
+  //             institutionType,
+  //             commissions: null
+  //           });
 
-            // Crear sede cental
-            const headquarters = await this.headquartersService.create({
-              cuit,
-              businessName,
-              phone,
-              user,
-              institution,
-              address: null,
-              isMainBranch: true
-            });
+  //           // Crear sede cental
+  //           const headquarters = await this.headquartersService.create({
+  //             cuit,
+  //             businessName,
+  //             phone,
+  //             user,
+  //             institution,
+  //             address: null,
+  //             isMainBranch: true
+  //           });
 
-            // Eliminar solicitud
-            this.remove(institutionApplication.id);
+  //           // Eliminar solicitud
+  //           this.remove(institutionApplication.id);
 
-            // Enviar email diciendo que el usuario ha sido creado e informar la clave autogenerada. En el mail,recomendar que cambien la clave
+  //           // Enviar email diciendo que el usuario ha sido creado e informar la clave autogenerada. En el mail,recomendar que cambien la clave
 
-            return headquarters;
-          } else if (status === ApplicationStatus.REJECTED) {
-            // Obtener la razón por la que se rechazó la solicitud
-            // const { reason } = changeStatusApplicationDto;
-            // Si se rechaza la solicitud, enviar un mail informando sobre el rechazo.
-          }
+  //           return headquarters;
+  //         } else if (status === ApplicationStatus.REJECTED) {
+  //           // Obtener la razón por la que se rechazó la solicitud
+  //           // const { reason } = changeStatusApplicationDto;
+  //           // Si se rechaza la solicitud, enviar un mail informando sobre el rechazo.
+  //         }
 
-          // Asigna el nuevo status
-          institutionApplication.userApplication.applicationStatus = status;
+  //         // Asigna el nuevo status
+  //         institutionApplication.userApplication.applicationStatus = status;
 
-          return await transactionalEntityManager.save(institutionApplication);
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
+  //         return await transactionalEntityManager.save(institutionApplication);
+  //       }
+  //     );
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError((error as Error).message);
+  //   }
+  // }
 }

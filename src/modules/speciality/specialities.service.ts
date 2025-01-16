@@ -4,7 +4,6 @@ import { BaseService } from '../../common/bases/base.service';
 import { CreateSpecialityDto, UpdateSpecialityDto } from '../../domain/dtos';
 import { Speciality } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
 import { ErrorManager } from 'src/common/exceptions/error.manager';
 
 @Injectable()
@@ -15,7 +14,6 @@ export class SpecialitiesService extends BaseService<
 > {
   constructor(
     @InjectRepository(Speciality) protected specialityRepository: Repository<Speciality>,
-    @Inject(forwardRef(() => AuthService)) protected authService: AuthService
   ) {
     super(specialityRepository);
   }

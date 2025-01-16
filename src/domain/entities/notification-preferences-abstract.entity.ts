@@ -1,7 +1,6 @@
 import { Column, JoinColumn, ManyToOne } from 'typeorm';
 import { Media } from '../enums/media.enum';
 import { Base } from '../../common/bases/base.entity';
-import { User } from './user.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export abstract class NotificationPreferences extends Base {
@@ -28,14 +27,14 @@ export abstract class NotificationPreferences extends Base {
   @ApiProperty({ examples: [Media.EMAIL, Media.WHATSAPP] })
   media: Media;
 
-  @ManyToOne(() => User, {
-    onDelete: 'CASCADE',
-    onUpdate: 'CASCADE',
-    orphanedRowAction: 'soft-delete',
-    cascade: true
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  // @ManyToOne(() => User, {
+  //   onDelete: 'CASCADE',
+  //   onUpdate: 'CASCADE',
+  //   orphanedRowAction: 'soft-delete',
+  //   cascade: true
+  // })
+  // @JoinColumn({ name: 'user_id' })
+  // user: User;
 }
 
 export abstract class MedicalProviderNotificationPreferences extends NotificationPreferences {

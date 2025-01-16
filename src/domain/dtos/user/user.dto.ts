@@ -17,31 +17,22 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { OmitFieldForRoles } from '../../../common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
 import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
 import { ShortBaseDto } from '../../../common/dtos';
+import { Gender } from 'src/domain/enums';
+import { DocumentType } from 'src/domain/enums';
 
-export class CreateUserDto {
-
+export class UserDto {
+  
   @IsOptional()
-  @IsUUID()
-  @ApiProperty({ example: '50436717-8608-4bff-bf41-373f14a8b888' })
-  id?: string;
-
   @IsNotEmpty()
   @IsEmail()
   @ApiProperty({ example: 'juan@example.com' })
   email: string;
 
-  @IsString()
-  //si se crea secretary, specialist o institution, el nombre de usuario es opcional
-  // @IsOptionalIf(
-  //   (dto) =>
-  //     dto.role == Role.SECRETARY ||
-  //     dto.role == Role.SPECIALIST ||
-  //     dto.role == Role.INSTITUTION
-  // )
   @IsOptional()
   @ApiProperty({ example: 'juan123' })
   username: string;
 
+  @IsOptional()
   @IsString()
   // @IsStrongPassword(
   //   {
@@ -71,33 +62,73 @@ export class CreateUserDto {
   @ApiProperty({
     examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST]
   })
-  role?: Role;
+  role: Role;
 
-  //recibe un id de profile image ya creado
   @IsOptional()
-  @ValidateNested()
+  @IsString()
+  @ApiProperty({ example: 'David' })
+  name?: string | null;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'Peréz' })
+  lastName?: string;
+
+  @IsOptional()
+  @IsEnum(Gender)
+  @ApiProperty({
+    examples: [Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.RATHER_NOT_SAY],
+  })
+  gender?: Gender;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: '2000-08-21' })
+  birth?: string;
+
+  @IsOptional()
+  @IsEnum(DocumentType)
+  @ApiProperty({ examples: [DocumentType.DNI, DocumentType.PASSPORT] })
+  documentType?: DocumentType;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ examples: ['42.098.163', 'A0123456'] })
+  dni?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: '2615836294' })
+  phone?: string;
+
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Type(() => ShortBaseDto)
-  profileImage?: ShortBaseDto;
+  @ApiProperty({ type: [ShortBaseDto] })
+  addresses?: ShortBaseDto[];
+
 }
 
 //"reescribe" profile image, no permite actualizar rol
 export class UpdateUserDto extends PartialType(
-  OmitType(CreateUserDto, [
+  OmitType(UserDto, [
     'role',
     'username',
     'password'
   ] as const)
 ) {
   // @IsNumberString()
-  // @IsOptional()
+  // 
   // @ApiProperty({ example: '2615836294' })
   // phone?: string;
 
   @IsString()
+  
   @IsOptional()
   @ApiProperty({ example: 'juan123' })
   username?: string;
 
+  @IsOptional()
   @IsString()
   // @IsStrongPassword(
   //   {
@@ -112,28 +143,15 @@ export class UpdateUserDto extends PartialType(
   //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
   //   }
   // )
-  @IsOptional()
   @ApiProperty({ example: 'Clave1*' })
   password?: string;
 
-  //recibe un id de profile image
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  profileImage?: ShortBaseDto;
 }
 
 export class CreateUserDtoWithFiles {
   @ValidateNested()
-  @Type(() => CreateUserDto)
-  @ApiProperty({ type: CreateUserDto })
-  turn?: CreateUserDto;
+  @Type(() => UserDto)
+  @ApiProperty({ type: UserDto })
+  turn?: UserDto;
 
-  @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    required: false,
-    description: 'Imagen de perfil en formato PNG, JPG o JPEG'
-  })
-  profileImage?: Express.Multer.File[];
 }

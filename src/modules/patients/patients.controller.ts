@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { PatientService } from './patients.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Patient } from '../../domain/entities';
@@ -22,16 +22,38 @@ export class PatientController extends ControllerFactory<
   UpdatePatientDto,
   SerializerPatientDto
 ) {
-  constructor(protected readonly service: PatientService) {
+  constructor(protected readonly patientService: PatientService) {
     super();
   }
   
+  @Post()
+  async createPatient(@Body() createPatientDto: CreatePatientDto) {
+    return await this.patientService.createPatient(createPatientDto);
+  }
+
+  @Get()
+  async getAll() {
+    return await this.patientService.getAll();
+  }
+
   @Get(':id')
-  async getOne(
-    @Param('id', ParseUUIDPipe) id: string
-  ) {
-    const patient = await this.service.getOne(id);
-    return patient;
+  async getOnePatient(@Param('id') id: string) {
+    return await this.patientService.getOne(id);
+  }
+
+  @Patch(':id')
+  async updatePatient(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
+    return await this.patientService.update(id, updatePatientDto);
+  }
+
+  @Delete(':id')
+  async softDelete(@Param('id') id: string) {
+    return await this.patientService.softDelete(id);
+  }
+
+  @Post('/recover/:id')
+  async recover(@Param('id') id: string) {
+    return await this.patientService.recover(id);
   }
 
   // @Post('/create-patient')

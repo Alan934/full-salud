@@ -22,10 +22,6 @@ export class SerializerUserDto extends FullBaseDto {
     example: Object.values(Role).join(' | ')
   })
   role: Role;
-
-  @Expose()
-  @Type(() => SerializerShortImageBaseDto)
-  profileImage?: SerializerShortImageBaseDto;
 }
 
 export class SerializerShortUserDto extends ShortBaseDto {

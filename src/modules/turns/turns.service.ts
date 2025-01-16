@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
@@ -91,6 +91,95 @@ export class TurnsService extends BaseService<
       await queryRunner.release();
     }
   }
+
+  async createTurnWithPatient(createTurnDto: CreateTurnDto): Promise<Turn> {
+    const queryRunner = this.repository.manager.connection.createQueryRunner();
+  
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+  
+    try {
+      let patient: Patient;
+  
+      // Verificar si llega `patientId` o el objeto `patient`
+      if (createTurnDto.patientId) {
+        patient = await queryRunner.manager.findOne(Patient, {
+          where: { id: createTurnDto.patientId },
+        });
+  
+        if (!patient) {
+          throw new NotFoundException(
+            `Patient with ID ${createTurnDto.patientId} not found`
+          );
+        }
+      } else if (createTurnDto.patient) {
+        const existingPatient = await queryRunner.manager.findOne(Patient, {
+          where: { dni: createTurnDto.patient.dni },
+        });
+  
+        if (existingPatient) {
+          patient = existingPatient;
+        } else {
+          patient = queryRunner.manager.create(Patient, {
+            dni: createTurnDto.patient.dni,
+            name: createTurnDto.patient.name,
+            lastName: createTurnDto.patient.lastName,
+            email: createTurnDto.patient.email,
+            phone: createTurnDto.patient.phone,
+            documentType: createTurnDto.patient.documentType,
+          });
+  
+          patient = await queryRunner.manager.save(patient);
+        }
+      } else {
+        throw new BadRequestException(
+          'Either patientId or patient object must be provided'
+        );
+      }
+  
+      const specialistIds = createTurnDto.specialists.map((s) => s.id);
+
+      // Asegurarnos de que los IDs no estén vacíos
+      if (!specialistIds || specialistIds.length === 0) {
+        throw new BadRequestException('At least one specialist ID must be provided');
+      }
+      
+      const specialists = await queryRunner.manager.find(Specialist, {
+        where: { id: In(specialistIds) },
+      });
+      
+      // Comprobamos si el número de especialistas encontrados coincide con los solicitados
+      if (specialists.length !== specialistIds.length) {
+        const notFoundIds = specialistIds.filter(id => !specialists.some(s => s.id === id));
+        throw new NotFoundException(`Specialists with IDs ${notFoundIds.join(', ')} not found`);
+      }
+  
+      const newTurn = queryRunner.manager.create(Turn, {
+        date: createTurnDto.date,
+        hour: createTurnDto.hour,
+        observation: createTurnDto.observation,
+        status: TurnStatus.PENDING,
+        patient,
+        specialists,
+      });
+  
+      const savedTurn = await queryRunner.manager.save(newTurn);
+  
+      await queryRunner.commitTransaction();
+  
+      return savedTurn;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+  
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+  
+      throw ErrorManager.createSignatureError((error as Error).message);
+    } finally {
+      await queryRunner.release();
+    }
+  }  
   
   async getOne(id: string): Promise<Turn> {
     try {

@@ -56,14 +56,13 @@ export class Turn extends Base {
   })
   status: TurnStatus;
 
-  // Relación con Patient: un paciente puede tener muchos turnos, pero cada turno pertenece a un solo paciente
   @ManyToOne(() => Patient, (patient) => patient, {
     eager: false,
-    nullable: false,
+    nullable: true,
     onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'patient_id' })
-  patient: Patient;
+  patient?: Patient;
   
   @ManyToMany(() => Specialist, (specialist) => specialist, {
     eager: false,

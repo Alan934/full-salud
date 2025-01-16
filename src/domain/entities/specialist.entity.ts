@@ -1,56 +1,41 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-} from 'typeorm';
-import {
-  Degree,
-  Person,
-  Speciality,
-  SocialWork,
-  SpecialistAttentionHour,
-  Turn,
-} from '.';
-import { ApiProperty } from '@nestjs/swagger';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
+import { Degree, Speciality, SocialWork, SpecialistAttentionHour } from '.';
+import { User } from './user.entity';
 
 @Entity('specialists')
-export class Specialist extends Person {
+export class Specialist extends User {
   @Column({
     type: 'varchar',
-    nullable: false
+    nullable: true,
   })
-  @ApiProperty({ example: '123456-M-BA' })
   license: string;
 
   @Column({
     type: 'float',
-    default: 0.0
+    default: 0.0,
   })
   rating: number = 0;
 
   @Column({
     type: 'boolean',
-    nullable: false,
+    nullable: true,
     name: 'home_service',
-    default: false
+    default: false,
   })
   homeService: boolean;
 
   @ManyToOne(() => Degree, {
-    eager: true
+    eager: true,
   })
   @JoinColumn({ name: 'degree_id' })
   degree: Degree;
 
   @ManyToMany(() => Speciality, (speciality) => speciality.specialists, {
     eager: true,
+    nullable: true,
   })
   @JoinTable({
-    name: 'specialists_specialities', // Nombre de la tabla de relación
+    name: 'specialists_specialities',
     joinColumn: {
       name: 'specialist_id',
       referencedColumnName: 'id',
@@ -62,32 +47,33 @@ export class Specialist extends Person {
   })
   specialities: Speciality[];
 
-  @ManyToMany(() => SocialWork, (socialWork) => socialWork.specialists)
+  @ManyToMany(() => SocialWork, (socialWork) => socialWork.specialists, {
+    nullable: true,
+  })
   @JoinTable({
     name: 'specialists_social_works',
     joinColumn: {
       name: 'specialist_id',
-      referencedColumnName: 'id'
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
       name: 'social_work_id',
-      referencedColumnName: 'id'
-    }
+      referencedColumnName: 'id',
+    },
   })
   acceptedSocialWorks?: SocialWork[];
 
   @OneToMany(
     () => SpecialistAttentionHour,
-    (specialistAtenttionHour) => specialistAtenttionHour.specialist,
+    (specialistAttentionHour) => specialistAttentionHour.specialist,
     {
       eager: true,
       cascade: true,
       nullable: true,
       orphanedRowAction: 'soft-delete',
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
-    }
+      onDelete: 'CASCADE',
+    },
   )
   specialistAttentionHour: SpecialistAttentionHour[];
 }
-

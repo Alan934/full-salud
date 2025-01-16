@@ -26,6 +26,7 @@ import {
 } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender } from '../../domain/enums';
+import * as bcrypt from 'bcrypt';
 // import { PersonsService } from '../persons/persons.service';
 
 @Injectable()
@@ -38,47 +39,48 @@ export class SpecialistsService extends BaseService<
     @InjectRepository(Specialist) protected repository: Repository<Specialist>,
     //@Inject() protected personService: PersonsService
     @InjectRepository(Speciality) private readonly specialityRepository: Repository<Speciality>,
+    @InjectRepository(Degree) private readonly degreeRepository: Repository<Degree>,
   ) {
     super(repository);
   }
 
+  // Crear un nuevo especialista
   async create(createSpecialistDto: CreateSpecialistDto): Promise<Specialist> {
     try {
-      const { specialities, degreeId, license, dni, phone, ...specialistData } = createSpecialistDto;
+      const { specialities, degreeId, password, ...userData } = createSpecialistDto;
   
-      const existingDni = await this.repository.findOne({ where: { dni } });
-      if (existingDni) {
-        throw new ErrorManager(`DNI "${dni}" already exists`, 400);
-      }
+      const existingUser = await this.repository.findOne({
+        where: [
+          { dni: userData.dni },
+          { email: userData.email },
+          { phone: userData.phone },
+        ],
+      });
   
-      const existingPhone = await this.repository.findOne({ where: { phone } });
-      if (existingPhone) {
-        throw new ErrorManager(`Phone "${phone}" already exists`, 400);
-      }
-  
-      const existingLicense = await this.repository.findOne({ where: { license } });
-      if (existingLicense) {
-        throw new ErrorManager(`License number "${license}" already exists`, 400);
+      if (existingUser) {
+        throw new ErrorManager(
+          `User with provided dni, email, or phone already exists`,
+          400
+        );
       }
   
       const specialityEntities = await this.specialityRepository.findByIds(
-        specialities.map((s) => s.id)
+        specialities.map((s) => s.id),
       );
       if (specialityEntities.length !== specialities.length) {
-        throw new ErrorManager('Some specialties not found', 400);
+        throw new ErrorManager('Some specialities not found', 400);
       }
-
-      const degreeEntity = await this.repository.manager.findOne(Degree, {
-        where: { id: degreeId },
-      });
+  
+      const degreeEntity = await this.degreeRepository.findOne({ where: { id: degreeId } });
       if (!degreeEntity) {
         throw new ErrorManager(`Degree with id "${degreeId}" not found`, 400);
       }
   
+      const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+  
       const specialist = this.repository.create({
-        ...specialistData,
-        license,
-        dni,
+        ...userData,
+        password: hashedPassword,
         degree: degreeEntity,
         specialities: specialityEntities,
       });
@@ -102,7 +104,7 @@ export class SpecialistsService extends BaseService<
   async getOne(id: string): Promise<Specialist> {
     try {
       const specialist = await this.repository.findOne({
-        where: { id, deletedAt: null },
+        where: { id },
         relations: ['specialities', 'degree'],
       });
 
@@ -116,38 +118,32 @@ export class SpecialistsService extends BaseService<
     }
   }
 
-  // Actualizar un especialista
-  async update(id: string, updateSpecialistDto: UpdateSpecialistDto): Promise<Specialist> {
+   // Actualizar un especialista
+   async update(id: string, updateSpecialistDto: UpdateSpecialistDto): Promise<Specialist> {
     try {
       const specialist = await this.getOne(id);
 
-      const { specialities, degreeId, ...specialistData } = updateSpecialistDto;
+      const { specialities, degreeId, ...updatedData } = updateSpecialistDto;
 
       if (specialities) {
         const specialityEntities = await this.specialityRepository.findByIds(
-          specialities.map((s) => s.id)
+          specialities.map((s) => s.id),
         );
-
         if (specialityEntities.length !== specialities.length) {
-          throw new ErrorManager('Some specialties not found', 400);
+          throw new ErrorManager('Some specialities not found', 400);
         }
-
         specialist.specialities = specialityEntities;
       }
 
       if (degreeId) {
-        const degreeEntity = await this.repository.manager.findOne(Degree, {
-          where: { id: degreeId },
-        });
+        const degreeEntity = await this.degreeRepository.findOne({ where: { id: degreeId } });
         if (!degreeEntity) {
           throw new ErrorManager(`Degree with id "${degreeId}" not found`, 400);
         }
-  
         specialist.degree = degreeEntity;
       }
 
-      Object.assign(specialist, specialistData);
-
+      Object.assign(specialist, updatedData);
       return await this.repository.save(specialist);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

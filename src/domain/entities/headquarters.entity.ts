@@ -30,15 +30,6 @@ export class Headquarters extends Base {
   })
   phone: string;
 
-  @OneToOne(() => User, {
-    cascade: true,
-    onDelete: 'CASCADE',
-    orphanedRowAction: 'soft-delete',
-    eager: true
-  })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
-
   @ManyToOne(() => Institution, {
     onDelete: 'CASCADE',
     orphanedRowAction: 'soft-delete'

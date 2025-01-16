@@ -3,10 +3,9 @@ import { SpecialitiesService } from './specialities.service';
 import { SpecialitiesController } from './specialities.controller';
 import { Speciality } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Speciality]), forwardRef(() => AuthModule)],
+  imports: [TypeOrmModule.forFeature([Speciality])],
   controllers: [SpecialitiesController],
   providers: [SpecialitiesService],
   exports: [SpecialitiesService]

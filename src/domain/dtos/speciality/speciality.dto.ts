@@ -3,12 +3,11 @@ import { Type } from 'class-transformer';
 import {
   ArrayUnique,
   IsBoolean,
-  IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested
 } from 'class-validator';
-import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreateSpecialityDto {
   

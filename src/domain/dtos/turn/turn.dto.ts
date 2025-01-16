@@ -15,6 +15,8 @@ import { IsTime } from '../../../common/util/custom-dto-properties-decorators/va
 import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
 import { CreateAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient.dto';
 import { CreateSpecialistDto } from '../specialist/specialist.dto';
+import { Patient } from 'src/domain/entities';
+import { CreatePatientDto } from '../patient/patient.dto';
 
 export class CreateTurnDto {
   @IsOptional()
@@ -46,10 +48,25 @@ export class CreateTurnDto {
   // //@ValidateNested()
   // patientId: string; // Cambiado de patient a patientId
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @ApiProperty({ example: '20a05b0e-d872-4fe5-bf9f-4b6b010b443d' })
-  patientId: string; // Usamos solo el ID
+  patientId?: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreatePatientDto)
+  @ApiProperty({
+    example: {
+      documentType: '56895458',
+      dni: '12345678',
+      name: 'Juan',
+      lastName: 'Pérez',
+      email: 'juan.perez@gmail.com',
+      phone: '123456789',
+    },
+  })
+  patient?: CreatePatientDto;
 
   @IsNotEmpty()
   @ValidateNested({ each: true })

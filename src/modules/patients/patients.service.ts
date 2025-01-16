@@ -1,4 +1,4 @@
-import { Injectable, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, forwardRef, Inject, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import {
@@ -8,9 +8,7 @@ import {
 import { Patient } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
 import { Role } from 'src/domain/enums';
-
 
 @Injectable()
 export class PatientService extends BaseService<
@@ -20,35 +18,40 @@ export class PatientService extends BaseService<
 > {
   constructor(
     @InjectRepository(Patient) protected patientRepository: Repository<Patient>,
-    @Inject(forwardRef(() => AuthService))
-    protected authService: AuthService,
   ) {
     super(patientRepository);
   }
 
-
-  override async create(createPatientDto: CreatePatientDto): Promise<Patient> {
+  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
     try {
-      // Llama al servicio de auth para crear usuario y paciente en una transacción
-      return await this.authService.createUserWithPatient(createPatientDto);
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
-
-
-  async getOne(id: string): Promise<Patient> {
-    try {
-      const patient = await this.patientRepository.findOne({
-        where: { id },
-        relations: ['user']
+      const { dni, email, phone, username, ...userData } = createPatientDto;
+  
+      const existingPatient = await this.patientRepository.findOne({
+        where: [
+          { dni: dni ?? undefined },
+          { email: email ?? undefined },
+          { phone: phone ?? undefined },
+          { username: username ?? undefined },
+        ],
       });
-
-      if (!patient) {
-        throw ErrorManager.createSignatureError(`Patient with id ${id} not found`);
+  
+      if (existingPatient) {
+        throw new ErrorManager(
+          'Patient with provided DNI, email, username, or phone already exists',
+          400
+        );
       }
-
-      return patient;
+  
+      const patient = this.patientRepository.create({
+        ...userData,
+        dni,
+        email,
+        phone,
+        username,
+        role: Role.PATIENT,
+      });
+  
+      return await this.patientRepository.save(patient);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -56,7 +59,25 @@ export class PatientService extends BaseService<
 
   async getAll(): Promise<Patient[]> {
     try {
-      return await this.patientRepository.find({ relations: ['user'] });
+      return await this.patientRepository.find({
+        where: { deletedAt: null },
+      });
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async getOne(id: string): Promise<Patient> {
+    try {
+      const patient = await this.patientRepository.findOne({
+        where: { id },
+      });
+
+      if (!patient) {
+        throw new NotFoundException(`Patient with ID ${id} not found`);
+      }
+
+      return patient;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -66,36 +87,40 @@ export class PatientService extends BaseService<
     try {
       const patient = await this.getOne(id);
 
-      const updatedPatient = this.patientRepository.merge(patient, updatePatientDto);
-      return await this.patientRepository.save(updatedPatient);
+      Object.assign(patient, updatePatientDto);
+
+      return await this.patientRepository.save(patient);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async softDelete(id: string): Promise<string> {
+  async softDelete(id: string): Promise<{ message: string }> {
     try {
       const patient = await this.getOne(id);
 
       await this.patientRepository.softRemove(patient);
-      return `Patient with id ${id} has been soft deleted`;
+
+      return { message: 'Patient soft deleted successfully' };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async restorePatient(id: string, manager: EntityManager): Promise<Patient> {
+  async recover(id: string): Promise<{ message: string }> {
     try {
-      const patient = await manager.findOne(Patient, {
+      const patient = await this.patientRepository.findOne({
         where: { id },
-        withDeleted: true
+        withDeleted: true,
       });
 
-      if (!patient) {
-        throw ErrorManager.createSignatureError(`Patient with id ${id} not found or not deleted`);
+      if (!patient || !patient.deletedAt) {
+        throw new NotFoundException(`Patient with ID ${id} not found or not deleted`);
       }
 
-      return await manager.recover(Patient, patient);
+      await this.patientRepository.recover(patient);
+
+      return { message: 'Patient recovered successfully' };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -120,7 +145,7 @@ export class PatientService extends BaseService<
         where: { id }
       });
       await manager.remove(Patient, entity);
-      await this.authService.removeWithManager(entity.user.id, manager);
+      // await this.authService.removeWithManager(entity.id, manager);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -131,7 +156,7 @@ export class PatientService extends BaseService<
       const entity = await manager.findOne(Patient, {
         where: { id }
       });
-      await this.authService.softRemoveWithManager(entity.user.id, manager);
+      // await this.authService.softRemoveWithManager(entity.id, manager);
       await manager.softRemove(Patient, entity);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
@@ -147,7 +172,7 @@ export class PatientService extends BaseService<
         where: { id },
         withDeleted: true
       });
-      await this.authService.restoreWithManager(entity.user.id, manager);
+      // await this.authService.restoreWithManager(entity.id, manager);
       return await manager.recover(Patient, entity);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

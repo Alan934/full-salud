@@ -4,7 +4,6 @@ import { SpecialistApplicationsService } from './specialist_applications.service
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SpecialistApplication } from '../../domain/entities';
 import { UserApplicationsModule } from '../user_applications/user_applications.module';
-import { AuthModule } from '../auth/auth.module';
 import { SpecialistsModule } from '../specialists/specialists.module';
 import { SpecialitiesModule } from '../speciality/specialities.module';
 import { DegreesModule } from '../degrees/degrees.module';
@@ -13,7 +12,6 @@ import { DegreesModule } from '../degrees/degrees.module';
   imports: [
     TypeOrmModule.forFeature([SpecialistApplication]),
     UserApplicationsModule,
-    AuthModule,
     SpecialistsModule,
     SpecialitiesModule,
     DegreesModule

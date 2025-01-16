@@ -10,7 +10,6 @@ import { Specialist, SpecialistApplication } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { UserApplicationsService } from '../user_applications/user_applications.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
-import { AuthService } from '../auth/auth.service';
 import { ApplicationStatus, Role } from '../../domain/enums';
 import { generatedRandomPassword } from '../../common/util/random-password.util';
 import { SpecialistsService } from '../specialists/specialists.service';
@@ -27,7 +26,6 @@ export class SpecialistApplicationsService extends BaseService<
     @InjectRepository(SpecialistApplication)
     protected repository: Repository<SpecialistApplication>,
     private readonly userApplicationService: UserApplicationsService,
-    private readonly authService: AuthService,
     private readonly specialistsService: SpecialistsService,
     private readonly specialitiesService: SpecialitiesService,
     private readonly degreesService: DegreesService
@@ -55,18 +53,18 @@ export class SpecialistApplicationsService extends BaseService<
       // }
 
       // Comprobar que no haya un usuario registrado con el mismo email
-      const emails = await this.authService.findAll({
-        email: createDto.userApplication.email,
-        page: 1,
-        limit: 10
-      });
+      // const emails = await this.authService.findAll({
+      //   email: createDto.userApplication.email,
+      //   page: 1,
+      //   limit: 10
+      // });
 
-      if (emails.data.length > 0) {
-        throw new ErrorManager(
-          'A user with this email address already exists.',
-          409
-        );
-      }
+      // if (emails.data.length > 0) {
+      //   throw new ErrorManager(
+      //     'A user with this email address already exists.',
+      //     409
+      //   );
+      // }
 
       // Comprobar que no haya una persona registrada con el mismo dni
       const dni = await this.specialistsService.findAll({

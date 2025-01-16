@@ -17,7 +17,6 @@ import {
 } from '../../domain/dtos';
 import { Institution, Turn } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
-import { AuthService } from '../auth/auth.service';
 import { HeadquartersService } from '../headquarters/headquarters.service';
 
 @Injectable()
@@ -29,7 +28,6 @@ export class InstitutionsService extends BaseService<
   constructor(
     @InjectRepository(Institution)
     protected repository: Repository<Institution>,
-    @Inject() protected readonly authService: AuthService,
     @Inject() protected readonly headquartersService: HeadquartersService
   ) {
     super(repository);

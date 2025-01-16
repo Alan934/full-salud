@@ -1,17 +1,12 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne
-} from 'typeorm';
-import { PatientTurn, Person, Relationship } from '.';
+import { Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { PatientTurn, Relationship } from '.';
+import { User } from './user.entity';
 
 @Entity('patients')
-export class Patient extends Person {
-
+export class Patient extends User {
   @ManyToOne(() => Relationship, {
     eager: true,
-    nullable: true
+    nullable: true,
   })
   @JoinColumn({ name: 'relationship_id' })
   relationship: Relationship | null;
@@ -19,9 +14,8 @@ export class Patient extends Person {
   @ManyToOne(() => PatientTurn, {
     eager: true,
     cascade: ['insert'],
-    onDelete: 'CASCADE'
+    onDelete: 'CASCADE',
   })
   @JoinColumn({ name: 'patient_turn_id' })
   patientTurn: PatientTurn;
 }
-
