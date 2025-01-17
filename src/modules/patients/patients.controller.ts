@@ -26,10 +26,10 @@ export class PatientController extends ControllerFactory<
     super();
   }
   
-  @Post()
-  async createPatient(@Body() createPatientDto: CreatePatientDto) {
-    return await this.patientService.createPatient(createPatientDto);
-  }
+  // @Post()
+  // async createPatient(@Body() createPatientDto: CreatePatientDto) {
+  //   return await this.patientService.createPatient(createPatientDto);
+  // }
 
   @Get()
   async getAll() {

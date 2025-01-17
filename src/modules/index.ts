@@ -1,7 +1,7 @@
 export * from './addresses/addresses.module';
 // export * from './admins_notification_preferences/admins-notification-preferences.module';
 export * from './attention_hours/attention_hours.module';
-// export * from './auth/auth.module';
+export * from './auth/auth.module';
 export * from './countries/countries.module';
 export * from './degrees/degrees.module';
 export * from './derivation_images/derivation_images.module';

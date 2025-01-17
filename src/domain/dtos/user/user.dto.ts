@@ -109,6 +109,23 @@ export class UserDto {
 
 }
 
+export class LoginUserDto {
+  @IsOptional()
+  @IsEmail()
+  @ApiProperty({ example: 'juan@example.com', required: false })
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'juan123', required: false })
+  username?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: 'Clave1*' })
+  password: string;
+}
+
 //"reescribe" profile image, no permite actualizar rol
 export class UpdateUserDto extends PartialType(
   OmitType(UserDto, [

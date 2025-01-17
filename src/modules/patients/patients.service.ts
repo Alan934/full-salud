@@ -9,6 +9,7 @@ import { Patient } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
 import { Role } from 'src/domain/enums';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class PatientService extends BaseService<
@@ -22,10 +23,12 @@ export class PatientService extends BaseService<
     super(patientRepository);
   }
 
-  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
+  override async create(createPatientDto: CreatePatientDto): Promise<Patient> {
     try {
-      const { dni, email, phone, username, ...userData } = createPatientDto;
-  
+      const { dni, email, phone, username, password, ...userData } = createPatientDto;
+      
+      console.log("password: " + password)
+
       const existingPatient = await this.patientRepository.findOne({
         where: [
           { dni: dni ?? undefined },
@@ -42,12 +45,15 @@ export class PatientService extends BaseService<
         );
       }
   
+      const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
+  
       const patient = this.patientRepository.create({
         ...userData,
+        password: hashedPassword,
         dni,
         email,
         phone,
-        username,
+        username,        
         role: Role.PATIENT,
       });
   

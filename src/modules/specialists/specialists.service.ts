@@ -25,7 +25,7 @@ import {
   Turn
 } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
-import { Gender } from '../../domain/enums';
+import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 // import { PersonsService } from '../persons/persons.service';
 
@@ -83,6 +83,7 @@ export class SpecialistsService extends BaseService<
         password: hashedPassword,
         degree: degreeEntity,
         specialities: specialityEntities,
+        role: Role.SPECIALIST,
       });
   
       return await this.repository.save(specialist);

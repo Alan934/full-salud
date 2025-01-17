@@ -16,7 +16,7 @@ import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { UserDto } from '../user/user.dto';
 
-export class CreateSpecialistDto extends UserDto {
+export class CreateSpecialistDto extends OmitType(UserDto, ['role'] as const) {
   @IsOptional()
   @IsString()
   @ApiProperty({ example: '123456-M-BA' })
