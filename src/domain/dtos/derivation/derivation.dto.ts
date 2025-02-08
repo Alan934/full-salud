@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { PatientTurn, Specialist } from '../../../domain/entities';
+import { PatientTurn, Practitioner } from '../../../domain/entities';
 
 export class CreateDerivationDto {
   @IsNotEmpty()
@@ -28,8 +28,8 @@ export class CreateDerivationDto {
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => Specialist)
-  @ApiProperty({ type: () => Specialist })
-  specialist: Specialist;
+  @Type(() => Practitioner)
+  @ApiProperty({ type: () => Practitioner })
+  practitioner: Practitioner;
 }
 export class UpdateDerivationDto extends PartialType(CreateDerivationDto) {}

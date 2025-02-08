@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, UseGuards } from '@nestjs/common';
 import { PatientService } from './patients.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Patient } from '../../domain/entities';
@@ -8,6 +8,9 @@ import {
   UpdatePatientDto
 } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard'
+import { Role } from '../../domain/enums/role.enum';
+import { toDtoList } from 'src/common/util/transform-dto.util';
 
 @ApiTags('Patients')
 @Controller('patient')
@@ -26,16 +29,19 @@ export class PatientController extends ControllerFactory<
     super();
   }
   
-  // @Post()
-  // async createPatient(@Body() createPatientDto: CreatePatientDto) {
-  //   return await this.patientService.createPatient(createPatientDto);
-  // }
+  @Post()
+  async createPatient(@Body() createPatientDto: CreatePatientDto) {
+    return await this.patientService.createPatient(createPatientDto);
+  }
 
   @Get()
   async getAll() {
-    return await this.patientService.getAll();
+    const data =  await this.patientService.getAll();
+    return toDtoList(SerializerPatientDto, data);
   }
 
+  @Roles(Role.SPECIALIST, Role.ADMIN)
+  // @UseGuards(AuthGuard)
   @Get(':id')
   async getOnePatient(@Param('id') id: string) {
     return await this.patientService.getOne(id);

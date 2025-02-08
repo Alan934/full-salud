@@ -1,5 +1,6 @@
 import { Role } from '../../enums/role.enum';
 import {
+  IsArray,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -10,7 +11,7 @@ import {
   IsUUID,
   ValidateNested
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { Express } from 'express';
 import 'multer';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
@@ -21,7 +22,7 @@ import { Gender } from 'src/domain/enums';
 import { DocumentType } from 'src/domain/enums';
 
 export class UserDto {
-  
+
   @IsOptional()
   @IsNotEmpty()
   @IsEmail()
@@ -140,7 +141,7 @@ export class UpdateUserDto extends PartialType(
   // phone?: string;
 
   @IsString()
-  
+
   @IsOptional()
   @ApiProperty({ example: 'juan123' })
   username?: string;
@@ -172,3 +173,25 @@ export class CreateUserDtoWithFiles {
   turn?: UserDto;
 
 }
+
+
+// export class NameEntry {
+//   @Expose()
+//   @IsOptional()
+//   @ApiProperty({ example: 'official' })
+//   @IsString()
+//   use?: string;
+
+//   @Expose()
+//   @IsOptional()
+//   @ApiProperty({ example: 'Peréz' })
+//   @IsString()
+//   family?: string;
+
+//   @Expose()
+//   @IsOptional()
+//   @ApiProperty({ example: ['David', 'Carlos'] })
+//   @IsArray()
+//   @IsString({ each: true })
+//   given?: string[];
+// }

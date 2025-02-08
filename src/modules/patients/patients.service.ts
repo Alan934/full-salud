@@ -5,7 +5,7 @@ import {
   CreatePatientDto,
   UpdatePatientDto
 } from '../../domain/dtos';
-import { Patient } from '../../domain/entities';
+import { Patient, Practitioner } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
 import { Role } from 'src/domain/enums';
@@ -19,29 +19,27 @@ export class PatientService extends BaseService<
 > {
   constructor(
     @InjectRepository(Patient) protected patientRepository: Repository<Patient>,
+    @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
   ) {
     super(patientRepository);
   }
 
-  override async create(createPatientDto: CreatePatientDto): Promise<Patient> {
+  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
     try {
       const { dni, email, phone, username, password, ...userData } = createPatientDto;
       
-      console.log("password: " + password)
-
       const existingPatient = await this.patientRepository.findOne({
-        where: [
-          { dni: dni ?? undefined },
-          { email: email ?? undefined },
-          { phone: phone ?? undefined },
-          { username: username ?? undefined },
-        ],
+        where: [{ dni }, { email }, { phone }, { username }],
       });
   
-      if (existingPatient) {
+      const existingSpecialist = await this.practitionerRepository.findOne({
+        where: [{ email }, { username }],
+      });
+  
+      if (existingPatient || existingSpecialist) {
         throw new ErrorManager(
-          'Patient with provided DNI, email, username, or phone already exists',
-          400
+          'User with provided DNI, email, username, or phone already exists',
+          400,
         );
       }
   

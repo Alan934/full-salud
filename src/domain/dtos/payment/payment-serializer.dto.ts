@@ -2,7 +2,7 @@ import { Expose, Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { SerializerShortSocialWorkDto } from '../social-work/social-work-serializer.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { SerializerShortSpecialityDto } from '../speciality/speciality-serializer.dto';
+import { SerializerShortPractitionerRoleDto } from '../practitioner-role/PractitionerRole-serializer.dto';
 
 export class SerializerPaymentDto extends ShortBaseDto {
   @ApiProperty({ example: '30' })
@@ -14,6 +14,6 @@ export class SerializerPaymentDto extends ShortBaseDto {
   socialWork: SerializerShortSocialWorkDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialityDto)
-  speciality: SerializerShortSpecialityDto;
+  @Type(() => SerializerShortPractitionerRoleDto)
+  speciality: SerializerShortPractitionerRoleDto;
 }

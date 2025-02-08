@@ -13,7 +13,7 @@ export class CreateClinicalHistoryAccessDto {
   //Recbie el id del especialista que va a pertenecer al historial
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
-  specialist: ShortBaseDto;
+  practitioner: ShortBaseDto;
 
   //Recibe el id de patientTurn que va a pertenecer al historial
   @IsNotEmpty()

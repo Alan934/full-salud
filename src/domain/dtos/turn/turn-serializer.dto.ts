@@ -2,9 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { FullBaseDto } from '../../../common/dtos';
 import {
   SerializerDiagnosticDto,
-  SerializerShortSpecialistDto,
   SerializerInstitutionDto,
-  SerializerShortPatientDto
+  SerializerShortPatientDto,
+  SerializerShortPractitionerDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
 import { Role, TurnStatus } from 'src/domain/enums';
@@ -57,8 +57,8 @@ export class SerializerTurnDto extends FullBaseDto {
   diagnostic?: SerializerDiagnosticDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialists?: SerializerShortSpecialistDto[];
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner?: SerializerShortPractitionerDto[];
 
   @Expose()
   @Type(() => SerializerAttentionHourPatientDto)

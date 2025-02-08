@@ -41,7 +41,7 @@ export class CreateSpecialistAttentionHourDto {
   @IsOptional()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  specialist: ShortBaseDto;
+  practitioner: ShortBaseDto;
 
   //recibe opcionalmente el id de una oficina o una oficina nueva
   @ValidateNested()

@@ -10,7 +10,6 @@ import {
   ChangeStatusApplicationDto,
   CreateSpecialistApplicationDto,
   SerializerSpecialistApplicationDto,
-  SerializerSpecialistDto,
   UpdateSpecialistApplicationDto
 } from '../../domain/dtos';
 import { SpecialistApplication } from '../../domain/entities';

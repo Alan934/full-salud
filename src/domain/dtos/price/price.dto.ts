@@ -14,7 +14,7 @@ export class CreatePriceDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  specialist: ShortBaseDto;
+  practitioner: ShortBaseDto;
 
   //recibe el id de la practica
   @IsNotEmpty()

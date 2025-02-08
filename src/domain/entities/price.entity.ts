@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Entity, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { Specialist } from './specialist.entity';
+import { Practitioner } from './Practitioner.entity';
 import { Practice } from './practice.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -13,14 +13,14 @@ export class Price extends Base {
   @ApiProperty({ example: '8000' })
   price: number;
 
-  @ManyToOne(() => Specialist, {
+  @ManyToOne(() => Practitioner, {
     onDelete: 'CASCADE',
     cascade: true,
     orphanedRowAction: 'soft-delete',
     eager: true
   })
-  @JoinColumn({ name: 'specialist_id' })
-  specialist: Specialist;
+  @JoinColumn({ name: 'practitioner_id' })
+  practitioner: Practitioner;
 
   @ManyToOne(() => Practice, {
     onDelete: 'CASCADE',

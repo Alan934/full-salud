@@ -2,7 +2,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import {
-  SerializerMedicineDto,
+  SerializerMedicationDto,
   SerializerShortPrescriptionDto,
   SerializerIndicationDetailDto
 } from '..';
@@ -12,9 +12,9 @@ export class SerializerIndicationDto extends FullBaseDto {
   @ApiProperty({ example: '2024-09-12' })
   start: string;
 
-  @Expose()
-  @Type(() => SerializerMedicineDto)
-  medicine: SerializerMedicineDto;
+  // @Expose()
+  // @Type(() => SerializerMedicineDto)
+  // medicine: SerializerMedicineDto;
 
   @Expose()
   @Type(() => SerializerIndicationDetailDto)
@@ -30,6 +30,6 @@ export class SerializerShortIndicationDto extends ShortBaseDto {
   start: string;
 
   @Expose()
-  @Type(() => SerializerMedicineDto)
-  medicine: SerializerMedicineDto;
+  @Type(() => SerializerMedicationDto)
+  medicine: SerializerMedicationDto;
 }

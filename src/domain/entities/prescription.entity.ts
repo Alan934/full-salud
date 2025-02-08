@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { PatientTurn, Indication, Specialist } from '.';
+import { PatientTurn, Indication, Practitioner } from '.';
 
 @Entity('prescriptions')
 export class Prescription extends Base {
@@ -16,12 +16,12 @@ export class Prescription extends Base {
   @JoinColumn({ name: 'patient_turn_id' })
   patientTurn: PatientTurn;
 
-  @ManyToOne(() => Specialist, {
+  @ManyToOne(() => Practitioner, {
     eager: true,
     nullable: true
   })
-  @JoinColumn({ name: 'specialist_id' })
-  specialist: Specialist;
+  @JoinColumn({ name: 'practitioner_id' })
+  practitioner: Practitioner;
 
   @Column({
     type: 'varchar',

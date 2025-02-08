@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Patient, Specialist, User } from '../../domain/entities';
+import { Patient, Practitioner, User } from '../../domain/entities';
 import { AuthController } from './auth.controller';
 // import { PatientsNotificationPreferencesModule } from '../patients_notification_preferences/patients-notification-preferences.module';
 // import { SpecialistsNotificationPreferencesModule } from '../specialists_notification_preferences/specialists-notification-preferences.module';
@@ -11,12 +11,20 @@ import { AuthController } from './auth.controller';
 // import { SpecialistsSecretaryNotificationPreferencesModule } from '../specialists_secretary_notification_preferences/specialists-secretary-notification-preferences.module';
 import { ProfileImagesModule } from '../profile_images/profile_images.module';
 import { PatientModule } from '../patients/patients.module';
-import { SpecialistsModule } from '../specialists/specialists.module';
+import { PractitionerModule } from '../practitioner/Practitioner.module';
 // import { NotificationsModule } from '../notifications/notifications.module';
+import { JwtModule } from '@nestjs/jwt';
+import { envConfig } from '../../config/envs';
+
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Specialist, Patient]),
+    JwtModule.register({
+      global: true,
+      secret: envConfig.JWT_SECRET,
+      signOptions: { expiresIn: '15000s' },
+    }),
+    TypeOrmModule.forFeature([User, Practitioner, Patient]),
     // PatientsNotificationPreferencesModule,
     // SpecialistsNotificationPreferencesModule,
     // InstitutionsNotificationPreferencesModule,

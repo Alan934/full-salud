@@ -1,6 +1,7 @@
-import { Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { PatientTurn, Relationship } from '.';
 import { User } from './user.entity';
+import { Favorite } from './favorite.entity';
 
 @Entity('patients')
 export class Patient extends User {
@@ -18,4 +19,7 @@ export class Patient extends User {
   })
   @JoinColumn({ name: 'patient_turn_id' })
   patientTurn: PatientTurn;
+
+  @OneToMany(() => Favorite, (favorite) => favorite.patient)
+  favorites: Favorite[]
 }

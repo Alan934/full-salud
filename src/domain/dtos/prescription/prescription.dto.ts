@@ -26,7 +26,7 @@ export class CreatePrescriptionDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  specialist: ShortBaseDto;
+  practitioner: ShortBaseDto;
 
   @IsOptional()
   @ValidateNested()
@@ -39,5 +39,5 @@ export class CreatePrescriptionDto {
 }
 
 export class UpdatePrescriptionDto extends PartialType(
-  OmitType(CreatePrescriptionDto, ['patientTurn', 'specialist', 'indications'])
+  OmitType(CreatePrescriptionDto, ['patientTurn', 'practitioner', 'indications'])
 ) {}

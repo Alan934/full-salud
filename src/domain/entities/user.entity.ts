@@ -1,11 +1,15 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, JoinTable, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinTable } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
+import { Role } from '../enums/role.enum';
+
 import { ApiProperty } from '@nestjs/swagger';
 import { Address } from './address.entity';
-import { Role } from '../enums';
 
+
+
+@Entity('users')
 export abstract class User extends Base {
   @Column({
     type: 'varchar',
@@ -39,7 +43,6 @@ export abstract class User extends Base {
     examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST],
   })
   role: Role;
-
   @Column({
     type: 'varchar',
     nullable: true,
@@ -111,4 +114,5 @@ export abstract class User extends Base {
     },
   })
   addresses: Address[];
+
 }

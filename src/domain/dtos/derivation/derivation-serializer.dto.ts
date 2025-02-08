@@ -2,8 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import { SerializerShortPacientTurnDto } from '../patient-turn/patient-turn-serializer.dto';
-import { SerializerSpecialistDto } from '../specialist/specialist-serializer.dto';
-
+import { SerializerShortPractitionerDto } from '../practitioner/Practitioner-serializer.dto';
 export class SerializerDerivationDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '2024-12-31T23:59:59Z' })
@@ -23,9 +22,9 @@ export class SerializerDerivationDto extends FullBaseDto {
   patientTurn: SerializerShortPacientTurnDto;
 
   @Expose()
-  @Type(() => SerializerSpecialistDto)
-  @ApiProperty({ type: () => SerializerSpecialistDto })
-  specialist: SerializerSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  @ApiProperty({ type: () => SerializerShortPractitionerDto })
+  practitioner: SerializerShortPractitionerDto;
 }
 
 export class ShortDerivationDto extends ShortBaseDto {

@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { CreatePrescriptionDto, UpdatePrescriptionDto } from '../../domain/dtos';
-import { Prescription, Specialist } from '../../domain/entities';
+import { Prescription, Practitioner } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -26,8 +26,8 @@ export class PrescriptionsService extends BaseService<
     try {
       return await this.repository.manager.transaction(
         async (entityManager: EntityManager) => {
-          const specialist: Specialist = await entityManager.findOne(Specialist, {
-            where: { id: createDto.specialist.id },
+          const specialist: Practitioner = await entityManager.findOne(Practitioner, {
+            where: { id: createDto.practitioner.id },
             relations: ['specialities'], // Asegúrate de incluir la relación
           });
   

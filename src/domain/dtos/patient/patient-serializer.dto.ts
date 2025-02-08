@@ -7,8 +7,14 @@ import {
   SerializerShortUserDto
 } from '..';
 import { FullBaseDto } from 'src/common/dtos';
+import { IsOptional } from 'class-validator';
 
 export class SerializerPatientDto extends FullBaseDto {
+
+  @Expose()
+  @ApiProperty({ example: 'Patient' }) 
+  resourceType: string = 'Patient';
+
   @Expose()
   @ApiProperty({ example: 'Pepe' })
   name: string;

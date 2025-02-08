@@ -6,14 +6,14 @@ import {
   CreateSpecialistApplicationDto,
   UpdateSpecialistApplicationDto
 } from '../../domain/dtos';
-import { Specialist, SpecialistApplication } from '../../domain/entities';
+import { Practitioner, SpecialistApplication } from '../../domain/entities';
 import { Repository } from 'typeorm';
 import { UserApplicationsService } from '../user_applications/user_applications.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { ApplicationStatus, Role } from '../../domain/enums';
 import { generatedRandomPassword } from '../../common/util/random-password.util';
-import { SpecialistsService } from '../specialists/specialists.service';
-import { SpecialitiesService } from '../speciality/specialities.service';
+import { PractitionerService } from '../practitioner/Practitioner.service';
+import { PractitionerRoleService } from '../practitioner-role/PractitionerRole.service';
 import { DegreesService } from '../degrees/degrees.service';
 
 @Injectable()
@@ -26,8 +26,8 @@ export class SpecialistApplicationsService extends BaseService<
     @InjectRepository(SpecialistApplication)
     protected repository: Repository<SpecialistApplication>,
     private readonly userApplicationService: UserApplicationsService,
-    private readonly specialistsService: SpecialistsService,
-    private readonly specialitiesService: SpecialitiesService,
+    private readonly specialistsService: PractitionerService,
+    private readonly specialitiesService: PractitionerRoleService,
     private readonly degreesService: DegreesService
   ) {
     super(repository);

@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 import {
   Diagnostic,
-  Specialist,
+  Practitioner,
   Patient,
   DerivationImage,
   AttentionHourPatient
@@ -64,21 +64,21 @@ export class Turn extends Base {
   @JoinColumn({ name: 'patient_id' })
   patient?: Patient;
   
-  @ManyToMany(() => Specialist, (specialist) => specialist, {
+  @ManyToMany(() => Practitioner, (practitioner) => practitioner, {
     eager: false,
   })
   @JoinTable({
-    name: 'turns_specialists',
+    name: 'turns_practitioners',
     joinColumn: {
       name: 'turn_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'specialist_id',
+      name: 'practitioner_id',
       referencedColumnName: 'id',
     },
   })
-  specialists: Specialist[];
+  practitioners: Practitioner[];
 
   @OneToMany(
     () => AttentionHourPatient,

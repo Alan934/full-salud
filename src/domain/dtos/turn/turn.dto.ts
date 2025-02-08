@@ -14,7 +14,6 @@ import { TurnStatus } from '../../../domain/enums';
 import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
 import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
 import { CreateAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient.dto';
-import { CreateSpecialistDto } from '../specialist/specialist.dto';
 import { Patient } from 'src/domain/entities';
 import { CreatePatientDto } from '../patient/patient.dto';
 
@@ -75,7 +74,7 @@ export class CreateTurnDto {
     example: [{ id: '7c715f1e-09b9-4138-814a-00959681b541' }],
     type: [ShortBaseDto],
   })
-  specialists: ShortBaseDto[];
+  practitioners: ShortBaseDto[];
 
   // @ValidateNested({ each: true })
   // @IsNotEmpty()

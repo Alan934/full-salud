@@ -16,11 +16,11 @@ export class CreateIndicationDto {
   @ApiProperty({ example: '2024-12-07' })
   start?: string;
 
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  @ApiProperty({ description: 'Medicina que se receta.' })
-  medicine: ShortBaseDto;
+  // @IsNotEmpty()
+  // @ValidateNested()
+  // @Type(() => ShortBaseDto)
+  // @ApiProperty({ description: 'Medicina que se receta.' })
+  // medicine: ShortBaseDto;
 
   @IsOptional()
   @ValidateNested()

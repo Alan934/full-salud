@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { FullBaseDto } from '../../../common/dtos';
-import { SerializerShortSpecialistDto, SerializerShortPracticeDto } from '..';
+import { SerializerShortPracticeDto, SerializerShortPractitionerDto } from '..';
 import { Expose, Type } from 'class-transformer';
 
 export class SerializerPriceDto extends FullBaseDto {
@@ -9,8 +9,8 @@ export class SerializerPriceDto extends FullBaseDto {
   price: number;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialist: SerializerShortSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner: SerializerShortPractitionerDto;
 
   @Expose()
   @Type(() => SerializerShortPracticeDto)

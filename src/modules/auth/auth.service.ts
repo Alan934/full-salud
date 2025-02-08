@@ -12,7 +12,7 @@ import {
 } from '../../domain/dtos';
 import { Express } from 'express';
 import 'multer';
-import { Patient, Specialist, User } from '../../domain/entities';
+import { Patient, Practitioner, User } from '../../domain/entities';
 import { Media } from '../../domain/enums/media.enum';
 import { Role } from '../../domain/enums/role.enum';
 import {
@@ -41,6 +41,8 @@ import {
 // import { NotificationsService } from '../notifications/notifications.service';
 import * as bcrypt from 'bcryptjs';
 import { plainToInstance } from 'class-transformer';
+import { JwtService } from '@nestjs/jwt';
+import { envConfig } from '../../config/envs';
 
 @Injectable()
 export class AuthService extends BaseService<
@@ -59,40 +61,57 @@ export class AuthService extends BaseService<
     protected readonly profileImagesService: ProfileImagesService,
     // protected readonly notificationsService: NotificationsService,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
-    @InjectRepository(Specialist) private readonly specialistRepository: Repository<Specialist>,
+    @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
+    private readonly jwtService: JwtService,
     private readonly dataSource: DataSource
   ) {
     super(repository);
   }
 
-  async loginUser(loginDto: LoginUserDto): Promise<UserDto> {
+  async loginUser(loginDto: LoginUserDto): Promise<{ data: UserDto; token: string }> {
     const { email, username, password } = loginDto;
-  
+
     try {
       let user: User | undefined;
-  
+
       user = await this.patientRepository.findOne({
-        where: [{ email: email ?? undefined }, { username: username ?? undefined }],
+        where: [
+          { email: email ?? undefined },
+          { username: username ?? undefined },
+        ],
       });
-  
+
       if (!user) {
-        user = await this.specialistRepository.findOne({
-          where: [{ email: email ?? undefined }, { username: username ?? undefined }],
+        user = await this.practitionerRepository.findOne({
+          where: [
+            { email: email ?? undefined },
+            { username: username ?? undefined },
+          ],
         });
       }
-  
+
       if (!user) {
         throw new ErrorManager('Invalid email, username, or password', 401);
       }
-  
+
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (!isPasswordValid) {
         throw new ErrorManager('Invalid email, username, or password', 401);
       }
-  
+
       const userDto = plainToInstance(UserDto, user);
-  
-      return userDto;
+
+      const payload = { sub: user.id, email: user.email, role: user.role };
+
+      const token = await this.jwtService.signAsync(payload, {
+        secret: envConfig.JWT_SECRET,
+        //expiresIn: '1h',
+      });
+
+      return {
+        data: userDto,
+        token,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

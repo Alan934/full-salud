@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, ManyToMany } from 'typeorm';
-import { Specialist } from '.';
+import { Practitioner } from '.';
 
 @Entity('social_works')
 export class SocialWork extends Base {
@@ -12,6 +12,6 @@ export class SocialWork extends Base {
   @ApiProperty({ example: 'OSEP' })
   name: string;
 
-  @ManyToMany(() => Specialist, (specialist) => specialist.acceptedSocialWorks)
-  specialists: Specialist[];
+  @ManyToMany(() => Practitioner, (practitioner) => practitioner.acceptedSocialWorks)
+  practitioners: Practitioner[];
 }

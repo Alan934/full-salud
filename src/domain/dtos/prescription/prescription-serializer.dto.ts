@@ -1,8 +1,8 @@
 import { FullBaseDto } from '../../../common/dtos';
 import {
-  SerializerShortSpecialistDto,
   SerializerShortPacientTurnDto,
-  SerializerIndicationDto
+  SerializerIndicationDto,
+  SerializerShortPractitionerDto
 } from '..';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
@@ -17,8 +17,8 @@ export class SerializerPrescriptionDto extends FullBaseDto {
   patientTurn: SerializerShortPacientTurnDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialist: SerializerShortSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner: SerializerShortPractitionerDto;
 
   @Expose()
   @Type(() => SerializerIndicationDto)
@@ -34,6 +34,6 @@ export class SerializerShortPrescriptionDto extends FullBaseDto {
   patientTurn: SerializerShortPacientTurnDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialist: SerializerShortSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner: SerializerShortPractitionerDto;
 }

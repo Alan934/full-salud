@@ -2,7 +2,7 @@ import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Day } from '../../domain/enums';
 import { ApiProperty } from '@nestjs/swagger';
-import { Specialist, Office } from '.';
+import { Practitioner, Office } from '.';
 
 @Entity('specialists_attention_hours')
 export class SpecialistAttentionHour extends Base {
@@ -38,11 +38,11 @@ export class SpecialistAttentionHour extends Base {
   day: Day;
 
   @ManyToOne(
-    () => Specialist,
-    (specialist) => specialist.specialistAttentionHour
+    () => Practitioner,
+    (practitioner) => practitioner.specialistAttentionHour
   )
-  @JoinColumn({ name: 'specialist_id' })
-  specialist: Specialist;
+  @JoinColumn({ name: 'practitioner_id' })
+  practitioner: Practitioner;
 
   @ManyToOne(() => Office, (office) => office.specialistAttentionHours, {
     eager: true

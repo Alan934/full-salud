@@ -10,6 +10,7 @@ const enVarsSchema = joi
       .default('development'),
     HOST: joi.string().default('localhost'),
     DB_PORT: joi.number().default(3306),
+    JWT_SECRET: joi.string().required(),
     DB_USERNAME: joi.string().default('root'),
     DB_PASSWORD: joi.string().allow('').default(''),
     DB_NAME: joi.string(),
@@ -42,6 +43,7 @@ interface EnvVars {
   DB_USERNAME: string;
   DB_PASSWORD: string;
   DB_NAME: string;
+  JWT_SECRET: string;
   CLOUDINARY_NAME: string;
   CLOUDINARY_API_KEY: string;
   CLOUDINARY_API_SECRET: string;
@@ -63,6 +65,7 @@ export const envConfig: EnvVars = {
   DB_USERNAME: envVars.DB_USERNAME,
   DB_PASSWORD: envVars.DB_PASSWORD,
   DB_NAME: envVars.DB_NAME,
+  JWT_SECRET: envVars.JWT_SECRET,
   CLOUDINARY_NAME: envVars.CLOUDINARY_NAME,
   CLOUDINARY_API_KEY: envVars.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: envVars.CLOUDINARY_API_SECRET,

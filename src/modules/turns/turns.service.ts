@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { CreateTurnDto, UpdateTurnDto } from '../../domain/dtos';
-import { Patient, Specialist, Turn } from '../../domain/entities';
+import { Patient, Practitioner, Turn } from '../../domain/entities';
 import { TurnStatus } from '../../domain/enums';
 import { Express } from 'express';
 import 'multer';
@@ -26,11 +26,11 @@ export class TurnsService extends BaseService<
   // Método simplificado para crear turnos
   async createTurn(createTurnDto: CreateTurnDto): Promise<Turn> {
     const queryRunner = this.repository.manager.connection.createQueryRunner();
-    
+
     console.log('Start creating turn...');
     await queryRunner.connect();
     await queryRunner.startTransaction();
-    
+
     try {
       console.log('Validating patient existence...');
       // Validar existencia del paciente
@@ -46,8 +46,8 @@ export class TurnsService extends BaseService<
 
       console.log('Validating specialists existence...');
       // Validar existencia de especialistas
-      const specialistIds = createTurnDto.specialists.map((s) => s.id);
-      const specialists = await queryRunner.manager.find(Specialist, {
+      const specialistIds = createTurnDto.practitioners.map((s) => s.id);
+      const specialists = await queryRunner.manager.find(Practitioner, {
         where: { id: In(specialistIds) },
         relations: [] // Desactivar la carga de relaciones para evitar ciclos
       });
@@ -79,7 +79,7 @@ export class TurnsService extends BaseService<
     } catch (error) {
       console.log('Error occurred:', error);
       await queryRunner.rollbackTransaction();
-  
+
       if (error instanceof NotFoundException) {
         console.log('NotFoundException: ', error.message);
         throw error;
@@ -94,19 +94,19 @@ export class TurnsService extends BaseService<
 
   async createTurnWithPatient(createTurnDto: CreateTurnDto): Promise<Turn> {
     const queryRunner = this.repository.manager.connection.createQueryRunner();
-  
+
     await queryRunner.connect();
     await queryRunner.startTransaction();
-  
+
     try {
       let patient: Patient;
-  
+
       // Verificar si llega `patientId` o el objeto `patient`
       if (createTurnDto.patientId) {
         patient = await queryRunner.manager.findOne(Patient, {
           where: { id: createTurnDto.patientId },
         });
-  
+
         if (!patient) {
           throw new NotFoundException(
             `Patient with ID ${createTurnDto.patientId} not found`
@@ -116,7 +116,7 @@ export class TurnsService extends BaseService<
         const existingPatient = await queryRunner.manager.findOne(Patient, {
           where: { dni: createTurnDto.patient.dni },
         });
-  
+
         if (existingPatient) {
           patient = existingPatient;
         } else {
@@ -128,7 +128,6 @@ export class TurnsService extends BaseService<
             phone: createTurnDto.patient.phone,
             documentType: createTurnDto.patient.documentType,
           });
-  
           patient = await queryRunner.manager.save(patient);
         }
       } else {
@@ -136,24 +135,24 @@ export class TurnsService extends BaseService<
           'Either patientId or patient object must be provided'
         );
       }
-  
-      const specialistIds = createTurnDto.specialists.map((s) => s.id);
+
+      const specialistIds = createTurnDto.practitioners.map((s) => s.id);
 
       // Asegurarnos de que los IDs no estén vacíos
       if (!specialistIds || specialistIds.length === 0) {
         throw new BadRequestException('At least one specialist ID must be provided');
       }
-      
-      const specialists = await queryRunner.manager.find(Specialist, {
+
+      const specialists = await queryRunner.manager.find(Practitioner, {
         where: { id: In(specialistIds) },
       });
-      
+
       // Comprobamos si el número de especialistas encontrados coincide con los solicitados
       if (specialists.length !== specialistIds.length) {
         const notFoundIds = specialistIds.filter(id => !specialists.some(s => s.id === id));
         throw new NotFoundException(`Specialists with IDs ${notFoundIds.join(', ')} not found`);
       }
-  
+
       const newTurn = queryRunner.manager.create(Turn, {
         date: createTurnDto.date,
         hour: createTurnDto.hour,
@@ -162,25 +161,25 @@ export class TurnsService extends BaseService<
         patient,
         specialists,
       });
-  
+
       const savedTurn = await queryRunner.manager.save(newTurn);
-  
+
       await queryRunner.commitTransaction();
-  
+
       return savedTurn;
     } catch (error) {
       await queryRunner.rollbackTransaction();
-  
+
       if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
-  
+
       throw ErrorManager.createSignatureError((error as Error).message);
     } finally {
       await queryRunner.release();
     }
-  }  
-  
+  }
+
   async getOne(id: string): Promise<Turn> {
     try {
       const turn = await this.repository.findOne({
@@ -216,7 +215,7 @@ export class TurnsService extends BaseService<
     try {
       const turns = await this.repository.find({
         where: {
-          specialists: {
+          practitioners: {
             id: specialistId,
           },
           deletedAt: null,
@@ -260,7 +259,7 @@ export class TurnsService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-    
+
   //Obtener turnos completados por el ID del paciente (historial).
   async getCompletedTurnsByPatient(patientId: string): Promise<Turn[]> {
     try {
@@ -287,13 +286,13 @@ export class TurnsService extends BaseService<
   async removeTurn(id: string): Promise<{ message: string; deletedTurn: Turn }> {
     try {
       const turn = await this.repository.findOne({ where: { id, deletedAt: null } });
-  
+
       if (!turn) {
         throw new NotFoundException(`Turn with ID ${id} not found`);
       }
-  
+
       const deletedTurn = await this.repository.softRemove(turn);
-  
+
       return {
         message: 'Turn deleted successfully',
         deletedTurn,
@@ -404,7 +403,7 @@ export class TurnsService extends BaseService<
   //     await queryRunner.release();
   //   }
   // }
-  
+
   // override async remove(id: string): Promise<string> {
   //   try {
   //     const turn = await this.findOne(id); // Verifica que la entidad existe

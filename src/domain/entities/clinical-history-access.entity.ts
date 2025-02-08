@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Specialist, PatientTurn } from '.';
+import { Practitioner, PatientTurn } from '.';
 
 @Entity('clinical_history_accesses')
 export class ClinicalHistoryAccess extends Base {
@@ -11,11 +11,11 @@ export class ClinicalHistoryAccess extends Base {
   })
   expirationDate: string;
 
-  @ManyToOne(() => Specialist, {
+  @ManyToOne(() => Practitioner, {
     eager: true
   })
-  @JoinColumn({ name: 'specialist_id' })
-  specialist: Specialist;
+  @JoinColumn({ name: 'practitioner_id' })
+  practitioner: Practitioner;
 
   @ManyToOne(() => PatientTurn, {
     eager: true,

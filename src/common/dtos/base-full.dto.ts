@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
 export class FullBaseDto {
@@ -13,4 +13,5 @@ export class FullBaseDto {
   @Expose()
   @ApiProperty({ example: '2024-08-15 12:50:39.147274' })
   createdAt!: string;
+
 }
