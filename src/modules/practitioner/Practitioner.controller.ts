@@ -3,15 +3,15 @@ import { PractitionerService } from './Practitioner.service';
 import { Practitioner, Turn } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 
-import { CreatePractitionerDto, UpdatePractitionerDto } from 'src/domain/dtos/practitioner/Practitioner.dto';
+import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
 
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { PaginationMetadata } from '../../common/util/pagination-data.util';
 import { plainToClass } from 'class-transformer';
-import { SerializerPractitionerDto } from 'src/domain/dtos/practitioner/Practitioner-serializer.dto';
-import { PractitionerFilteredPaginationDto } from 'src/domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
+import { SerializerPractitionerDto } from '../../domain/dtos/practitioner/Practitioner-serializer.dto';
+import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
 
 @ApiTags('Practitioner')
 @Controller('practitioner')

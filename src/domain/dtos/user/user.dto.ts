@@ -18,8 +18,8 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { OmitFieldForRoles } from '../../../common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
 import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
 import { ShortBaseDto } from '../../../common/dtos';
-import { Gender } from 'src/domain/enums';
-import { DocumentType } from 'src/domain/enums';
+import { Gender } from '../../../domain/enums';
+import { DocumentType } from '../../../domain/enums';
 
 export class UserDto {
 

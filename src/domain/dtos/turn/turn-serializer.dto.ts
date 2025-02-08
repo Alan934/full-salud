@@ -7,7 +7,7 @@ import {
   SerializerShortPractitionerDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
-import { Role, TurnStatus } from 'src/domain/enums';
+import { Role, TurnStatus } from '../../../domain/enums';
 import { SerializerAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient-serializer.dto';
 
 export class SerializerTurnDto extends FullBaseDto {

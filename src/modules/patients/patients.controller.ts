@@ -10,7 +10,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard'
 import { Role } from '../../domain/enums/role.enum';
-import { toDtoList } from 'src/common/util/transform-dto.util';
+import { toDtoList } from '../../common/util/transform-dto.util';
 
 @ApiTags('Patients')
 @Controller('patient')

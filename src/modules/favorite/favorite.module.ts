@@ -2,7 +2,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { FavoriteService } from './favorite.service';
 import { FavoriteController } from './favorite.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Favorite } from 'src/domain/entities/favorite.entity';
+import { Favorite } from '../../domain/entities/favorite.entity';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({

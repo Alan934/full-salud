@@ -25,8 +25,8 @@ import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 // import { PersonsService } from '../persons/persons.service';
 import axios from 'axios';
-import { CreatePractitionerDto, UpdatePractitionerDto } from 'src/domain/dtos/practitioner/Practitioner.dto';
-import { PractitionerFilteredPaginationDto } from 'src/domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
+import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
+import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
 
 @Injectable()
 export class PractitionerService extends BaseService<

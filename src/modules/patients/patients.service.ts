@@ -8,7 +8,7 @@ import {
 import { Patient, Practitioner } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
-import { Role } from 'src/domain/enums';
+import { Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()

@@ -12,8 +12,8 @@ import { ControllerFactory } from '../../common/factories/controller.factory';
 import { MedicationRequest } from '../../domain/entities/MedicationRequest.entity';
 import { toDto, toDtoList } from '../../common/util/transform-dto.util';
 import { MedicationRequestsService } from './MedicationRequest.service';
-import { SerializerMedicationRequestDto } from 'src/domain/dtos/medication-request/MedicationRequest-serializer.dto';
-import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from 'src/domain/dtos/medication-request/MedicationRequest.dto';
+import { SerializerMedicationRequestDto } from '../../domain/dtos/medication-request/MedicationRequest-serializer.dto';
+import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/MedicationRequest.dto';
 
 @ApiTags('MedicationRequests')
 @Controller('MedicationRequest')

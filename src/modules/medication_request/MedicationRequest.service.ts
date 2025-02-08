@@ -7,7 +7,7 @@ import { ErrorManager } from '../../common/exceptions/error.manager';
 import { Medication } from '../../domain/entities';
 import { PatientService } from '../patients/patients.service';
 import { PractitionerService } from '../practitioner/Practitioner.service';
-import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from 'src/domain/dtos/medication-request/MedicationRequest.dto';
+import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/MedicationRequest.dto';
 
 @Injectable()
 export class MedicationRequestsService extends BaseService<

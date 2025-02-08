@@ -6,7 +6,7 @@ import {
   SerializerShortAddressDto,
   SerializerShortUserDto
 } from '..';
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import { IsOptional } from 'class-validator';
 
 export class SerializerPatientDto extends FullBaseDto {

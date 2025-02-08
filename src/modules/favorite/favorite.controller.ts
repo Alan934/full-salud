@@ -3,10 +3,10 @@ import { FavoriteService } from './favorite.service';
 import { CreateFavoriteDto } from '../../domain/dtos/favorite/favorite.dto';
 import { UpdateFavoriteDto } from '../../domain/dtos/favorite/favorite.dto';
 import { ApiBody, ApiCreatedResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import { SerializerFavoriteDto } from 'src/domain/dtos/favorite/favorite-serializer.dto';
-import { Favorite } from 'src/domain/entities/favorite.entity';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { ControllerFactory } from '../../common/factories/controller.factory';
+import { SerializerFavoriteDto } from '../../domain/dtos/favorite/favorite-serializer.dto';
+import { Favorite } from '../../domain/entities/favorite.entity';
+import { toDto } from '../../common/util/transform-dto.util';
 import { PaginationDto } from './../../common/dtos/pagination-common.dto';
 
 @ApiTags('Favorites')

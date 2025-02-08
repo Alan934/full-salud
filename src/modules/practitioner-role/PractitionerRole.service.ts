@@ -4,7 +4,7 @@ import { BaseService } from '../../common/bases/base.service';
 import { CreatePractitionerRoleDto, UpdatePractitionerRoleDto } from '../../domain/dtos';
 import { PractitionerRole } from '../../domain/entities';
 import { EntityManager, Repository } from 'typeorm';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 
 @Injectable()
 export class PractitionerRoleService extends BaseService<
