@@ -1,7 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginUserDto, UserDto } from '../../domain/dtos';
+import {  AuthUserDto, UserDto } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
+import { Roles } from './guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -9,10 +11,16 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  async loginUser(@Body() loginDto: LoginUserDto): Promise<{ data: UserDto; token: string }> {
+  async loginUser(@Body() loginDto: AuthUserDto): Promise<{ data: UserDto; token: string }> {
     return await this.authService.loginUser(loginDto);
   }
   
+  @Post('/create')
+  @Roles(Role.ADMIN)
+  async createAdmin(@Body() createUserDto: AuthUserDto) {
+    return this.authService.createAdmin(createUserDto);
+  }
+
 }
 // import {
 //   Body,

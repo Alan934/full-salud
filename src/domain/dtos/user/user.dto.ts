@@ -110,7 +110,7 @@ export class UserDto {
 
 }
 
-export class LoginUserDto {
+export class AuthUserDto {
   @IsOptional()
   @IsEmail()
   @ApiProperty({ example: 'juan@example.com', required: false })
@@ -166,11 +166,21 @@ export class UpdateUserDto extends PartialType(
 
 }
 
-export class CreateUserDtoWithFiles {
-  @ValidateNested()
-  @Type(() => UserDto)
-  @ApiProperty({ type: UserDto })
-  turn?: UserDto;
+export class CreateUserDto {
+  @IsOptional()
+  @IsEmail()
+  @ApiProperty({ example: 'juan@example.com', required: false })
+  email?: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'juan123', required: false })
+  username?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ example: 'Clave1*' })
+  password: string;
 
 }
 

@@ -7,8 +7,6 @@ import { Role } from '../enums/role.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Address } from './address.entity';
 
-
-
 @Entity('users')
 export abstract class User extends Base {
   @Column({

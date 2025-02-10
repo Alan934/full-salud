@@ -3,21 +3,17 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
-  CreateNotificationPreferencesDto,
-  CreatePatientDto,
   UserDto,
   UpdateUserDto,
   UserPaginationDto,
-  LoginUserDto
+  AuthUserDto
 } from '../../domain/dtos';
 import { Express } from 'express';
 import 'multer';
 import { Patient, Practitioner, User } from '../../domain/entities';
-import { Media } from '../../domain/enums/media.enum';
 import { Role } from '../../domain/enums/role.enum';
 import {
   DataSource,
-  DeepPartial,
   EntityManager,
   FindManyOptions,
   Repository,
@@ -68,7 +64,11 @@ export class AuthService extends BaseService<
     super(repository);
   }
 
-  async loginUser(loginDto: LoginUserDto): Promise<{ data: UserDto; token: string }> {
+  async onModuleInit() {
+    await this.ensureAdminExists();
+  }
+
+  async loginUser(loginDto: AuthUserDto): Promise<{ data: UserDto; token: string }> {
     const { email, username, password } = loginDto;
 
     try {
@@ -83,6 +83,15 @@ export class AuthService extends BaseService<
 
       if (!user) {
         user = await this.practitionerRepository.findOne({
+          where: [
+            { email: email ?? undefined },
+            { username: username ?? undefined },
+          ],
+        });
+      }
+
+      if (!user) {
+        user = await this.repository.findOne({
           where: [
             { email: email ?? undefined },
             { username: username ?? undefined },
@@ -117,6 +126,58 @@ export class AuthService extends BaseService<
     }
   }
 
+  async createAdmin(createUserDto: AuthUserDto): Promise<UserDto> {
+    try {
+      const existingUser = await this.repository.findOne({
+        where: [
+          { email: createUserDto.email },
+          { username: createUserDto.username }
+        ],
+      });
+  
+      if (existingUser) {
+        throw new ErrorManager('Email or username already in use', 400);
+      }
+  
+      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
+  
+      const newAdmin = this.repository.create({
+        ...createUserDto,
+        password: hashedPassword,
+        role: Role.ADMIN,
+      });
+  
+      const savedAdmin = await this.repository.save(newAdmin);
+  
+      return plainToInstance(UserDto, savedAdmin, { excludeExtraneousValues: true });
+  
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async ensureAdminExists() {
+    const adminExists = await this.repository.findOne({
+      where: { role: Role.ADMIN },
+    });
+
+    if (!adminExists) {
+      console.log('No admin found. Creating default admin...');
+
+      const defaultAdmin = this.repository.create({
+        email: 'admin@example.com',
+        username: 'admin',
+        password: await bcrypt.hash('Admin123*', 10),
+        role: Role.ADMIN,
+        name: 'Default',
+        lastName: 'Admin',
+      });
+
+      await this.repository.save(defaultAdmin);
+      console.log('Default admin created successfully.');
+    }
+  }
+  
   //método que devuelve el servicio de notification preferences correspondiente al rol recibido por parametro
   // private getNotificationPreferenceServiceByRole(role: Role): any {
   //   switch (role) {
