@@ -61,16 +61,32 @@ export class PatientService extends BaseService<
     }
   }
 
-  async getAll(): Promise<Patient[]> {
+  async getAll(page: number = 1, limit: number = 10): Promise<{ 
+    patients: Patient[]; 
+    total: number; 
+    page: number; 
+    limit: number;
+    previousPage: number | null;
+  }> {
     try {
-      return await this.patientRepository.find({
+      const [data, total] = await this.patientRepository.findAndCount({
         where: { deletedAt: null },
+        skip: (page - 1) * limit,
+        take: limit,
       });
+  
+      return { 
+        patients: data, 
+        total, 
+        page, 
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-
+  
   async getOne(id: string): Promise<Patient> {
     try {
       const patient = await this.patientRepository.findOne({

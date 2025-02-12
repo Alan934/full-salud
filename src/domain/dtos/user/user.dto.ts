@@ -20,6 +20,7 @@ import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorat
 import { ShortBaseDto } from '../../../common/dtos';
 import { Gender } from '../../../domain/enums';
 import { DocumentType } from '../../../domain/enums';
+import { Column } from 'typeorm';
 
 export class UserDto {
 
@@ -125,6 +126,13 @@ export class AuthUserDto {
   @IsString()
   @ApiProperty({ example: 'Clave1*' })
   password: string;
+
+  @Column({
+    type: 'varchar',
+    nullable: true,
+  })
+  @ApiProperty({ example: 'hashed_refresh_token' })
+  refreshToken?: string;
 }
 
 //"reescribe" profile image, no permite actualizar rol

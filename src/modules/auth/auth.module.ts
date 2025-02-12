@@ -22,7 +22,7 @@ import { envConfig } from '../../config/envs';
     JwtModule.register({
       global: true,
       secret: envConfig.JWT_SECRET,
-      signOptions: { expiresIn: '15000s' },
+      //signOptions: { expiresIn: '15000s' },
     }),
     TypeOrmModule.forFeature([User, Practitioner, Patient]),
     // PatientsNotificationPreferencesModule,

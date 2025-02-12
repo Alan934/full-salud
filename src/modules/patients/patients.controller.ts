@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { PatientService } from './patients.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Patient } from '../../domain/entities';
@@ -10,7 +10,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
 import { Role } from '../../domain/enums/role.enum';
-import { toDtoList } from '../../common/util/transform-dto.util';
+import { toDto, toDtoList } from '../../common/util/transform-dto.util';
 
 @ApiTags('Patients')
 @Controller('patient')
@@ -37,9 +37,11 @@ export class PatientController extends ControllerFactory<
   @Roles(Role.SPECIALIST, Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
-  async getAll() {
-    const data = await this.patientService.getAll();
-    return toDtoList(SerializerPatientDto, data);
+  async getAll(@Query('page') page: number = 1, 
+  @Query('limit') limit: number = 10): 
+  Promise<{ total: number; page: number; limit: number; patients: SerializerPatientDto[] }> {
+    const { patients, total } = await this.patientService.getAll(page, limit);
+    return { patients: patients.map((patient) => toDto(SerializerPatientDto, patient)), total, page, limit };
   }
 
   @Roles(Role.SPECIALIST, Role.ADMIN, Role.PATIENT)

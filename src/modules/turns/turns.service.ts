@@ -150,7 +150,7 @@ export class TurnsService extends BaseService<
       // Comprobamos si el número de especialistas encontrados coincide con los solicitados
       if (specialists.length !== specialistIds.length) {
         const notFoundIds = specialistIds.filter(id => !specialists.some(s => s.id === id));
-        throw new NotFoundException(`Specialists with IDs ${notFoundIds.join(', ')} not found`);
+        throw new NotFoundException(`Practitioner with IDs ${notFoundIds.join(', ')} not found`);
       }
 
       const newTurn = queryRunner.manager.create(Turn, {
@@ -184,7 +184,7 @@ export class TurnsService extends BaseService<
     try {
       const turn = await this.repository.findOne({
         where: { id, deletedAt: null },
-        relations: ['patient', 'specialists'],
+        relations: ['patient', 'practitioners'],
       });
 
       if (!turn) {
@@ -197,86 +197,134 @@ export class TurnsService extends BaseService<
     }
   }
 
-  async getAll(): Promise<Turn[]> {
+  async getAll(page: number = 1, limit: number = 10): Promise<{ 
+    turns: Turn[]; 
+    total: number; 
+    page: number; 
+    limit: number;
+    previousPage: number | null;
+  }> {
     try {
-      return await this.repository.find({
-        where: {
-          deletedAt: null,
-        },
-        relations: ['patient', 'specialists'],
+      const [data, total] = await this.repository.findAndCount({
+        where: { deletedAt: null },
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
       });
+  
+      return { 
+        turns: data, 
+        total, 
+        page, 
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
   // Turnos de un especialista por ID
-  async getTurnsBySpecialist(specialistId: string): Promise<Turn[]> {
+  async getTurnsBySpecialist(specialistId: string, page: number = 1, limit: number = 10): Promise<{ 
+    turns: Turn[]; 
+    total: number; 
+    page: number; 
+    limit: number;
+    previousPage: number | null;
+  }> {
     try {
-      const turns = await this.repository.find({
+      const [data, total] = await this.repository.findAndCount({
         where: {
-          practitioners: {
-            id: specialistId,
-          },
+          practitioners: { id: specialistId },
           deletedAt: null,
         },
-        relations: ['patient', 'specialists'],
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
       });
-
-      if (!turns.length) {
-        throw new NotFoundException(
-          `No turns found for specialist with ID ${specialistId}`
-        );
+  
+      if (!data.length) {
+        throw new NotFoundException(`No turns found for specialist with ID ${specialistId}`);
       }
-
-      return turns;
+  
+      return { 
+        turns: data, 
+        total, 
+        page, 
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
   // Turnos de un paciente por ID
-  async getTurnsByPatient(patientId: string): Promise<Turn[]> {
+  async getTurnsByPatient(patientId: string, page: number = 1, limit: number = 10): Promise<{ 
+    turns: Turn[]; 
+    total: number; 
+    page: number; 
+    limit: number;
+    previousPage: number | null;
+  }> {
     try {
-      const turns = await this.repository.find({
+      const [data, total] = await this.repository.findAndCount({
         where: {
-          patient: {
-            id: patientId,
-          },
+          patient: { id: patientId },
           deletedAt: null,
         },
-        relations: ['patient', 'specialists'],
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
       });
-
-      if (!turns.length) {
-        throw new NotFoundException(
-          `No turns found for patient with ID ${patientId}`
-        );
+  
+      if (!data.length) {
+        throw new NotFoundException(`No turns found for patient with ID ${patientId}`);
       }
-
-      return turns;
+  
+      return { 
+        turns: data, 
+        total, 
+        page, 
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
   //Obtener turnos completados por el ID del paciente (historial).
-  async getCompletedTurnsByPatient(patientId: string): Promise<Turn[]> {
+  async getCompletedTurnsByPatient(patientId: string, page: number = 1, limit: number = 10): Promise<{ 
+    turns: Turn[]; 
+    total: number; 
+    page: number; 
+    limit: number;
+    previousPage: number | null;
+  }> {
     try {
-      const turns = await this.repository.find({
+      const [data, total] = await this.repository.findAndCount({
         where: {
           patient: { id: patientId },
           status: TurnStatus.COMPLETED,
           deletedAt: null,
         },
-        relations: ['patient', 'specialists'],
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
       });
-
-      if (!turns.length) {
+  
+      if (!data.length) {
         throw new NotFoundException(`No completed turns found for patient ID ${patientId}`);
       }
-
-      return turns;
+  
+      return { 
+        turns: data, 
+        total, 
+        page, 
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

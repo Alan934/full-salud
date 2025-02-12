@@ -10,7 +10,8 @@ import {
   Post,
   UploadedFiles,
   UseInterceptors,
-  Get
+  Get,
+  Query
 } from '@nestjs/common';
 import { Express } from 'express';
 import 'multer';
@@ -90,48 +91,106 @@ export class TurnsController extends ControllerFactory<
   }
 
   @Get()
-  @ApiOperation({ description: 'Obtener todos los turnos' })
-  @ApiResponse({ status: 200, description: 'Lista de turnos', type: [SerializerTurnDto] })
-  async getAllTurns(): Promise<SerializerTurnDto[]> {
-    const turns = await this.service.getAll();
-    return turns.map((turn) => toDto(SerializerTurnDto, turn));
+  @ApiOperation({ description: 'Obtener todos los turnos con paginación' })
+  @ApiResponse({ status: 200, description: 'Lista de turnos paginada', type: [SerializerTurnDto] })
+  async getAllTurns(
+    @Query('page') page: number = 1, 
+    @Query('limit') limit: number = 10
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerTurnDto[] 
+  }> {
+    const { turns, total, previousPage } = await this.service.getAll(page, limit);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
+      total, 
+      page, 
+      limit,
+      previousPage,
+    };
   }
-
+  
   @Get('specialist/:specialistId')
-  @ApiOperation({ description: 'Obtener turnos por el ID de un especialista' })
+  @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación' })
   @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerTurnDto] })
   @ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista' })
   async getTurnsBySpecialist(
-    @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string
-  ): Promise<SerializerTurnDto[]> {
-    const turns = await this.service.getTurnsBySpecialist(specialistId);
-    return turns.map((turn) => toDto(SerializerTurnDto, turn));
+    @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerTurnDto[] 
+  }> {
+    const { turns, total, previousPage } = await this.service.getTurnsBySpecialist(specialistId, page, limit);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
+      total, 
+      page, 
+      limit,
+      previousPage,
+    };
   }
-
+  
   @Get('patient/:patientId')
-  @ApiOperation({ description: 'Obtener turnos por el ID de un paciente' })
+  @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerTurnDto] })
   @ApiResponse({ status: 404, description: 'No se encontraron turnos para el paciente' })
   async getTurnsByPatient(
-    @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string
-  ): Promise<SerializerTurnDto[]> {
-    const turns = await this.service.getTurnsByPatient(patientId);
-    return turns.map((turn) => toDto(SerializerTurnDto, turn));
+    @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerTurnDto[] 
+  }> {
+    const { turns, total, previousPage } = await this.service.getTurnsByPatient(patientId, page, limit);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
+      total, 
+      page, 
+      limit,
+      previousPage,
+    };
   }
-
+  
   @Get('completed/patient/:patientId')
-  @ApiOperation({ description: 'Obtener turnos completados por el ID de un paciente y turnos completados' })
+  @ApiOperation({ description: 'Obtener turnos completados por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
   @ApiResponse({ status: 200, description: 'Turnos completados encontrados', type: [SerializerTurnDto] })
   @ApiResponse({ status: 404, description: 'No se encontraron turnos completados para el paciente' })
   async getCompletedTurnsByPatient(
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
-  ): Promise<SerializerTurnDto[]> {
-    const turns = await this.service.getCompletedTurnsByPatient(patientId);
-    return turns.map((turn) => toDto(SerializerTurnDto, turn));
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerTurnDto[] 
+  }> {
+    const { turns, total, previousPage } = await this.service.getCompletedTurnsByPatient(patientId, page, limit);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
+      total, 
+      page, 
+      limit,
+      previousPage,
+    };
   }
+  
 
   @Patch('/remove/:id')
   @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
