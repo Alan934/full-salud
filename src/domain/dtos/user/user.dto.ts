@@ -127,12 +127,6 @@ export class AuthUserDto {
   @ApiProperty({ example: 'Clave1*' })
   password: string;
 
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  @ApiProperty({ example: 'hashed_refresh_token' })
-  refreshToken?: string;
 }
 
 //"reescribe" profile image, no permite actualizar rol
