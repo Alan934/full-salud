@@ -11,15 +11,15 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
-  async loginUser(@Body() loginDto: AuthUserDto): Promise<UserDto & { accessToken: string; refreshToken: string }> {
+  async loginUser(@Body() loginDto: AuthUserDto): Promise<UserDto & { accessToken: string/*; refreshToken: string*/ }> {
     return await this.authService.loginUser(loginDto);
   }
   
 
-  @Post('/refresh')
-  async refreshToken(@Body('refreshToken') refreshToken: string) {
-    return await this.authService.refreshToken(refreshToken);
-  }
+  // @Post('/refresh')
+  // async refreshToken(@Body('refreshToken') refreshToken: string) {
+  //   return await this.authService.refreshToken(refreshToken);
+  // }
   
   @Post('/create')
   @Roles(Role.ADMIN)

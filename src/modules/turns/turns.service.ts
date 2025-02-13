@@ -319,11 +319,11 @@ export class TurnsService extends BaseService<
       }
   
       return { 
-        turns: data, 
         total, 
         page, 
         limit,
         previousPage: page > 1 ? page - 1 : null,
+        turns: data,
       };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

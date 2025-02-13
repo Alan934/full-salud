@@ -68,7 +68,7 @@ export class AuthService extends BaseService<
     await this.ensureAdminExists();
   }
 
-  async loginUser(loginDto: AuthUserDto): Promise<UserDto & { accessToken: string; refreshToken: string }> {
+  async loginUser(loginDto: AuthUserDto): Promise<UserDto & { accessToken: string/*; refreshToken: string*/ }> {
     const { email, username, password } = loginDto;
   
     try {
@@ -103,20 +103,20 @@ export class AuthService extends BaseService<
   
       const accessToken = await this.jwtService.signAsync(payload, {
         secret: envConfig.JWT_SECRET,
-        expiresIn: '15m',
+        expiresIn: '60m',
       });
   
-      const refreshToken = await this.jwtService.signAsync(payload, {
-        secret: envConfig.JWT_REFRESH_SECRET,
-        expiresIn: '7d',
-      });
+      // const refreshToken = await this.jwtService.signAsync(payload, {
+      //   secret: envConfig.JWT_REFRESH_SECRET,
+      //   expiresIn: '7d',
+      // });
   
-      user.refreshToken = await bcrypt.hash(refreshToken, 10);
-      await this.repository.save(user);
+      // user.refreshToken = await bcrypt.hash(refreshToken, 10);
+      // await this.repository.save(user);
   
       // Convertimos el usuario a DTO y agregamos los tokens en el mismo objeto
       const userDto = plainToInstance(UserDto, user);
-      return { ...userDto, accessToken, refreshToken };
+      return { ...userDto, accessToken/*, refreshToken*/ };
   
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
@@ -124,41 +124,41 @@ export class AuthService extends BaseService<
   }
   
   
-  async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
-    try {
-      const payload = await this.jwtService.verifyAsync(refreshToken, {
-        secret: envConfig.JWT_REFRESH_SECRET,
-      });
+  // async refreshToken(refreshToken: string): Promise<{ accessToken: string; refreshToken: string }> {
+  //   try {
+  //     const payload = await this.jwtService.verifyAsync(refreshToken, {
+  //       secret: envConfig.JWT_REFRESH_SECRET,
+  //     });
   
-      const user = await this.repository.findOne({ where: { id: payload.sub } });
+  //     const user = await this.repository.findOne({ where: { id: payload.sub } });
   
-      if (!user || !user.refreshToken) {
-        throw new ErrorManager('Invalid refresh token', 401);
-      }
+  //     if (!user || !user.refreshToken) {
+  //       throw new ErrorManager('Invalid refresh token', 401);
+  //     }
   
-      const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
-      if (!isValid) {
-        throw new ErrorManager('Invalid refresh token', 401);
-      }
+  //     const isValid = await bcrypt.compare(refreshToken, user.refreshToken);
+  //     if (!isValid) {
+  //       throw new ErrorManager('Invalid refresh token', 401);
+  //     }
   
-      const newAccessToken = await this.jwtService.signAsync(
-        { sub: user.id, email: user.email, role: user.role },
-        { secret: envConfig.JWT_SECRET, expiresIn: '15m' }
-      );
+  //     const newAccessToken = await this.jwtService.signAsync(
+  //       { sub: user.id, email: user.email, role: user.role },
+  //       { secret: envConfig.JWT_SECRET, expiresIn: '15m' }
+  //     );
   
-      const newRefreshToken = await this.jwtService.signAsync(
-        { sub: user.id, email: user.email, role: user.role },
-        { secret: envConfig.JWT_REFRESH_SECRET, expiresIn: '7d' }
-      );
+  //     const newRefreshToken = await this.jwtService.signAsync(
+  //       { sub: user.id, email: user.email, role: user.role },
+  //       { secret: envConfig.JWT_REFRESH_SECRET, expiresIn: '7d' }
+  //     );
   
-      user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
-      await this.repository.save(user);
+  //     user.refreshToken = await bcrypt.hash(newRefreshToken, 10);
+  //     await this.repository.save(user);
   
-      return { accessToken: newAccessToken, refreshToken: newRefreshToken };
-    } catch (error) {
-      throw ErrorManager.createSignatureError('Refresh token expired or invalid');
-    }
-  }
+  //     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+  //   } catch (error) {
+  //     throw ErrorManager.createSignatureError('Refresh token expired or invalid');
+  //   }
+  // }
 
   async createAdmin(createUserDto: AuthUserDto): Promise<UserDto> {
     try {

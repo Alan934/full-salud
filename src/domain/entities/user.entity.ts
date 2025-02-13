@@ -113,11 +113,4 @@ export abstract class User extends Base {
   })
   addresses: Address[];
 
-  @Column({
-    type: 'varchar',
-    nullable: true,
-  })
-  @ApiProperty({ example: 'hashed_refresh_token' })
-  refreshToken?: string;
-
 }
