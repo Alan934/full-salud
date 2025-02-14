@@ -24,6 +24,11 @@ import { Column } from 'typeorm';
 
 export class UserDto {
 
+  @IsUUID()
+  @IsOptional()
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  id?: string;
+
   @IsOptional()
   @IsNotEmpty()
   @IsEmail()
@@ -126,6 +131,11 @@ export class AuthUserDto {
   @IsString()
   @ApiProperty({ example: 'Clave1*' })
   password: string;
+
+  // @IsOptional()
+  // @IsString()
+  // @ApiProperty({ example: 'hashed_refresh_token' })
+  // refreshToken?: string;
 
 }
 
