@@ -27,67 +27,54 @@ export class TurnsService extends BaseService<
   async createTurn(createTurnDto: CreateTurnDto): Promise<Turn> {
     const queryRunner = this.repository.manager.connection.createQueryRunner();
 
-    console.log('Start creating turn...');
     await queryRunner.connect();
     await queryRunner.startTransaction();
 
     try {
-      console.log('Validating patient existence...');
       // Validar existencia del paciente
       const patient = await queryRunner.manager.findOne(Patient, {
         where: { id: createTurnDto.patientId },
         relations: [] // Desactivar la carga de relaciones para evitar ciclos
       });
       if (!patient) {
-        console.log(`Patient with ID ${createTurnDto.patientId} not found`);
         throw new NotFoundException(`Patient with ID ${createTurnDto.patientId} not found`);
       }
-      console.log(`Found patient: ${patient.id}`);
 
-      console.log('Validating specialists existence...');
       // Validar existencia de especialistas
       const specialistIds = createTurnDto.practitioners.map((s) => s.id);
       const specialists = await queryRunner.manager.find(Practitioner, {
         where: { id: In(specialistIds) },
         relations: [] // Desactivar la carga de relaciones para evitar ciclos
       });
-      console.log('Specialists found:', specialists);
+
       if (specialists.length !== specialistIds.length) {
-        console.log('One or more specialists not found');
         throw new NotFoundException('One or more specialists not found');
       }
 
       // Crear el turno
-      console.log('Creating turn...');
       const newTurn = queryRunner.manager.create(Turn, {
         ...createTurnDto,
         patient, // Se asigna el paciente
         specialists, // Se asignan los especialistas
       });
 
-      console.log('Saving new turn...');
       // Guardar el turno en la base de datos
       const savedTurn = await queryRunner.manager.save(newTurn);
 
       // Confirmar transacción
-      console.log('Committing transaction...');
       await queryRunner.commitTransaction();
 
       // Retornar el turno creado con las relaciones cargadas
-      console.log('Turn created successfully:', savedTurn);
       return savedTurn;
     } catch (error) {
-      console.log('Error occurred:', error);
       await queryRunner.rollbackTransaction();
 
       if (error instanceof NotFoundException) {
         console.log('NotFoundException: ', error.message);
         throw error;
       }
-      console.log('General error: ', error);
       throw ErrorManager.createSignatureError((error as Error).message);
     } finally {
-      console.log('Releasing query runner...');
       await queryRunner.release();
     }
   }

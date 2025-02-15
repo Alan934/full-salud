@@ -91,6 +91,20 @@ export class CreateTurnDto {
   @ValidateNested()
   @Type(() => ShortBaseDto)
   diagnostic?: ShortBaseDto;
+
+  @IsOptional()
+  @IsEnum(TurnStatus)
+  @ApiProperty({
+    examples: [
+      TurnStatus.APPROVED,
+      TurnStatus.CANCELLED,
+      TurnStatus.COMPLETED,
+      TurnStatus.NO_SHOW,
+      TurnStatus.PENDING,
+      TurnStatus.UNDER_REVIEW
+    ]
+  })
+  status?: TurnStatus;
 }
 
 export class UpdateTurnDto extends PartialType(CreateTurnDto) {
