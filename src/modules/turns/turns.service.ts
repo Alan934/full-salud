@@ -23,63 +23,7 @@ export class TurnsService extends BaseService<
     super(repository);
   }
 
-  // Método simplificado para crear turnos
   async createTurn(createTurnDto: CreateTurnDto): Promise<Turn> {
-    const queryRunner = this.repository.manager.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      // Validar existencia del paciente
-      const patient = await queryRunner.manager.findOne(Patient, {
-        where: { id: createTurnDto.patientId },
-        relations: [] // Desactivar la carga de relaciones para evitar ciclos
-      });
-      if (!patient) {
-        throw new NotFoundException(`Patient with ID ${createTurnDto.patientId} not found`);
-      }
-
-      // Validar existencia de especialistas
-      const specialistIds = createTurnDto.practitioners.map((s) => s.id);
-      const specialists = await queryRunner.manager.find(Practitioner, {
-        where: { id: In(specialistIds) },
-        relations: [] // Desactivar la carga de relaciones para evitar ciclos
-      });
-
-      if (specialists.length !== specialistIds.length) {
-        throw new NotFoundException('One or more specialists not found');
-      }
-
-      // Crear el turno
-      const newTurn = queryRunner.manager.create(Turn, {
-        ...createTurnDto,
-        patient, // Se asigna el paciente
-        specialists, // Se asignan los especialistas
-      });
-
-      // Guardar el turno en la base de datos
-      const savedTurn = await queryRunner.manager.save(newTurn);
-
-      // Confirmar transacción
-      await queryRunner.commitTransaction();
-
-      // Retornar el turno creado con las relaciones cargadas
-      return savedTurn;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-
-      if (error instanceof NotFoundException) {
-        console.log('NotFoundException: ', error.message);
-        throw error;
-      }
-      throw ErrorManager.createSignatureError((error as Error).message);
-    } finally {
-      await queryRunner.release();
-    }
-  }
-
-  async createTurnWithPatient(createTurnDto: CreateTurnDto): Promise<Turn> {
     const queryRunner = this.repository.manager.connection.createQueryRunner();
 
     await queryRunner.connect();
@@ -145,12 +89,15 @@ export class TurnsService extends BaseService<
         date: createTurnDto.date,
         hour: createTurnDto.hour,
         observation: createTurnDto.observation,
-        status: TurnStatus.PENDING,
+        status: createTurnDto.status ?? TurnStatus.PENDING,
         patient,
         specialists,
       });
 
       const savedTurn = await queryRunner.manager.save(newTurn);
+
+      // After saving, populate the practitionerIds
+      savedTurn.practitionerIds = specialists.map(specialist => specialist.id);
 
       await queryRunner.commitTransaction();
 
@@ -369,181 +316,5 @@ export class TurnsService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-
-  // // Método que sube imágenes y se las asigna al nuevo turno
-  // async createWithDerivationImages(
-  //   createTurnDto: CreateTurnDto,
-  //   files?: Express.Multer.File[] | null
-  // ): Promise<Turn> {
-  //   const queryRunner = this.repository.manager.connection.createQueryRunner();
-
-  //   await queryRunner.connect();
-  //   await queryRunner.startTransaction();
-
-  //   let derivationImages = [];
-  //   try {
-  //     // Subida de imágenes si existen archivos
-  //     if (files && files.length > 0) {
-  //       derivationImages = await this.derivationImagesService.uploadFiles(files);
-  //     }
-
-  //     // Validar existencia del paciente
-  //     const patient = await queryRunner.manager.findOne(Patient, {
-  //       where: { id: createTurnDto.patientId },
-  //     });
-  //     if (!patient) {
-  //       throw new Error(`Patient with ID ${createTurnDto.patientId} not found`);
-  //     }
-
-  //     // Validar existencia de especialistas
-  //     const specialistIds = createTurnDto.specialists.map((s) => s.id);
-  //     const specialists = await queryRunner.manager.find(Specialist, {
-  //       where: { id: In(specialistIds) },
-  //     });
-  //     if (specialists.length !== specialistIds.length) {
-  //       throw new Error('One or more specialists not found');
-  //     }
-
-  //     // Crear el turno
-  //     const newTurn = queryRunner.manager.create(Turn, {
-  //       ...createTurnDto,
-  //       patient,
-  //       specialists,
-  //       derivationImages,
-  //     });
-
-  //     // Guardar el turno en la base de datos
-  //     const savedTurn = await queryRunner.manager.save(newTurn);
-
-  //     // Confirmar transacción
-  //     await queryRunner.commitTransaction();
-
-  //     // Retornar el turno creado con las relaciones cargadas
-  //     return await this.findOne(savedTurn.id);
-  //   } catch (error) {
-  //     // Revertir transacción en caso de error
-  //     await queryRunner.rollbackTransaction();
-
-  //     // Eliminar imágenes subidas en caso de error
-  //     if (derivationImages.length > 0) {
-  //       await Promise.all(
-  //         derivationImages.map((image) =>
-  //           this.derivationImagesService.deleteImage(image.id)
-  //         )
-  //       );
-  //     }
-
-  //     // Lanzar error personalizado
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   } finally {
-  //     await queryRunner.release();
-  //   }
-  // }
-
-  // override async remove(id: string): Promise<string> {
-  //   try {
-  //     const turn = await this.findOne(id); // Verifica que la entidad existe
-  //     const derivationImagesIds = turn.derivationImages
-  //       ? turn.derivationImages.map((image) => image.id)
-  //       : null; // Obtiene los ids de las imágenes
-
-  //     // Inicia la transacción
-  //     return await this.repository.manager.transaction(
-  //       async (transactionalEntityManager) => {
-  //         await transactionalEntityManager.remove(turn); // Elimina el turno
-
-  //         // Elimina las imágenes pasandole los ids
-  //         if (derivationImagesIds.length > 0) {
-  //           derivationImagesIds.map((imageId) =>
-  //             this.derivationImagesService.deleteImage(imageId)
-  //           );
-  //         }
-
-  //         return `Entity with id ${id} deleted`;
-  //       }
-  //     );
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
-
-  // async removeWithManager(id: string, manager: EntityManager): Promise<string> {
-  //   try {
-  //     const turn = await manager.findOne(Turn, {
-  //       where: { id }
-  //     }); // Verifica que la entidad existes
-  //     const derivationImagesIds = turn.derivationImages
-  //       ? turn.derivationImages.map((image) => image.id)
-  //       : null; // Obtiene los ids de las imágenes
-
-  //     await manager.remove(turn); // Elimina el turno
-
-  //     // Elimina las imágenes pasandole los ids
-  //     if (derivationImagesIds.length > 0) {
-  //       derivationImagesIds.map((imageId) =>
-  //         this.derivationImagesService.deleteImage(imageId)
-  //       );
-  //     }
-
-  //     return `Entity with id ${id} deleted`;
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
-
-  // async changeStatus(id: string, status: TurnStatus) {
-  //   const turn = await this.findOne(id);
-
-  //   // Verifica si el estado ya es el mismo, si es así, no se hacen cambios
-  //   if (turn.status === status) {
-  //     return turn;
-  //   }
-
-  //   // Asigna el nuevo status
-  //   turn.status = status;
-
-  //   return await this.repository.save(turn);
-  // }
-
-  // async removeByPatientWithManager(
-  //   patientTurnId: string,
-  //   manager: EntityManager
-  // ): Promise<string> {
-  //   try {
-  //     const turns: Turn[] = await manager
-  //       .createQueryBuilder()
-  //       .select(['turn.id'])
-  //       .from(Turn, 'turn')
-  //       .leftJoin(Patient, 'patient_user_connections')
-  //       .where('patient_turn_id = :id', { id: patientTurnId })
-  //       .execute();
-
-  //     await Promise.all(
-  //       turns.map(
-  //         async (turn) => await this.removeWithManager(turn.id, manager)
-  //       )
-  //     );
-  //     return `Turn of patient with id ${patientTurnId} deleted`;
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
-
-  // async getTurnsBySpecialists(specialistId: string): Promise<Turn[]> {
-  //   try {
-  //     const turns = await this.repository.find({
-  //       where: { specialists: { id: specialistId } },
-  //       relations: ['diagnostic', 'Patient', 'institution', 'attentionHourPatient'],
-  //     });
-
-  //     if (!turns.length) {
-  //       throw ErrorManager.createSignatureError(`No turns found for specialist with id ${specialistId}`);
-  //     }
-
-  //     return turns;
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
 
 }

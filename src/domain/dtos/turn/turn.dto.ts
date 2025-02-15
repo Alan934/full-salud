@@ -38,15 +38,6 @@ export class CreateTurnDto {
   })
   observation?: string;
 
-  // @IsNotEmpty()
-  // @ValidateNested()
-  // @Type(() => ShortBaseDto)
-  // patient: ShortBaseDto;
-
-  // @IsNotEmpty()
-  // //@ValidateNested()
-  // patientId: string; // Cambiado de patient a patientId
-
   @IsOptional()
   @IsString()
   @ApiProperty({ example: '20a05b0e-d872-4fe5-bf9f-4b6b010b443d' })
@@ -75,17 +66,6 @@ export class CreateTurnDto {
     type: [ShortBaseDto],
   })
   practitioners: ShortBaseDto[];
-
-  // @ValidateNested({ each: true })
-  // @IsNotEmpty()
-  // @Type(() => ShortBaseDto)
-  // specialists: ShortBaseDto[];
-
-
-  // @ValidateNested({ each: true })
-  // @IsNotEmpty()
-  // @Type(() => ShortBaseDto)
-  // specialists: ShortBaseDto[];
 
   @IsOptional()
   @ValidateNested()

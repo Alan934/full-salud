@@ -61,6 +61,10 @@ export class SerializerTurnDto extends FullBaseDto {
   practitioner?: SerializerShortPractitionerDto[];
 
   @Expose()
+  @ApiProperty({ type: [String], description: 'IDs de los practitioners', example: ['uuid1', 'uuid2'] })
+  practitionerIds: string[];
+
+  @Expose()
   @Type(() => SerializerAttentionHourPatientDto)
   attentionHourPatient: SerializerAttentionHourPatientDto[];
 }
