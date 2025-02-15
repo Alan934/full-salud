@@ -4,7 +4,7 @@ import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { CreateTurnDto, UpdateTurnDto } from '../../domain/dtos';
 import { Patient, Practitioner, Turn } from '../../domain/entities';
-import { TurnStatus } from '../../domain/enums';
+import { TurnStatus, Role } from '../../domain/enums';
 import { Express } from 'express';
 import 'multer';
 import { EntityManager, In, Repository } from 'typeorm';
@@ -114,6 +114,7 @@ export class TurnsService extends BaseService<
             email: createTurnDto.patient.email,
             phone: createTurnDto.patient.phone,
             documentType: createTurnDto.patient.documentType,
+            role: Role.PATIENT,
           });
           patient = await queryRunner.manager.save(patient);
         }
