@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUUID,
   ValidateNested,
 } from 'class-validator';
 import {
@@ -49,6 +50,12 @@ export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) 
   @IsOptional()
   @ApiProperty({ type: [CreateSpecialistAttentionHourDto] })
   specialistAttentionHour?: CreateSpecialistAttentionHourDto[];
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({ example: '3fa85f64-5717-4562-b3fc-2c963f66afa6' })
+  officeId?: string;
+
 }
 
 export class UpdatePractitionerDto extends PartialType(OmitType(CreatePractitionerDto, ['specialistAttentionHour'])) {

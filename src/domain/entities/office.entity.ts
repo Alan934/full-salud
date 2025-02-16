@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { Address, SpecialistAttentionHour, SpecialistSecretary } from '.';
+import { Address, AttentionHour, Practitioner, SpecialistAttentionHour, SpecialistSecretary } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('offices')
@@ -22,19 +22,10 @@ export class Office extends Base {
   })
   phone: string;
 
-  @OneToMany(
-    () => SpecialistAttentionHour,
-    (specialistAttentionHour) => specialistAttentionHour.office,
-    {
-      lazy: true,
-      cascade: true,
-      orphanedRowAction: 'disable',
-      onUpdate: 'CASCADE'
-    }
-  )
-  specialistAttentionHours:
-    | Promise<SpecialistAttentionHour[]>
-    | SpecialistAttentionHour[];
+  @OneToMany(() => Practitioner, (practitioner) => practitioner.office, {
+    cascade: true,
+  })
+  practitioners: Practitioner[];  
 
   @OneToOne(() => Address, {
     cascade: true,
@@ -50,4 +41,18 @@ export class Office extends Base {
     lazy: true
   })
   secretary: Promise<SpecialistSecretary> | SpecialistSecretary;
+
+  @OneToMany(
+    () => AttentionHour,
+    (attentionHour) => attentionHour.office,
+    {
+      eager: true,
+      cascade: true,
+      nullable: true,
+      orphanedRowAction: 'soft-delete',
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
+    },
+  )
+  attentionHour: AttentionHour[];
 }

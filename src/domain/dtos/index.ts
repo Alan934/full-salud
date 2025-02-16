@@ -109,4 +109,4 @@ export * from './office/office.dto';
 export * from './specialist-secretary/specialist-secretary-serializer.dto';
 export * from './specialist-secretary/specialist-secretary.dto';
 export * from './attention-hour-patient/attention-hour-patient-serializer.dto';
- export * from './attention-hour-patient/attention-hour-patient.dto';
+export * from './attention-hour-patient/attention-hour-patient.dto';

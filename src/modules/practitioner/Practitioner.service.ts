@@ -18,7 +18,8 @@ import {
   Practitioner,
   SpecialistAttentionHour,
   PractitionerRole,
-  Turn
+  Turn,
+  Office
 } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender, Role } from '../../domain/enums';
@@ -39,6 +40,7 @@ export class PractitionerService extends BaseService<
     //@Inject() protected personService: PersonsService
     @InjectRepository(PractitionerRole) private readonly specialityRepository: Repository<PractitionerRole>,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
+    @InjectRepository(Office) private readonly officeRepository: Repository<Office>,
     @InjectRepository(Degree) private readonly degreeRepository: Repository<Degree>,
   ) {
     super(repository);
@@ -47,7 +49,7 @@ export class PractitionerService extends BaseService<
   // Crear un nuevo especialista
   async createSpecialist(createSpecialistDto: CreatePractitionerDto): Promise<Practitioner> {
     try {
-      const { password, dni, license, email, username, ...userData } = createSpecialistDto;
+      const { password, dni, license, email, username, officeId, ...userData } = createSpecialistDto;
   
       // Validar en Specialist y Patient
       const existingUser = await this.repository.findOne({
@@ -99,6 +101,14 @@ export class PractitionerService extends BaseService<
           400,
         );
       }
+
+      let office: Office | null = null;
+      if (officeId) {
+        office = await this.officeRepository.findOne({ where: { id: officeId } });
+        if (!office) {
+          throw new ErrorManager(`Office with ID ${officeId} not found`, 400);
+        }
+      }
   
       const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
   
@@ -110,6 +120,7 @@ export class PractitionerService extends BaseService<
         license,
         email,
         username,
+        office,
       });
   
       return await this.repository.save(practitioner);

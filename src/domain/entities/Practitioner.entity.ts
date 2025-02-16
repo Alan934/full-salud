@@ -10,6 +10,7 @@ import {
 } from 'typeorm';
 import {
   Degree,
+  Office,
   PractitionerRole,
   SocialWork,
   SpecialistAttentionHour
@@ -94,4 +95,12 @@ export class Practitioner extends User {
 
   @OneToOne(() => Favorite, (favorite) => favorite.practitioner)
   favorite: Favorite;
+
+  @ManyToOne(() => Office, (office) => office.practitioners, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'office_id' })
+  office: Office;
+  
 }

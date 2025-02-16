@@ -44,9 +44,4 @@ export class SpecialistAttentionHour extends Base {
   @JoinColumn({ name: 'practitioner_id' })
   practitioner: Practitioner;
 
-  @ManyToOne(() => Office, (office) => office.specialistAttentionHours, {
-    eager: true
-  })
-  @JoinColumn({ name: 'office_id' })
-  office: Office;
 }

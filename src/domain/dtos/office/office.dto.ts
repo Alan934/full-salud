@@ -1,4 +1,4 @@
-import { CreateAddressDto, UpdateAddressDto } from '../../../domain/dtos';
+import { CreateAddressDto, UpdateAddressDto, CreateAttentionHourDto } from '../../../domain/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsNotEmpty,
@@ -26,9 +26,16 @@ export class CreateOfficeDto {
 
   //recibe una nueva dirección
   @ValidateNested()
+  @IsOptional()
   @IsNotEmpty()
   @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
+  address?: CreateAddressDto;
+
+  @ValidateNested({ each: true })
+  @Type(() => CreateAttentionHourDto)
+  @IsOptional()
+  @ApiProperty({ type: [CreateAttentionHourDto] })
+  attentionHour?: CreateAttentionHourDto[];
 }
 
 export class CreateOfficeWithIdDto extends CreateAddressDto {
