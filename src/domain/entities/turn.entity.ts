@@ -80,7 +80,7 @@ export class Turn extends Base {
   })
   practitioners: Practitioner[];
 
-  practitionerIds: string[];
+  practitionerId: string[];
 
   @OneToMany(
     () => AttentionHourPatient,

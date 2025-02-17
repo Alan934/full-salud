@@ -68,7 +68,7 @@ export class TurnsService extends BaseService<
         );
       }
 
-      const specialistIds = createTurnDto.practitioners.map((s) => s.id);
+      const specialistIds = createTurnDto.practitionerIds.map((s) => s.id);
 
       // Asegurarnos de que los IDs no estén vacíos
       if (!specialistIds || specialistIds.length === 0) {
@@ -91,13 +91,13 @@ export class TurnsService extends BaseService<
         observation: createTurnDto.observation,
         status: createTurnDto.status ?? TurnStatus.PENDING,
         patient,
-        specialists,
+        practitioners: specialists,
       });
 
       const savedTurn = await queryRunner.manager.save(newTurn);
 
       // After saving, populate the practitionerIds
-      savedTurn.practitionerIds = specialists.map(specialist => specialist.id);
+      savedTurn.practitionerId = specialists.map(specialist => specialist.id);
 
       await queryRunner.commitTransaction();
 

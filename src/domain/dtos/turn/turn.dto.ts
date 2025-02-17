@@ -65,7 +65,7 @@ export class CreateTurnDto {
     example: [{ id: '7c715f1e-09b9-4138-814a-00959681b541' }],
     type: [ShortBaseDto],
   })
-  practitioners: ShortBaseDto[];
+  practitionerIds: ShortBaseDto[];
 
   @IsOptional()
   @ValidateNested()
