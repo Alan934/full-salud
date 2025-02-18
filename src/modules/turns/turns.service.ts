@@ -171,6 +171,7 @@ export class TurnsService extends BaseService<
       const [data, total] = await this.repository.findAndCount({
         where: {
           practitioners: { id: specialistId },
+          status: In([TurnStatus.PENDING, TurnStatus.APPROVED, TurnStatus.NO_SHOW]),
           deletedAt: null,
         },
         relations: ['patient', 'practitioners'],
@@ -206,6 +207,7 @@ export class TurnsService extends BaseService<
       const [data, total] = await this.repository.findAndCount({
         where: {
           patient: { id: patientId },
+          status: In([TurnStatus.PENDING, TurnStatus.APPROVED, TurnStatus.NO_SHOW]),
           deletedAt: null,
         },
         relations: ['patient', 'practitioners'],
