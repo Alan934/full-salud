@@ -51,8 +51,7 @@ export class PatientController extends ControllerFactory<
     return await this.patientService.getOne(id);
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
+
   @Patch(':id')
   async updatePatient(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return await this.patientService.update(id, updatePatientDto);
