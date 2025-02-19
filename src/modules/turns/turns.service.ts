@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { CreateTurnDto, UpdateTurnDto } from '../../domain/dtos';
-import { Patient, Practitioner, Turn } from '../../domain/entities';
+import { AttentionHourPatient, Patient, Practitioner, Turn } from '../../domain/entities';
 import { TurnStatus, Role } from '../../domain/enums';
 import { Express } from 'express';
 import 'multer';
@@ -99,6 +99,20 @@ export class TurnsService extends BaseService<
       // After saving, populate the practitionerIds
       savedTurn.practitionerId = specialists.map(specialist => specialist.id);
 
+      if (createTurnDto.attentionHourPatient && createTurnDto.attentionHourPatient.length > 0) {
+        const attentionHours = createTurnDto.attentionHourPatient.map((hourData) => {
+          return queryRunner.manager.create(AttentionHourPatient, {
+            openingHour: hourData.openingHour,
+            closeHour: hourData.closeHour,
+            day: hourData.day,
+            turn: savedTurn,
+          });
+        });
+  
+        await queryRunner.manager.save(AttentionHourPatient, attentionHours);
+        savedTurn.attentionHourPatient = attentionHours;
+      }
+      
       await queryRunner.commitTransaction();
 
       return savedTurn;
@@ -119,7 +133,7 @@ export class TurnsService extends BaseService<
     try {
       const turn = await this.repository.findOne({
         where: { id, deletedAt: null },
-        relations: ['patient', 'practitioners'],
+        relations: ['patient', 'practitioners', 'attentionHourPatient'],
       });
 
       if (!turn) {
@@ -220,11 +234,11 @@ export class TurnsService extends BaseService<
       }
   
       return { 
-        turns: data, 
         total, 
         page, 
         limit,
         previousPage: page > 1 ? page - 1 : null,
+        turns: data, 
       };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

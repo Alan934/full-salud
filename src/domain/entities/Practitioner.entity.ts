@@ -1,3 +1,4 @@
+import { Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -20,18 +21,21 @@ import { Favorite } from './favorite.entity';
 
 @Entity('practitioner')
 export class Practitioner extends User {
+  @Expose()
   @Column({
     type: 'varchar',
     nullable: true,
   })
   license: string;
 
+  @Expose()
   @Column({
     type: 'float',
     default: 0.0,
   })
   rating: number = 0;
 
+  @Expose()
   @Column({
     type: 'boolean',
     nullable: true,
@@ -40,12 +44,14 @@ export class Practitioner extends User {
   })
   homeService: boolean;
 
+  @Expose()
   @ManyToOne(() => Degree, {
     eager: true,
   })
   @JoinColumn({ name: 'degree_id' })
   degree: Degree;
 
+  @Expose()
   @ManyToMany(() => PractitionerRole, (practitioner) => practitioner.practitioners, {
     eager: true,
     nullable: true,
@@ -63,6 +69,7 @@ export class Practitioner extends User {
   })
   specialities: PractitionerRole[];
 
+  @Expose()
   @ManyToMany(() => SocialWork, (socialWork) => socialWork.practitioners, {
     nullable: true,
   })
@@ -79,6 +86,7 @@ export class Practitioner extends User {
   })
   acceptedSocialWorks?: SocialWork[];
 
+  @Expose()
   @OneToMany(
     () => SpecialistAttentionHour,
     (specialistAttentionHour) => specialistAttentionHour.practitioner,
@@ -93,14 +101,16 @@ export class Practitioner extends User {
   )
   specialistAttentionHour: SpecialistAttentionHour[];
 
+  @Expose()
   @OneToOne(() => Favorite, (favorite) => favorite.practitioner)
   favorite: Favorite;
 
+  @Expose()
   @ManyToOne(() => Office, (office) => office.practitioners, {
     nullable: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'office_id' })
   office: Office;
-  
+
 }
