@@ -37,11 +37,13 @@ export class PatientController extends ControllerFactory<
   @Roles(Role.SPECIALIST, Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
   @Get()
-  async getAll(@Query('page') page: number = 1, 
-  @Query('limit') limit: number = 10): 
+  async getAll(@Query('page') page: string = '1',
+  @Query('limit') limit: string = '10'): 
   Promise<{ total: number; page: number; limit: number; patients: SerializerPatientDto[] }> {
-    const { patients, total } = await this.patientService.getAll(page, limit);
-    return { patients: patients.map((patient) => toDto(SerializerPatientDto, patient)), total, page, limit };
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { patients, total } = await this.patientService.getAll(pageNumber, limitNumber);
+    return { patients: patients.map((patient) => toDto(SerializerPatientDto, patient)), total, page: pageNumber, limit: limitNumber };
   }
 
   @Roles(Role.SPECIALIST, Role.ADMIN, Role.PATIENT)

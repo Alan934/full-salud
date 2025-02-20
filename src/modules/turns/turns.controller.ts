@@ -11,7 +11,8 @@ import {
   UploadedFiles,
   UseInterceptors,
   Get,
-  Query
+  Query,
+  ParseIntPipe
 } from '@nestjs/common';
 import { Express } from 'express';
 import 'multer';
@@ -81,21 +82,23 @@ export class TurnsController extends ControllerFactory<
   @ApiOperation({ description: 'Obtener todos los turnos con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de turnos paginada', type: [SerializerTurnDto] })
   async getAllTurns(
-    @Query('page') page: number = 1, 
-    @Query('limit') limit: number = 10
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerTurnDto[] 
+    turns: SerializerTurnDto[]
   }> {
-    const { turns, total, previousPage } = await this.service.getAll(page, limit);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
-      total, 
-      page, 
-      limit,
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getAll(pageNumber, limitNumber);
+    return {
+      turns: turns.map((turn) => toDto(SerializerTurnDto, turn)),
+      total,
+      page: pageNumber,
+      limit: limitNumber,
       previousPage,
     };
   }
@@ -107,8 +110,8 @@ export class TurnsController extends ControllerFactory<
   @ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista' })
   async getTurnsBySpecialist(
     @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
   ): Promise<{ 
     total: number; 
     page: number; 
@@ -116,12 +119,14 @@ export class TurnsController extends ControllerFactory<
     previousPage: number | null;
     turns: SerializerTurnDto[] 
   }> {
-    const { turns, total, previousPage } = await this.service.getTurnsBySpecialist(specialistId, page, limit);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getTurnsBySpecialist(specialistId, pageNumber, limitNumber);
     return { 
       turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
       total, 
-      page, 
-      limit,
+      page: pageNumber,
+      limit: limitNumber,
       previousPage,
     };
   }
@@ -133,8 +138,8 @@ export class TurnsController extends ControllerFactory<
   @ApiResponse({ status: 404, description: 'No se encontraron turnos para el paciente' })
   async getTurnsByPatient(
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
   ): Promise<{ 
     total: number; 
     page: number; 
@@ -142,12 +147,14 @@ export class TurnsController extends ControllerFactory<
     previousPage: number | null;
     turns: SerializerTurnDto[] 
   }> {
-    const { turns, total, previousPage } = await this.service.getTurnsByPatient(patientId, page, limit);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getTurnsByPatient(patientId, pageNumber, limitNumber);
     return { 
       turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
       total, 
-      page, 
-      limit,
+      page: pageNumber,
+      limit: limitNumber,
       previousPage,
     };
   }
@@ -159,8 +166,8 @@ export class TurnsController extends ControllerFactory<
   @ApiResponse({ status: 404, description: 'No se encontraron turnos completados para el paciente' })
   async getCompletedTurnsByPatient(
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
-    @Query('page') page: number = 1,
-    @Query('limit') limit: number = 10
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
   ): Promise<{ 
     total: number; 
     page: number; 
@@ -168,16 +175,17 @@ export class TurnsController extends ControllerFactory<
     previousPage: number | null;
     turns: SerializerTurnDto[] 
   }> {
-    const { turns, total, previousPage } = await this.service.getCompletedTurnsByPatient(patientId, page, limit);
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getCompletedTurnsByPatient(patientId, pageNumber, limitNumber);
     return { 
       turns: turns.map((turn) => toDto(SerializerTurnDto, turn)), 
       total, 
-      page, 
-      limit,
+      page: pageNumber,
+      limit: limitNumber,
       previousPage,
     };
-  }
-  
+  }  
 
   @Patch('/remove/:id')
   @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
