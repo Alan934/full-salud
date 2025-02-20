@@ -18,6 +18,7 @@ import {
 } from '.';
 import { User } from './user.entity';
 import { Favorite } from './favorite.entity';
+import { IsOptional } from 'class-validator';
 
 @Entity('practitioner')
 export class Practitioner extends User {
@@ -106,11 +107,12 @@ export class Practitioner extends User {
   favorite: Favorite;
 
   @Expose()
+  @IsOptional()
   @ManyToOne(() => Office, (office) => office.practitioners, {
     nullable: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'office_id' })
-  office: Office;
+  office?: Office;
 
 }

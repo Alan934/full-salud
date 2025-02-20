@@ -3,13 +3,13 @@ import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import { Gender, Role, DocumentType } from '../../../domain/enums';
 import { SerializerShortImageBaseDto } from '..';
+import { IsOptional } from 'class-validator';
 
 export class SerializerUserDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: 'juan@gmail.com' })
   email: string;
 
-  @Expose()
   @ApiProperty({ example: 'password1234' })
   password: string;
 
@@ -45,7 +45,6 @@ export class SerializerUserDto extends FullBaseDto {
   @ApiProperty({ example: 'juan123' })
   phone: string;
 
-  @Expose()
   @ApiProperty({
     example: Object.values(Role).join(' | ')
   })

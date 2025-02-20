@@ -2,13 +2,14 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
-import { CreateTurnDto, UpdateTurnDto } from '../../domain/dtos';
+import { CreateTurnDto, SerializerTurnDto, UpdateTurnDto } from '../../domain/dtos';
 import { AttentionHourPatient, Patient, Practitioner, Turn } from '../../domain/entities';
 import { TurnStatus, Role } from '../../domain/enums';
 import { Express } from 'express';
 import 'multer';
 import { EntityManager, In, Repository } from 'typeorm';
 import { DerivationImagesService } from '../derivation_images/derivation_images.service';
+import { plainToClass } from 'class-transformer';
 
 @Injectable()
 export class TurnsService extends BaseService<
@@ -133,7 +134,7 @@ export class TurnsService extends BaseService<
     try {
       const turn = await this.repository.findOne({
         where: { id, deletedAt: null },
-        relations: ['patient', 'practitioners', 'attentionHourPatient'],
+        relations: ['patient', 'practitioners'],
       });
 
       if (!turn) {

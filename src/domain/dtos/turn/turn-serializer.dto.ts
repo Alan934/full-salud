@@ -4,6 +4,7 @@ import {
   SerializerDiagnosticDto,
   SerializerInstitutionDto,
   SerializerPractitionerDto,
+  //SerializerPractitionerDtoComplete,
   SerializerShortPatientDto,
   SerializerShortPractitionerDto
 } from '..';

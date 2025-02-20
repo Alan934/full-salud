@@ -1,22 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
-import {
-  // SerializerFullPersonDto,
-  SerializerDegreeDto,
-  // SerializerShortPersonDto,
-  SerializerShortPractitionerRoleDto,
-  SerializerShortSocialWorkDto,
-  ShortSerializerSpecialistAttentionHourDto,
-  SerializerTurnDto,
-  SerializerShortUserDto,
-  SerializerUserDto
-} from '..';
 import { Expose, Type } from 'class-transformer';
+import { SerializerDegreeDto, SerializerShortPractitionerRoleDto, SerializerShortSocialWorkDto, ShortSerializerSpecialistAttentionHourDto, SerializerTurnDto } from '..';
+import { SerializerUserDto } from '../user/user-serializer.dto';
+import { ShortBaseDto } from '../../../common/dtos';
 
-export class SerializerPractitionerDto extends FullBaseDto {
+export class SerializerPractitionerDto extends SerializerUserDto {
   @Expose()
   @ApiProperty({ example: 'Practitioner' })
   resourceType?: string = 'Practitioner';
+
   @Expose()
   @ApiProperty({ example: '123456-M-BA' })
   license: string;
@@ -30,12 +22,9 @@ export class SerializerPractitionerDto extends FullBaseDto {
   homeService: boolean;
 
   @Expose()
-  @Type(() => SerializerUserDto)
-  user: SerializerUserDto; 
-
-  @Expose()
   @Type(() => SerializerShortPractitionerRoleDto)
   specialities: SerializerShortPractitionerRoleDto[];
+
   @Expose()
   @Type(() => SerializerShortSocialWorkDto)
   acceptedSocialWorks: SerializerShortSocialWorkDto[];
