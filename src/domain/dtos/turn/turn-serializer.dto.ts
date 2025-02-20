@@ -3,12 +3,14 @@ import { FullBaseDto } from '../../../common/dtos';
 import {
   SerializerDiagnosticDto,
   SerializerInstitutionDto,
+  SerializerPractitionerDto,
   SerializerShortPatientDto,
   SerializerShortPractitionerDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
 import { Role, TurnStatus } from '../../../domain/enums';
 import { SerializerAttentionHourPatientDto } from '../attention-hour-patient/attention-hour-patient-serializer.dto';
+import { Practitioner } from 'src/domain/entities';
 
 export class SerializerTurnDto extends FullBaseDto {
   @Expose()
@@ -57,8 +59,8 @@ export class SerializerTurnDto extends FullBaseDto {
   diagnostic?: SerializerDiagnosticDto;
 
   @Expose()
-  @Type(() => SerializerShortPractitionerDto)
-  practitioner?: SerializerShortPractitionerDto[];
+  @Type(() => SerializerPractitionerDto)
+  practitioners: SerializerPractitionerDto[]; 
 
   @Expose()
   @ApiProperty({ type: [String], description: 'IDs de los practitioners', example: ['uuid1', 'uuid2'] })

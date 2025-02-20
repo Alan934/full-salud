@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
-import { Role } from '../../../domain/enums';
+import { Gender, Role, DocumentType } from '../../../domain/enums';
 import { SerializerShortImageBaseDto } from '..';
 
 export class SerializerUserDto extends FullBaseDto {
@@ -16,6 +16,34 @@ export class SerializerUserDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: 'juan123' })
   username: string;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  name: string;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  lastName: string;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  gender: Gender;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  birth: string;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  documentType: DocumentType;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  dni: string;
+
+  @Expose()
+  @ApiProperty({ example: 'juan123' })
+  phone: string;
 
   @Expose()
   @ApiProperty({

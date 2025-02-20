@@ -8,7 +8,8 @@ import {
   SerializerShortSocialWorkDto,
   ShortSerializerSpecialistAttentionHourDto,
   SerializerTurnDto,
-  SerializerShortUserDto
+  SerializerShortUserDto,
+  SerializerUserDto
 } from '..';
 import { Expose, Type } from 'class-transformer';
 
@@ -29,8 +30,8 @@ export class SerializerPractitionerDto extends FullBaseDto {
   homeService: boolean;
 
   @Expose()
-  @Type(() => SerializerShortUserDto)
-  user: SerializerShortUserDto;
+  @Type(() => SerializerUserDto)
+  user: SerializerUserDto; 
 
   @Expose()
   @Type(() => SerializerShortPractitionerRoleDto)
