@@ -10,6 +10,7 @@ import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
 import { Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class PatientService extends BaseService<
@@ -20,11 +21,12 @@ export class PatientService extends BaseService<
   constructor(
     @InjectRepository(Patient) protected patientRepository: Repository<Patient>,
     @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
+    @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
   ) {
     super(patientRepository);
   }
 
-  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient> {
+  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient & { accessToken: string; refreshToken: string }> {
     try {
       const { dni, email, phone, username, password, ...userData } = createPatientDto;
       
@@ -54,8 +56,12 @@ export class PatientService extends BaseService<
         username,        
         role: Role.PATIENT,
       });
+
+      const savedPatient = await this.patientRepository.save(patient);
+
+      const tokens = await this.authService.generateRefreshToken(savedPatient);
   
-      return await this.patientRepository.save(patient);
+      return { ...savedPatient, ...tokens };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

@@ -38,6 +38,14 @@ export abstract class User extends Base {
 
   @Expose()
   @Column({
+    type: 'varchar',
+    nullable: true
+  })
+  @ApiProperty({ example: 'urlImagen' })
+  urlImg?: string | null;
+
+  @Expose()
+  @Column({
     type: 'enum',
     nullable: true,
     enum: Role,

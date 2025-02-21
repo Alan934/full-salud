@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import {
@@ -28,6 +28,7 @@ import * as bcrypt from 'bcrypt';
 import axios from 'axios';
 import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable()
 export class PractitionerService extends BaseService<
@@ -42,12 +43,13 @@ export class PractitionerService extends BaseService<
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Office) private readonly officeRepository: Repository<Office>,
     @InjectRepository(Degree) private readonly degreeRepository: Repository<Degree>,
+    @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
   ) {
     super(repository);
   }
 
   // Crear un nuevo especialista
-  async createSpecialist(createSpecialistDto: CreatePractitionerDto): Promise<Practitioner> {
+  async createSpecialist(createSpecialistDto: CreatePractitionerDto): Promise<Practitioner & { accessToken: string; refreshToken: string }> {
     try {
       const { password, dni, license, email, username, officeId, ...userData } = createSpecialistDto;
   
@@ -123,7 +125,11 @@ export class PractitionerService extends BaseService<
         office,
       });
   
-      return await this.repository.save(practitioner);
+      const savedPractitioner = await this.repository.save(practitioner);
+
+      const tokens = await this.authService.generateRefreshToken(savedPractitioner);
+
+      return { ...savedPractitioner, ...tokens };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

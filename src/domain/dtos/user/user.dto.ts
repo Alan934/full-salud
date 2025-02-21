@@ -9,6 +9,7 @@ import {
   IsString,
   IsStrongPassword,
   IsUUID,
+  MaxLength,
   ValidateNested
 } from 'class-validator';
 import { Expose, Type } from 'class-transformer';
@@ -41,19 +42,23 @@ export class UserDto {
 
   @IsOptional()
   @IsString()
-  // @IsStrongPassword(
-  //   {
-  //     minLength: 6,
-  //     minLowercase: 1,
-  //     minUppercase: 1,
-  //     minNumbers: 1,
-  //     minSymbols: 1
-  //   },
-  //   {
-  //     message:
-  //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
-  //   }
-  // )
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      //maxLength: 20,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 0
+    },
+    {
+      message:
+        'Password must be at least 8 characters long and contain at least one upper case letter, one lower case letter, one number, and zero special character(@$!%*?&)'
+    }
+  )
+  @MaxLength(20, {
+    message: 'Password must be at most 20 characters long'
+  })
   //si se crea secretary, patient o institution, la contraseña es opcional
   @IsOptionalIf(
     (dto) =>
@@ -94,6 +99,11 @@ export class UserDto {
   birth?: string;
 
   @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'https://rybwefx6jybsfaoy.public.blob.vercel-storage.com/colapinto-z9UMp9pG9UAu6DZm3s1ajWCBJDpN9H.jpg' })
+  urlImg?: string;
+
+  @IsOptional()
   @IsEnum(DocumentType)
   @ApiProperty({ examples: [DocumentType.DNI, DocumentType.PASSPORT] })
   documentType?: DocumentType;
@@ -132,11 +142,6 @@ export class AuthUserDto {
   @ApiProperty({ example: 'Clave1*' })
   password: string;
 
-  // @IsOptional()
-  // @IsString()
-  // @ApiProperty({ example: 'hashed_refresh_token' })
-  // refreshToken?: string;
-
 }
 
 //"reescribe" profile image, no permite actualizar rol
@@ -160,19 +165,23 @@ export class UpdateUserDto extends PartialType(
 
   @IsOptional()
   @IsString()
-  // @IsStrongPassword(
-  //   {
-  //     minLength: 6,
-  //     minLowercase: 1,
-  //     minUppercase: 1,
-  //     minNumbers: 1,
-  //     minSymbols: 1
-  //   },
-  //   {
-  //     message:
-  //       'Password must be at least 6 characters long and contain at least one upper case letter, one lower case letter, one number, and one special character(@$!%*?&)'
-  //   }
-  // )
+  @IsStrongPassword(
+    {
+      minLength: 8,
+      //maxLength: 20,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 0 
+    },
+    {
+      message:
+        'Password must be at least 8 characters long and contain at least one upper case letter, one lower case letter, one number, and zero special character(@$!%*?&)'
+    }
+  )
+  @MaxLength(20, {
+    message: 'Password must be at most 20 characters long'
+  })
   @ApiProperty({ example: 'Clave1*' })
   password?: string;
 
@@ -195,25 +204,3 @@ export class CreateUserDto {
   password: string;
 
 }
-
-
-// export class NameEntry {
-//   @Expose()
-//   @IsOptional()
-//   @ApiProperty({ example: 'official' })
-//   @IsString()
-//   use?: string;
-
-//   @Expose()
-//   @IsOptional()
-//   @ApiProperty({ example: 'Peréz' })
-//   @IsString()
-//   family?: string;
-
-//   @Expose()
-//   @IsOptional()
-//   @ApiProperty({ example: ['David', 'Carlos'] })
-//   @IsArray()
-//   @IsString({ each: true })
-//   given?: string[];
-// }
