@@ -8,32 +8,13 @@ import {
 } from '..';
 import { FullBaseDto } from '../../../common/dtos';
 import { IsOptional } from 'class-validator';
+import { SerializerUserDto } from '../user/user-serializer.dto';
 
-export class SerializerPatientDto extends FullBaseDto {
+export class SerializerPatientDto extends SerializerUserDto {
 
   @Expose()
   @ApiProperty({ example: 'Patient' }) 
   resourceType: string = 'Patient';
-
-  @Expose()
-  @ApiProperty({ example: 'Pepe' })
-  name: string;
-
-  @Expose()
-  @ApiProperty({ example: '2615836294' })
-  phone: string;
-
-  @Expose()
-  @Type(() => SerializerShortUserDto)
-  user: SerializerShortUserDto;
-
-  @Expose()
-  @Type(() => SerializerPatientTurnDto)
-  patientTurn: SerializerPatientTurnDto;
-
-  @Expose()
-  @Type(() => SerializerRelationshipDto)
-  relationship: SerializerRelationshipDto;
 
   @Expose()
   @Type(() => SerializerShortAddressDto)

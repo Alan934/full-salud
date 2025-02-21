@@ -76,7 +76,6 @@ export class TurnsController extends ControllerFactory<
   ): Promise<SerializerTurnDto> {
     const turn = await this.service.getOne(id);
     return toDto(SerializerTurnDto, turn);
-    // return this.service.getOne(id);
   }
 
   @Get()
