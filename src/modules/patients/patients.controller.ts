@@ -7,10 +7,11 @@ import {
   SerializerPatientDto,
   UpdatePatientDto
 } from '../../domain/dtos';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
 import { Role } from '../../domain/enums/role.enum';
 import { toDto, toDtoList } from '../../common/util/transform-dto.util';
+import { plainToInstance } from 'class-transformer';
 
 @ApiTags('Patients')
 @Controller('patient')
@@ -30,6 +31,13 @@ export class PatientController extends ControllerFactory<
   }
 
   @Post()
+  @ApiOperation({ description: 'Crear un Paciente' })
+  // @ApiCreatedResponse({
+  //   description: 'Paciente creado exitosamente con un paciente asociado',
+  //   type: SerializerPatientDto,
+  // })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 404, description: 'Paciente no encontrado' })
   async createPatient(@Body() createPatientDto: CreatePatientDto) {
     return await this.patientService.createPatient(createPatientDto);
   }

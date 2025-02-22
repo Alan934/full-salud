@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose, Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import { Gender, Role, DocumentType } from '../../../domain/enums';
 import { SerializerShortImageBaseDto } from '..';
@@ -9,7 +9,8 @@ export class SerializerUserDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: 'juan@gmail.com' })
   email: string;
-
+  
+  @Exclude()
   @ApiProperty({ example: 'password1234' })
   password: string;
 
@@ -49,6 +50,7 @@ export class SerializerUserDto extends FullBaseDto {
   @ApiProperty({ example: 'https://rybwefx6jybsfaoy.public.blob.vercel-storage.com/colapinto-z9UMp9pG9UAu6DZm3s1ajWCBJDpN9H.jpg' })
   urlImg: string;
 
+  @Exclude()
   @ApiProperty({
     example: Object.values(Role).join(' | ')
   })

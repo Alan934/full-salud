@@ -29,6 +29,8 @@ import axios from 'axios';
 import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
 import { AuthService } from '../auth/auth.service';
+import { plainToInstance } from 'class-transformer';
+import { SerializerPractitionerDto } from '../../domain/dtos';
 
 @Injectable()
 export class PractitionerService extends BaseService<
@@ -49,7 +51,7 @@ export class PractitionerService extends BaseService<
   }
 
   // Crear un nuevo especialista
-  async createSpecialist(createSpecialistDto: CreatePractitionerDto): Promise<Practitioner & { accessToken: string; refreshToken: string }> {
+  async createSpecialist(createSpecialistDto: CreatePractitionerDto) {
     try {
       const { password, dni, license, email, username, officeId, ...userData } = createSpecialistDto;
   
@@ -72,10 +74,8 @@ export class PractitionerService extends BaseService<
       // Consultar SISA para validar al médico
       const sisaUrl = `https://sisa.msal.gov.ar/sisa/services/rest/profesional/obtener?nrodoc=${dni}&usuario=jlllado&clave=$FullSalud123`;
       const sisaResponse = await axios.get(sisaUrl);
-      const sisaData = sisaResponse.data;
-  
-      console.log('SISA Response:', JSON.stringify(sisaData, null, 2));
-  
+      const sisaData = sisaResponse.data;  
+ 
       // Validar respuesta del SISA
       if (sisaData.resultado !== 'OK') {
         throw new ErrorManager('No valid professional found in SISA', 400);
@@ -129,7 +129,9 @@ export class PractitionerService extends BaseService<
 
       const tokens = await this.authService.generateRefreshToken(savedPractitioner);
 
-      return { ...savedPractitioner, ...tokens };
+      const practitionerDto = plainToInstance(SerializerPractitionerDto, savedPractitioner);
+
+      return { ...practitionerDto, ...tokens };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

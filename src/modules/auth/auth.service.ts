@@ -6,7 +6,8 @@ import {
   UserDto,
   UpdateUserDto,
   UserPaginationDto,
-  AuthUserDto
+  AuthUserDto,
+  SerializerUserDto
 } from '../../domain/dtos';
 import { Express } from 'express';
 import 'multer';
@@ -84,6 +85,7 @@ export class AuthService extends BaseService<
       }
 
       const isPasswordValid = await bcrypt.compare(password, user.password);
+      
       if (!isPasswordValid) {
         throw new ErrorManager('Invalid email, username, or password', 401);
       }
@@ -98,7 +100,7 @@ export class AuthService extends BaseService<
         expiresIn: '1d',
       });
 
-      const userDto = plainToInstance(UserDto, user);
+      const userDto = plainToInstance(SerializerUserDto, user);
       return { ...userDto, accessToken, refreshToken };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);

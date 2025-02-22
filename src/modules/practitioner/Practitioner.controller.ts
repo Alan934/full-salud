@@ -32,9 +32,8 @@ export class PractitionerController extends ControllerFactory<
 
   @Post()
   @ApiOperation({ description: 'Crear un nuevo especialista' })
-  async create(@Body() createSpecialistDto: CreatePractitionerDto): Promise<SerializerPractitionerDto> {
-    const practitioner = await this.service.createSpecialist(createSpecialistDto);
-    return plainToClass(SerializerPractitionerDto, practitioner);
+  async create(@Body() createSpecialistDto: CreatePractitionerDto) {
+    return await this.service.createSpecialist(createSpecialistDto);
   }
 
   @Get()

@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import {
   CreatePatientDto,
+  SerializerPatientDto,
+  SerializerUserDto,
   UpdatePatientDto
 } from '../../domain/dtos';
 import { Patient, Practitioner } from '../../domain/entities';
@@ -11,6 +13,7 @@ import { EntityManager, Repository } from 'typeorm';
 import { Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class PatientService extends BaseService<
@@ -26,7 +29,7 @@ export class PatientService extends BaseService<
     super(patientRepository);
   }
 
-  async createPatient(createPatientDto: CreatePatientDto): Promise<Patient & { accessToken: string; refreshToken: string }> {
+  async createPatient(createPatientDto: CreatePatientDto) {
     try {
       const { dni, email, phone, username, password, ...userData } = createPatientDto;
       
@@ -60,8 +63,10 @@ export class PatientService extends BaseService<
       const savedPatient = await this.patientRepository.save(patient);
 
       const tokens = await this.authService.generateRefreshToken(savedPatient);
-  
-      return { ...savedPatient, ...tokens };
+
+      const patientDto = plainToInstance(SerializerPatientDto, savedPatient);
+
+      return { ...patientDto, ...tokens };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
