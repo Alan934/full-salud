@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/NotificationPreference-base-controller.factory';
-import { SerializerPatientNotificationPreferenceDto, SerializerShortPatientNotificationPreferenceDto, UpdatePatientNotificationPreferenceDto } from 'src/domain/dtos';
-import { PatientNotificationPreference } from 'src/domain/entities';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/NotificationPreference-base-controller.factory';
+import { SerializerPatientNotificationPreferenceDto, SerializerShortPatientNotificationPreferenceDto, UpdatePatientNotificationPreferenceDto } from '../../domain/dtos';
+import { PatientNotificationPreference } from '../../domain/entities';
 import { PatientNotificationPreferenceService } from './PatientNotificationPreference.service';
 
 

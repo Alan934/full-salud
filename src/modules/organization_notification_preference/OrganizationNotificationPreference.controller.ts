@@ -7,7 +7,7 @@ import {
 } from '../../domain/dtos';
 import { OrganizationNotificationPreference } from '../../domain/entities';
 import { OrganizationNotificationPreferenceService } from './OrganizationNotificationPreference.service';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/NotificationPreference-base-controller.factory';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/NotificationPreference-base-controller.factory';
 
 @ApiTags("Organization Notification Preference")
 @Controller('organization-notification-preference')

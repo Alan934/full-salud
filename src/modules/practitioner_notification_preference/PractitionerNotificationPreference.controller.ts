@@ -7,7 +7,7 @@ import {
     SerializerPractitionerNotificationPreferenceDto
 } from '../../domain/dtos';
 import { PractitionerNotificationPreferenceService } from './PractitionerNotificationPreference.service';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/NotificationPreference-base-controller.factory';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/NotificationPreference-base-controller.factory';
 
 @ApiTags("Practitioner Notification Preference")
 @Controller('practitioner-notification-preference')

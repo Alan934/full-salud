@@ -1,7 +1,6 @@
 import { ApiProperty, PartialType } from "@nestjs/swagger";
 //import { Type } from "class-transformer";
 import { IsBoolean, IsNotEmpty, IsOptional, IsString  } from "class-validator";
-//import { ShortBaseDto } from "src/common/dtos";
 
 export class CreatePatientPractitionerFavoriteDto {
 

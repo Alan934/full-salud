@@ -13,7 +13,7 @@ import {
 import { ShortBaseDto } from '../dtos/base-short.dto';
 import { toDto, toDtoList } from '../util/transform-dto.util';
 import { INotificationPreferencesService } from '../bases/INotificationPreference-base.service';
-import { NotificationPreference } from 'src/domain/entities/NotificationPreference.entity';
+import { NotificationPreference } from '../../domain/entities/NotificationPreference.entity';
 
 export interface INotificationBaseController<
   T extends NotificationPreference,

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotificationPreferencesServiceFactory } from 'src/common/bases/INotificationPreference-base.service';
-import { CreateNotificationPreferenceDto, UpdatePatientNotificationPreferenceDto } from 'src/domain/dtos';
-import { PatientNotificationPreference } from 'src/domain/entities';
+import { NotificationPreferencesServiceFactory } from '../../common/bases/INotificationPreference-base.service';
+import { CreateNotificationPreferenceDto, UpdatePatientNotificationPreferenceDto } from '../../domain/dtos';
+import { PatientNotificationPreference } from '../../domain/entities';
 
 import { Repository } from 'typeorm';
 

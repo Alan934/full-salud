@@ -14,7 +14,6 @@ import { AppointmentStatus } from '../../enums';
 import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
 import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
 import { CreatePatientAppointmentDto } from '../patient-appointment/PatientAppointment.dto';
-//import { Patient } from 'src/domain/entities';
 import { CreatePatientDto } from '../patient/Patient.dto';
 
 export class CreateAppointmentDto {

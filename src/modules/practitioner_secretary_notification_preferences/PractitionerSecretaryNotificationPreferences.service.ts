@@ -7,7 +7,7 @@ import {
 } from '../../domain/dtos';
 import { PractitionerSecretaryNotificationPreferences } from '../../domain/entities';
 import { Repository } from 'typeorm';
-import { NotificationPreferencesServiceFactory } from 'src/common/bases/INotificationPreference-base.service';
+import { NotificationPreferencesServiceFactory } from '../../common/bases/INotificationPreference-base.service';
 
 @Injectable()
 export class PractitionerSecretaryNotificationPreferencesService extends NotificationPreferencesServiceFactory<

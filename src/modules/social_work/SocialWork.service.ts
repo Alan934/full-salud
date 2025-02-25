@@ -4,7 +4,7 @@ import { BaseService } from '../../common/bases/base.service';
 import { CreateSocialWorkDto, UpdateSocialWorkDto } from '../../domain/dtos';
 import { SocialWork } from '../../domain/entities';
 import { Repository } from 'typeorm';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 
 @Injectable()
 export class SocialWorkService extends BaseService<

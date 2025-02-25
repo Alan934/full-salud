@@ -7,7 +7,7 @@ import {
   SerializerShortSecretaryNotificationPreferenceDto
 } from '../../domain/dtos';
 import { SecretaryNotificationPreferenceService } from './SecretaryNotificationPreference.service';
-import { NotificationPreferencesControllerFactory } from 'src/common/factories/NotificationPreference-base-controller.factory';
+import { NotificationPreferencesControllerFactory } from '../../common/factories/NotificationPreference-base-controller.factory';
 
 @ApiTags("Secretary's Notification Preference")
 @Controller('secretary-notification-preference')
