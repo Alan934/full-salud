@@ -3,6 +3,7 @@ import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { Locality } from '.';
 
+
 @Entity('address')
 export class Address extends Base {
   @Column({
