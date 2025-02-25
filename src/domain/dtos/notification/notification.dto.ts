@@ -16,6 +16,6 @@ export class CreateNotificationDto {
   user?: ShortBaseDto;
 }
 
-export class UpdateNotificatioDto extends PartialType(
+export class UpdateNotificationDto extends PartialType(
   OmitType(CreateNotificationDto, ['user'] as const)
 ) {}

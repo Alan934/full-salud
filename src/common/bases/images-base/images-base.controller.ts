@@ -15,7 +15,7 @@ import { Express } from 'express';
 import 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesBaseService } from './images-base.service';
-import { ImageBase } from '../../../domain/entities/image-base.entity';
+import { MediaResource } from '../../../domain/entities/MediaResource.entity';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -29,7 +29,7 @@ import {
 
 @ApiBadRequestResponse({ description: 'Error: Bad Request' })
 @Controller()
-export class ImagesBaseController<T extends ImageBase> {
+export class ImagesBaseController<T extends MediaResource> {
   constructor(private readonly imagesService: ImagesBaseService<T>) {}
 
   @Post('upload')

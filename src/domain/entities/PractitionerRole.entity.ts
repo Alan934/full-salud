@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, OneToMany, JoinTable, ManyToMany } from 'typeorm';
-import { Practitioner, Tag } from '.';
+import { Practitioner, Category } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('practitioner_role')
@@ -23,7 +23,7 @@ export class PractitionerRole extends Base {
   @ManyToMany(() => Practitioner, (practitioner) => practitioner.specialities)
   practitioners: Practitioner[];
 
-  @ManyToMany(() => Tag, {
+  @ManyToMany(() => Category, {
     eager: true,
     cascade: true,
     orphanedRowAction: 'soft-delete'
@@ -39,5 +39,5 @@ export class PractitionerRole extends Base {
       referencedColumnName: 'id'
     }
   })
-  tags: Tag[];
+  tags: Category[];
 }

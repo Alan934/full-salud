@@ -1,20 +1,20 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { PatientTurn, Indication, Practitioner } from '.';
+import { ClinicalIndication, Patient, Practitioner } from '.';
 
-@Entity('prescriptions')
+@Entity('prescription')
 export class Prescription extends Base {
   @Column({
     type: 'date'
   })
   date: string;
 
-  @ManyToOne(() => PatientTurn, {
+  @ManyToOne(() => Patient, {
     eager: true,
     onDelete: 'CASCADE'
   })
-  @JoinColumn({ name: 'patient_turn_id' })
-  patientTurn: PatientTurn;
+  @JoinColumn({ name: 'patient_id' })
+  patient: Patient;
 
   @ManyToOne(() => Practitioner, {
     eager: true,
@@ -29,9 +29,9 @@ export class Prescription extends Base {
   })
   observations: string;
 
-  @OneToMany(() => Indication, (indication) => indication.prescription, {
+  @OneToMany(() => ClinicalIndication, (indication) => indication.prescription, {
     eager: true,
     cascade: true
   })
-  indications?: Indication[];
+  indications?: ClinicalIndication[];
 }

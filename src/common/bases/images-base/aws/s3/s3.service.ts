@@ -7,11 +7,11 @@ import { Express } from 'express';
 import 'multer';
 import { ErrorManager } from '../../../../../common/exceptions/error.manager';
 import { envConfig } from '../../../../../config/envs';
-import { ImageBase } from '../../../../../domain/entities/image-base.entity';
+import { MediaResource } from '../../../../../domain/entities/MediaResource.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
-export abstract class S3Service<T extends ImageBase> {
+export abstract class S3Service<T extends MediaResource> {
   private bucketName;
   private prefix: string;
 

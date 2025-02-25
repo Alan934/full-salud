@@ -3,10 +3,11 @@ import {
   IsAlphanumeric,
   IsBoolean,
   IsEnum,
-  IsNotEmpty,
+  //IsNotEmpty,
   IsOptional,
+  IsPositive,
   IsString,
-  IsUUID,
+  //IsUUID,
   MaxLength
 } from 'class-validator';
 import { PaginationDto } from '../../../common/dtos/pagination-common.dto';
@@ -15,11 +16,21 @@ import { TransformQueryBoolean } from '../../../common/util/custom-dto-propertie
 import { Gender } from '../../enums';
 
 export class PractitionerFilteredPaginationDto
-  extends PaginationDto
-  implements Filter
+  // extends PaginationDto
+   implements Filter
 {
+  @IsPositive()
   @IsOptional()
-  @IsNotEmpty()
+  @Type(() => Number)
+  page?: number = 1;
+
+  @IsPositive()
+  @IsOptional()
+  @Type(() => Number)
+  limit?: number = 10;
+
+  @IsOptional()
+  //@IsNotEmpty()
   @MaxLength(50)
   license?: string;
 
@@ -29,43 +40,43 @@ export class PractitionerFilteredPaginationDto
   homeService?: boolean;
 
   @IsOptional()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @MaxLength(50)
   name?: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @MaxLength(50)
   lastName?: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @IsAlphanumeric()
   dni?: string;
 
   @IsOptional()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @IsEnum(Gender)
   gender?: Gender;
 
   @IsOptional()
-  @IsNotEmpty()
+  //@IsNotEmpty()
   @IsString()
   @Type(() => String)
   birth?: string;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsUUID()
+  //@IsNotEmpty()
+  //@IsUUID()
   degree?: string;
 
   @IsOptional()
-  @IsNotEmpty()
-  @IsUUID()
+  //@IsNotEmpty()
+  //@IsUUID()
   speciality?: string;
 
   @IsOptional()
-  @IsUUID()
-  @IsNotEmpty()
+  //@IsUUID()
+  //@IsNotEmpty()
   socialWorkId?: string;
 }

@@ -26,7 +26,6 @@ import {
 // import { AdminsNotificationPreferencesService } from '../admins_notification_preferences/admins-notification-preferences.service';
 // import { SecretaryNotificationPreferencesService } from '../secretary_notification_preferences/secretary-notification-preferences.service';
 // import { SpecialistsSecretaryNotificationPreferencesService } from '../specialists_secretary_notification_preferences/specialists-secretary-notification-preferences.service';
-import { ProfileImagesService } from '../profile_images/profile_images.service';
 import {
   getPagingData,
   PaginationMetadata
@@ -55,7 +54,6 @@ export class AuthService extends BaseService<
     // protected readonly adminsNotificationPreferencesService: AdminsNotificationPreferencesService,
     // protected readonly secretaryNotificationPreferencesService: SecretaryNotificationPreferencesService,
     // protected readonly specialistsSecretaryNotificationPreferencesService: SpecialistsSecretaryNotificationPreferencesService,
-    protected readonly profileImagesService: ProfileImagesService,
     // protected readonly notificationsService: NotificationsService,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,

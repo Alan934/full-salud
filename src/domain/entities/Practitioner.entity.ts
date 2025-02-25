@@ -10,14 +10,14 @@ import {
   OneToOne,
 } from 'typeorm';
 import {
-  Degree,
-  Office,
+  ProfessionalDegree,
+  Location,
   PractitionerRole,
   SocialWork,
-  SpecialistAttentionHour
+  PractitionerAppointment
 } from '.';
-import { User } from './user.entity';
-import { Favorite } from './favorite.entity';
+import { User } from './User.entity';
+import { PatientPractitionerFavorite } from './PatientPractitionerFavorite.entity';
 import { IsOptional } from 'class-validator';
 
 @Entity('practitioner')
@@ -46,11 +46,11 @@ export class Practitioner extends User {
   homeService: boolean;
 
   @Expose()
-  @ManyToOne(() => Degree, {
+  @ManyToOne(() => ProfessionalDegree, {
     eager: true,
   })
   @JoinColumn({ name: 'degree_id' })
-  degree: Degree;
+  degree: ProfessionalDegree;
 
   @Expose()
   @ManyToMany(() => PractitionerRole, (practitioner) => practitioner.practitioners, {
@@ -71,25 +71,8 @@ export class Practitioner extends User {
   specialities: PractitionerRole[];
 
   @Expose()
-  @ManyToMany(() => SocialWork, (socialWork) => socialWork.practitioners, {
-    nullable: true,
-  })
-  @JoinTable({
-    name: 'practitioners_social_works',
-    joinColumn: {
-      name: 'practitioner_id',
-      referencedColumnName: 'id',
-    },
-    inverseJoinColumn: {
-      name: 'social_work_id',
-      referencedColumnName: 'id',
-    },
-  })
-  acceptedSocialWorks?: SocialWork[];
-
-  @Expose()
   @OneToMany(
-    () => SpecialistAttentionHour,
+    () => PractitionerAppointment,
     (specialistAttentionHour) => specialistAttentionHour.practitioner,
     {
       eager: true,
@@ -100,19 +83,19 @@ export class Practitioner extends User {
       onDelete: 'CASCADE',
     },
   )
-  specialistAttentionHour: SpecialistAttentionHour[];
+  specialistAttentionHour: PractitionerAppointment[];
 
   @Expose()
-  @OneToOne(() => Favorite, (favorite) => favorite.practitioner)
-  favorite: Favorite;
+  @OneToOne(() => PatientPractitionerFavorite, (favorite) => favorite.practitioner)
+  favorite: PatientPractitionerFavorite;
 
   @Expose()
   @IsOptional()
-  @ManyToOne(() => Office, (office) => office.practitioners, {
+  @ManyToOne(() => Location, (office) => office.practitioners, {
     nullable: true,
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'office_id' })
-  office?: Office;
+  office?: Location;
 
 }

@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
-import { Gender, Role, DocumentType } from '../../../domain/enums';
-import { SerializerShortImageBaseDto } from '..';
+import { Gender, Role, DocumentType } from '../../enums';
+import { SerializerSocialWorkDto } from '..';
 import { IsOptional } from 'class-validator';
 
 export class SerializerUserDto extends FullBaseDto {
@@ -55,6 +55,11 @@ export class SerializerUserDto extends FullBaseDto {
     example: Object.values(Role).join(' | ')
   })
   role: Role;
+
+  @Expose()
+  @Type(() => SerializerSocialWorkDto)
+  @ApiProperty({ type: SerializerSocialWorkDto })
+  socialWork?: SerializerSocialWorkDto;
 }
 
 export class SerializerShortUserDto extends ShortBaseDto {

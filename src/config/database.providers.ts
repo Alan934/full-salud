@@ -3,6 +3,7 @@ import { envConfig } from './envs';
 
 export const databaseProviders: TypeOrmModuleOptions = {
   type: 'postgres',
+  // type: 'mysql',
   host: envConfig.HOST,
   port: envConfig.DB_PORT || 3306,
   database: envConfig.DB_NAME,

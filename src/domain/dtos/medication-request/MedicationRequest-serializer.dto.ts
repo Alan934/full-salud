@@ -4,8 +4,8 @@ import { Medication } from '../../entities';
 import { Expose, Type } from 'class-transformer';
 import { CreateMedicationDto } from '../medication/Medication.dto';
 import { SerializerMedicationDto } from '../medication/Medication-serializer.dto';
-import { SerializerUserDto } from '../user/user-serializer.dto';
-import { SerializerPatientDto } from '../patient/patient-serializer.dto';
+import { SerializerUserDto } from '../user/User-serializer.dto';
+import { SerializerPatientDto } from '../patient/Patient-serializer.dto';
 import { SerializerPractitionerDto } from '../practitioner/Practitioner-serializer.dto';
 
 export class SerializerMedicationRequestDto extends ShortBaseDto {

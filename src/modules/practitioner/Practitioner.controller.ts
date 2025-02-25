@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { PractitionerService } from './Practitioner.service';
-import { Practitioner, Turn } from '../../domain/entities';
+import { Practitioner, Appointment } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 
 import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
@@ -12,6 +12,8 @@ import { PaginationMetadata } from '../../common/util/pagination-data.util';
 import { plainToClass } from 'class-transformer';
 import { SerializerPractitionerDto } from '../../domain/dtos/practitioner/Practitioner-serializer.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
+import { SerializerShortPractitionerRoleDto } from '../../domain/dtos';
+import { PractitionerFilteredDto } from '../../domain/dtos/practitioner/Practitioner-filterd.dto';
 
 @ApiTags('Practitioner')
 @Controller('practitioner')
@@ -72,19 +74,19 @@ export class PractitionerController extends ControllerFactory<
     return this.service.recover(id);
   }
 
-  @Get()
-  @ApiOperation({
-    description: 'Obtener practitioner paginados con filtros opcionales'
-  })
-  @ApiPaginationResponse(SerializerPractitionerDto)
-  override async findAll(
-    @Query()
-    paginationDto: PractitionerFilteredPaginationDto
-  ): Promise<{ data: SerializerPractitionerDto[]; meta: PaginationMetadata }> {
-    const { data, meta } = await this.service.findAll(paginationDto);
-    const serializedData = toDtoList(SerializerPractitionerDto, data);
-    return { data: serializedData, meta };
-  }
+  // @Get()
+  // @ApiOperation({
+  //   description: 'Obtener practitioner paginados con filtros opcionales'
+  // })
+  // @ApiPaginationResponse(SerializerPractitionerDto)
+  // override async findAll(
+  //   @Query()
+  //   paginationDto: PractitionerFilteredPaginationDto
+  // ): Promise<{ data: SerializerPractitionerDto[]; meta: PaginationMetadata }> {
+  //   const { data, meta } = await this.service.findAll(paginationDto);
+  //   const serializedData = toDtoList(SerializerPractitionerDto, data);
+  //   return { data: serializedData, meta };
+  // }
 
   @Get('/with-turns')
   @ApiOperation({

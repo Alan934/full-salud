@@ -2,16 +2,10 @@ import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { ValidateNested, IsOptional } from 'class-validator';
 import { ShortBaseDto } from '../../../common/dtos';
-import { CreatePatientTurnWithIdDto } from '..';
-import { UserDto } from '../user/user.dto';
+import { UserDto } from '../user/User.dto';
 
 export class CreatePatientDto extends OmitType(UserDto, ['role'] as const) {
   
-  @ValidateNested()
-  @Type(() => CreatePatientTurnWithIdDto)
-  @IsOptional()
-  patientTurn?: CreatePatientTurnWithIdDto;
-
   @ValidateNested()
   @Type(() => ShortBaseDto)
   @IsOptional()

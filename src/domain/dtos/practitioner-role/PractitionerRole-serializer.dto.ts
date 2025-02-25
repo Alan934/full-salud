@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
-import { SerializerShortTagDto } from '..';
+import { SerializerShortCategoryDto } from '..';
 
 export class SerializerPractitionerRoleDto extends FullBaseDto {
   @Expose()
@@ -12,8 +12,8 @@ export class SerializerPractitionerRoleDto extends FullBaseDto {
   canPrescribe: boolean;
 
   @Expose()
-  @Type(() => SerializerShortTagDto)
-  tags: SerializerShortTagDto[];
+  @Type(() => SerializerShortCategoryDto)
+  tags: SerializerShortCategoryDto[];
 }
 
 export class SerializerShortPractitionerRoleDto extends ShortBaseDto {

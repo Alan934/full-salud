@@ -1,4 +1,4 @@
-import { ImageBase } from '../../../domain/entities/image-base.entity';
+import { MediaResource } from '../../../domain/entities/MediaResource.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import {
   v2 as cloudinary,
@@ -15,7 +15,7 @@ import {
   BadRequestException
 } from '@nestjs/common';
 
-export abstract class ImagesBaseService<T extends ImageBase> {
+export abstract class ImagesBaseService<T extends MediaResource> {
   private folderName: string;
 
   constructor(

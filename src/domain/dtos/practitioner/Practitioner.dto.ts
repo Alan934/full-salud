@@ -1,21 +1,18 @@
 import {
-  ArrayUnique,
-  IsArray,
   IsBoolean,
-  IsNotEmpty,
   IsOptional,
   IsString,
   IsUUID,
   ValidateNested,
 } from 'class-validator';
 import {
-  CreateSpecialistAttentionHourDto,
-  UpdateSpecialistAttentionHourDto,
+  CreatePractitionerAppointmentDto,
+  UpdatePractitionerAppointmentDto,
 } from '..';
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { UserDto } from '../user/user.dto';
+import { UserDto } from '../user/User.dto';
 
 export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) {
   @IsOptional()
@@ -46,10 +43,10 @@ export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) 
   homeService?: boolean;
 
   @ValidateNested({ each: true })
-  @Type(() => CreateSpecialistAttentionHourDto)
+  @Type(() => CreatePractitionerAppointmentDto)
   @IsOptional()
-  @ApiProperty({ type: [CreateSpecialistAttentionHourDto] })
-  specialistAttentionHour?: CreateSpecialistAttentionHourDto[];
+  @ApiProperty({ type: [CreatePractitionerAppointmentDto] })
+  specialistAttentionHour?: CreatePractitionerAppointmentDto[];
 
   @IsOptional()
   @IsUUID()
@@ -60,8 +57,8 @@ export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) 
 
 export class UpdatePractitionerDto extends PartialType(OmitType(CreatePractitionerDto, ['specialistAttentionHour'])) {
   @ValidateNested({ each: true })
-  @Type(() => UpdateSpecialistAttentionHourDto)
+  @Type(() => UpdatePractitionerAppointmentDto)
   @IsOptional()
-  @ApiProperty({ type: [UpdateSpecialistAttentionHourDto] })
-  specialistAttentionHour?: UpdateSpecialistAttentionHourDto[];
+  @ApiProperty({ type: [UpdatePractitionerAppointmentDto] })
+  specialistAttentionHour?: UpdatePractitionerAppointmentDto[];
 }

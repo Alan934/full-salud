@@ -1,14 +1,15 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinTable } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
 import { Role } from '../enums/role.enum';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { Address } from './address.entity';
+import { Address } from './Address.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { SocialWork } from './SocialWork.entity';
 
-@Entity('users')
+@Entity('user')
 export abstract class User extends Base {
   @Column({
     type: 'varchar',
@@ -122,4 +123,10 @@ export abstract class User extends Base {
   })
   addresses: Address[];
 
+  @ManyToOne(() => SocialWork, (socialWork) => socialWork.users, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'social_work_id' })
+  socialWork?: SocialWork;
 }

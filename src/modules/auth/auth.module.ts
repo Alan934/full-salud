@@ -9,8 +9,7 @@ import { AuthController } from './auth.controller';
 // import { AdminsNotificationPreferencesModule } from '../admins_notification_preferences/admins-notification-preferences.module';
 // import { SecretaryNotificationPreferencesModule } from '../secretary_notification_preferences/secretary-notification-preferences.module';
 // import { SpecialistsSecretaryNotificationPreferencesModule } from '../specialists_secretary_notification_preferences/specialists-secretary-notification-preferences.module';
-import { ProfileImagesModule } from '../profile_images/profile_images.module';
-import { PatientModule } from '../patients/patients.module';
+import { PatientModule } from '../patient/patient.module';
 import { PractitionerModule } from '../practitioner/Practitioner.module';
 // import { NotificationsModule } from '../notifications/notifications.module';
 import { JwtModule } from '@nestjs/jwt';
@@ -31,7 +30,6 @@ import { envConfig } from '../../config/envs';
     // AdminsNotificationPreferencesModule,
     // SecretaryNotificationPreferencesModule,
     // SpecialistsSecretaryNotificationPreferencesModule,
-    ProfileImagesModule,
     // NotificationsModule
   ],
   controllers: [AuthController],

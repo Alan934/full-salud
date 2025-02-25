@@ -19,9 +19,10 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { OmitFieldForRoles } from '../../../common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
 import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
 import { ShortBaseDto } from '../../../common/dtos';
-import { Gender } from '../../../domain/enums';
-import { DocumentType } from '../../../domain/enums';
+import { Gender } from '../../enums';
+import { DocumentType } from '../../enums';
 import { Column } from 'typeorm';
+import { CreateSocialWorkDto } from '../social-work/SocialWork.dto';
 
 export class UserDto {
 
@@ -123,6 +124,11 @@ export class UserDto {
   @Type(() => ShortBaseDto)
   @ApiProperty({ type: [ShortBaseDto] })
   addresses?: ShortBaseDto[];
+
+  @IsOptional()
+  @IsUUID()
+  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  socialWorkId?: string;
 
 }
 

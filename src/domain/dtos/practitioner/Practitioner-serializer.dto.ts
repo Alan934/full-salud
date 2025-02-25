@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { SerializerDegreeDto, SerializerShortPractitionerRoleDto, SerializerShortSocialWorkDto, ShortSerializerSpecialistAttentionHourDto, SerializerTurnDto } from '..';
-import { SerializerUserDto } from '../user/user-serializer.dto';
+import { SerializerProfessionalDegreeDto, SerializerShortPractitionerRoleDto, SerializerShortSocialWorkDto, ShortSerializerPractitionerAppointmentDto, SerializerAppointmentDto } from '..';
+import { SerializerUserDto } from '../user/User-serializer.dto';
 import { ShortBaseDto } from '../../../common/dtos';
 
 export class SerializerPractitionerDto extends SerializerUserDto {
@@ -14,8 +14,8 @@ export class SerializerPractitionerDto extends SerializerUserDto {
   license: string;
 
   @Expose()
-  @Type(() => SerializerDegreeDto)
-  degree: SerializerDegreeDto;
+  @Type(() => SerializerProfessionalDegreeDto)
+  degree: SerializerProfessionalDegreeDto;
 
   @Expose()
   @ApiProperty({ example: 'false' })
@@ -30,12 +30,12 @@ export class SerializerPractitionerDto extends SerializerUserDto {
   acceptedSocialWorks: SerializerShortSocialWorkDto[];
 
   @Expose()
-  @Type(() => ShortSerializerSpecialistAttentionHourDto)
-  specialistAttentionHour: ShortSerializerSpecialistAttentionHourDto[];
+  @Type(() => ShortSerializerPractitionerAppointmentDto)
+  specialistAttentionHour: ShortSerializerPractitionerAppointmentDto[];
 
   @Expose()
-  @Type(() => SerializerTurnDto)
-  turns: SerializerTurnDto[];
+  @Type(() => SerializerAppointmentDto)
+  turns: SerializerAppointmentDto[];
 }
 
 export class SerializerShortPractitionerDto extends ShortBaseDto {

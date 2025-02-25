@@ -1,6 +1,6 @@
 import { Expose, Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
-import { SerializerShortSocialWorkDto } from '../social-work/social-work-serializer.dto';
+import { SerializerShortSocialWorkDto } from '../social-work/SocialWork-serializer.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { SerializerShortPractitionerRoleDto } from '../practitioner-role/PractitionerRole-serializer.dto';
 

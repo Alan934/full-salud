@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 import { MedicationRequest } from '../../domain/entities/MedicationRequest.entity';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { Medication } from '../../domain/entities';
-import { PatientService } from '../patients/patients.service';
+import { PatientService } from '../patient/patient.service';
 import { PractitionerService } from '../practitioner/Practitioner.service';
 import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/MedicationRequest.dto';
 

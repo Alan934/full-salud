@@ -11,15 +11,15 @@ import {
   DynamicQueryBuilder
 } from '../../common/util/dynamic-query-builder.util';
 import {
-  Degree,
+  ProfessionalDegree,
   Patient,
   Prescription,
-  Price,
+  ChargeItem,
   Practitioner,
-  SpecialistAttentionHour,
+  PractitionerAppointment,
   PractitionerRole,
-  Turn,
-  Office
+  Appointment,
+  Location
 } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender, Role } from '../../domain/enums';
@@ -43,8 +43,8 @@ export class PractitionerService extends BaseService<
     //@Inject() protected personService: PersonsService
     @InjectRepository(PractitionerRole) private readonly specialityRepository: Repository<PractitionerRole>,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
-    @InjectRepository(Office) private readonly officeRepository: Repository<Office>,
-    @InjectRepository(Degree) private readonly degreeRepository: Repository<Degree>,
+    @InjectRepository(Location) private readonly officeRepository: Repository<Location>,
+    @InjectRepository(ProfessionalDegree) private readonly degreeRepository: Repository<ProfessionalDegree>,
     @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
   ) {
     super(repository);
@@ -104,7 +104,7 @@ export class PractitionerService extends BaseService<
         );
       }
 
-      let office: Office | null = null;
+      let office: Location | null = null;
       if (officeId) {
         office = await this.officeRepository.findOne({ where: { id: officeId } });
         if (!office) {
@@ -208,6 +208,7 @@ export class PractitionerService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
+
 
   // Recuperar un especialista eliminado
   async recover(id: string): Promise<{ message: string }> {
@@ -318,7 +319,7 @@ export class PractitionerService extends BaseService<
         async (manager: EntityManager) => {
           await manager //eliminar el especialista de turno
             .createQueryBuilder()
-            .update(Turn)
+            .update(Appointment)
             .set({ practitioner: null })
             .where('specialist_id = :id', { id: entity.id })
             .execute();
@@ -328,8 +329,8 @@ export class PractitionerService extends BaseService<
             .set({ practitioner: null })
             .where('specialist_id = :id', { id: entity.id })
             .execute();
-          await manager.delete(SpecialistAttentionHour, { practitioner: entity });
-          await manager.delete(Price, { practitioner: entity });
+          await manager.delete(PractitionerAppointment, { practitioner: entity });
+          await manager.delete(ChargeItem, { practitioner: entity });
           await manager.remove(Practitioner, entity);
           //await this.personService.removeWithManager(entity.person.id, manager);
           return `Entity with id ${id} deleted`;
@@ -345,7 +346,7 @@ export class PractitionerService extends BaseService<
       const entity = await this.findOne(id);
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
-          await manager.softDelete(Price, { practitioner: entity });
+          await manager.softDelete(ChargeItem, { practitioner: entity });
           // await this.personService.softRemoveWithManager(
           //   entity.person.id,
           //   manager
@@ -372,7 +373,7 @@ export class PractitionerService extends BaseService<
           //   entity.person.id,
           //   manager
           // );
-          await manager.restore(Price, { practitioner: entity });
+          await manager.restore(ChargeItem, { practitioner: entity });
           return recovered;
         }
       );

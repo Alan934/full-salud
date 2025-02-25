@@ -2,7 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from '.';
 import { Base } from '../../common/bases/base.entity';
 
-@Entity('notifications')
+@Entity('notification')
 export class Notification extends Base {
   @Column({
     type: 'varchar'

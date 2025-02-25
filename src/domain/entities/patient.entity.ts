@@ -1,29 +1,20 @@
 import { Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { PatientTurn, Relationship } from '.';
-import { User } from './user.entity';
-import { Favorite } from './favorite.entity';
+import {RelatedPerson } from '.';
+import { User } from './User.entity';
+import { PatientPractitionerFavorite } from './PatientPractitionerFavorite.entity';
 import { Expose } from 'class-transformer';
 
-@Entity('patients')
+@Entity('patient')
 export class Patient extends User {
   @Expose()
-  @ManyToOne(() => Relationship, {
+  @ManyToOne(() => RelatedPerson, {
     eager: true,
     nullable: true,
   })
   @JoinColumn({ name: 'relationship_id' })
-  relationship: Relationship | null;
+  relationship: RelatedPerson | null;
 
   @Expose()
-  @ManyToOne(() => PatientTurn, {
-    eager: true,
-    cascade: ['insert'],
-    onDelete: 'CASCADE',
-  })
-  @JoinColumn({ name: 'patient_turn_id' })
-  patientTurn: PatientTurn;
-
-  @Expose()
-  @OneToMany(() => Favorite, (favorite) => favorite.patient)
-  favorites: Favorite[]
+  @OneToMany(() => PatientPractitionerFavorite, (favorite) => favorite.patient)
+  favorites: PatientPractitionerFavorite[]
 }

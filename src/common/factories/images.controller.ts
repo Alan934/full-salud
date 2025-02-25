@@ -13,18 +13,18 @@ import { Express } from 'express';
 import 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ImagesBaseService } from '../bases/images-base/images-base.service';
-import { ImageBase } from '../../domain/entities/image-base.entity';
+import { MediaResource } from '../../domain/entities/MediaResource.entity';
 
-export interface IImagesController<T extends ImageBase> {
+export interface IImagesController<T extends MediaResource> {
   uploadFile(file: Express.Multer.File): Promise<T>;
   uploadFiles(files: Express.Multer.File[]): Promise<T[]>;
   deleteImage(publicId: string, id: string): Promise<string>;
 }
 
-export function ImagesControllerFactory<T extends ImageBase>(): Type<
+export function ImagesControllerFactory<T extends MediaResource>(): Type<
   IImagesController<T>
 > {
-  class ImagesController<T extends ImageBase> implements IImagesController<T> {
+  class ImagesController<T extends MediaResource> implements IImagesController<T> {
     constructor(private readonly imagesService: ImagesBaseService<T>) {}
 
     @Post('upload')

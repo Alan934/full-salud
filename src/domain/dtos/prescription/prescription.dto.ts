@@ -8,7 +8,7 @@ import {
   ValidateNested
 } from 'class-validator';
 import { ShortBaseDto } from '../../../common/dtos';
-import { CreateIndicationDto } from '..';
+import { CreateClinicalIndicationDto } from '..';
 
 export class CreatePrescriptionDto {
   @IsNotEmpty()
@@ -20,7 +20,7 @@ export class CreatePrescriptionDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  patientTurn: ShortBaseDto;
+  patient: ShortBaseDto;
 
   //recibe el id del especialista
   @IsNotEmpty()
@@ -30,8 +30,8 @@ export class CreatePrescriptionDto {
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => CreateIndicationDto)
-  indications?: CreateIndicationDto[];
+  @Type(() => CreateClinicalIndicationDto)
+  indications?: CreateClinicalIndicationDto[];
 
   @IsNotEmpty()
   @ValidateIf((dto) => !dto.indications || dto.observations) //si indications no está presente, observations es obligatoria
@@ -39,5 +39,5 @@ export class CreatePrescriptionDto {
 }
 
 export class UpdatePrescriptionDto extends PartialType(
-  OmitType(CreatePrescriptionDto, ['patientTurn', 'practitioner', 'indications'])
+  OmitType(CreatePrescriptionDto, ['patient', 'practitioner', 'indications'])
 ) {}
