@@ -7,7 +7,7 @@ import {
 import { BaseService } from './base.service';
 import { ErrorManager } from '../exceptions/error.manager';
 import { HttpStatus, Type } from '@nestjs/common';
-import { NotificationPreference } from '../../../domain/entities/NotificationPreference.entity';
+import { NotificationPreference } from '../../domain/entities/NotificationPreference.entity';
 
 export interface INotificationPreferencesService<
   T extends NotificationPreference,
