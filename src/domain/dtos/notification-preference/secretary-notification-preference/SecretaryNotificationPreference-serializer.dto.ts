@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { SerializerNotificationPreferenceDto } from '../NotificationPreference-serializer.dto';
+import { SerializerNotificationPreferenceDto } from '../notificationPreference-serializer.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 
 export class SerializerSecretaryNotificationPreferenceDto extends SerializerNotificationPreferenceDto {

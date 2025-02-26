@@ -7,7 +7,7 @@ import {
 } from '..';
 import { FullBaseDto } from '../../../common/dtos';
 import { IsOptional } from 'class-validator';
-import { SerializerUserDto } from '../user/User-serializer.dto';
+import { SerializerUserDto } from '../user/user-serializer.dto';
 
 export class SerializerPatientDto extends SerializerUserDto {
 

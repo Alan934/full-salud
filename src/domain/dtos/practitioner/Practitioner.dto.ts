@@ -12,7 +12,7 @@ import {
 import { Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { UserDto } from '../user/User.dto';
+import { UserDto } from '../user/user.dto';
 
 export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) {
   @IsOptional()

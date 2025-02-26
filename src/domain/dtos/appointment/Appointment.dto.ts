@@ -14,7 +14,7 @@ import { AppointmentStatus } from '../../enums';
 import { IsTime } from '../../../common/util/custom-dto-properties-decorators/validate-hour-decorator.util';
 import { IncompatableWith } from '../../../common/util/custom-dto-properties-decorators/validate-incompatible-properties.util';
 import { CreatePatientAppointmentDto } from '../patient-appointment/PatientAppointment.dto';
-import { CreatePatientDto } from '../patient/Patient.dto';
+import { CreatePatientDto } from '../patient/patient.dto';
 
 export class CreateAppointmentDto {
   @IsOptional()

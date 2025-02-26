@@ -1,6 +1,6 @@
 import { FullBaseDto } from '../../../common/dtos';
 import { Media } from '../../enums/media.enum';
-import { SerializerUserDto } from '../user/User-serializer.dto';
+import { SerializerUserDto } from '../user/user-serializer.dto';
 import { Expose, Type } from 'class-transformer';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 

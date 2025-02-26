@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { SerializerProfessionalDegreeDto, SerializerShortPractitionerRoleDto, SerializerShortSocialWorkDto, ShortSerializerPractitionerAppointmentDto, SerializerAppointmentDto } from '..';
-import { SerializerUserDto } from '../user/User-serializer.dto';
+import { SerializerUserDto } from '../user/user-serializer.dto';
 import { ShortBaseDto } from '../../../common/dtos';
 
 export class SerializerPractitionerDto extends SerializerUserDto {
