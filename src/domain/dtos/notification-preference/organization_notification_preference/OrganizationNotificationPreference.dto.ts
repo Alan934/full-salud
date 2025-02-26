@@ -1,6 +1,6 @@
 import { IsBoolean, IsOptional } from 'class-validator';
 import { Type } from 'class-transformer';
-import { UpdateMedicalProviderNotificationPreferenceDto } from '../notificationPreference.dto';
+import { UpdateMedicalProviderNotificationPreferenceDto } from '../NotificationPreference.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateOrganizationNotificationPreferenceDto extends UpdateMedicalProviderNotificationPreferenceDto {

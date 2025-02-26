@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { SerializerMedicalProviderNotificationPreferenceDto } from '../notificationPreference-serializer.dto';
+import { SerializerMedicalProviderNotificationPreferenceDto } from '../NotificationPreference-serializer.dto';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 
 export class SerializerOrganizationNotificationPreferenceDto extends SerializerMedicalProviderNotificationPreferenceDto {

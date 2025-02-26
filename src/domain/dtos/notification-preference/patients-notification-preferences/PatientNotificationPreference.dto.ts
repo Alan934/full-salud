@@ -1,5 +1,5 @@
 import { IsBoolean, IsOptional } from 'class-validator';
-import { UpdateNotificationPreferenceDto } from '../notificationPreference.dto';
+import { UpdateNotificationPreferenceDto } from '../NotificationPreference.dto';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 
