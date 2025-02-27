@@ -5,9 +5,9 @@ import { Gender } from '../enums/gender.enum';
 import { Role } from '../enums/role.enum';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { Address } from './Address.entity';
+import { Address } from './address.entity';
 import { Exclude, Expose } from 'class-transformer';
-import { SocialWork } from './SocialWork.entity';
+import { SocialWork } from './social-work.entity';
 
 @Entity('user')
 export abstract class User extends Base {

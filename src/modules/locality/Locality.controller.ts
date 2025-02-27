@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { LocalityService } from './Locality.service';
+import { LocalityService } from './locality.service';
 import { Locality } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

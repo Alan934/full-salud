@@ -16,8 +16,8 @@ import {
   SocialWork,
   PractitionerAppointment
 } from '.';
-import { User } from './User.entity';
-import { PatientPractitionerFavorite } from './PatientPractitionerFavorite.entity';
+import { User } from './user.entity';
+import { PatientPractitionerFavorite } from './patient-practitioner-favorite.entity';
 import { IsOptional } from 'class-validator';
 
 @Entity('practitioner')

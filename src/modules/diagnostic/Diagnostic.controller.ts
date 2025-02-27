@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { DiagnosticService } from './Diagnostic.service';
+import { DiagnosticService } from './diagnostic.service';
 import { Diagnostic } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

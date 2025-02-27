@@ -17,7 +17,7 @@ import {
   PatientAppointment
 } from '.';
 import { ApiProperty } from '@nestjs/swagger';
-import { AppointmentStatus } from '../enums/Appointment-status.enum';
+import { AppointmentStatus } from '../enums/appointment-status.enum';
 
 // Esta entidad anteriormente se denominaba Turn
 @Entity('appointment')

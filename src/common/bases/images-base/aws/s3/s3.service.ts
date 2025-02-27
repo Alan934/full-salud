@@ -7,7 +7,7 @@ import { Express } from 'express';
 import 'multer';
 import { ErrorManager } from '../../../../../common/exceptions/error.manager';
 import { envConfig } from '../../../../../config/envs';
-import { MediaResource } from '../../../../../domain/entities/MediaResource.entity';
+import { MediaResource } from '../../../../../domain/entities/media-resource.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 

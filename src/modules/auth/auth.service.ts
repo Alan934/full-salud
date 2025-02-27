@@ -209,5 +209,13 @@ export class AuthService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }    
   }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    const blob = await put(file.originalname, file.buffer, {
+      access: 'public',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+    });
+    return blob.url;
+  }
     
 }

@@ -7,7 +7,7 @@ import {
   SerializerPaymentDto
 } from '../../domain/dtos';
 import { Payment } from '../../domain/entities';
-import { PaymentService } from './Payment.service';
+import { PaymentService } from './payment.service';
 
 @ApiTags('Payment')
 @Controller('payment')

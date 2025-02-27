@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { Gender } from '../../../domain/enums';
+import { Gender } from '../../enums';
 import { SerializerProfessionalDegreeDto } from '..';
 import { SerializerShortPractitionerRoleDto } from '..';
 import { SerializerShortSocialWorkDto } from '..';

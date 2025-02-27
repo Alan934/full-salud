@@ -26,8 +26,8 @@ import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 // import { PersonsService } from '../persons/persons.service';
 import axios from 'axios';
-import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/Practitioner.dto';
-import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/Practitioner-filtered-pagination.dto';
+import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/practitioner.dto';
+import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/practitioner-filtered-pagination.dto';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { SerializerPractitionerDto } from '../../domain/dtos';
@@ -233,20 +233,20 @@ export class PractitionerService extends BaseService<
   //condiciones que se agregarán al query builder para filtrar los patient turn
   private practitionerConditions: Conditions<Practitioner> = {
     name: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('person.name LIKE :name', { name: `%${value}%` }),
+      queryBuilder.andWhere('user.name LIKE :name', { name: `%${value}%` }),
     lastName: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('person.last_name LIKE :lastName', {
+      queryBuilder.andWhere('user.last_name LIKE :lastName', {
         lastName: `%${value}%`
       }),
     dni: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('person.dni LIKE :dni', { dni: `%${value}%` }),
+      queryBuilder.andWhere('user.dni LIKE :dni', { dni: `%${value}%` }),
     gender: (queryBuilder: SelectQueryBuilder<Practitioner>, value: Gender) =>
-      queryBuilder.andWhere('person.gender = :gender', { gender: value }),
+      queryBuilder.andWhere('user.gender = :gender', { gender: value }),
     birth: (queryBuilder: SelectQueryBuilder<Practitioner>, value: Date) =>
       queryBuilder.andWhere(
-        '( YEAR(person.birth) = YEAR(:birth) ' +
-          'AND MONTH(person.birth) = MONTH(:birth) ' +
-          'AND DAY(person.birth) = DAY(:birth) ) ',
+        '( YEAR(user.birth) = YEAR(:birth) ' +
+          'AND MONTH(user.birth) = MONTH(:birth) ' +
+          'AND DAY(user.birth) = DAY(:birth) ) ',
         { birth: value }
       ),
     homeService: (
@@ -261,7 +261,7 @@ export class PractitionerService extends BaseService<
         license: value
       }),
     speciality: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('speciality.id = :id', { id: value }),
+      queryBuilder.andWhere('practitioner_role.id = :id', { id: value }),
     socialWorkId: (
       queryBuilder: SelectQueryBuilder<Practitioner>,
       value: string
@@ -271,7 +271,7 @@ export class PractitionerService extends BaseService<
   };
 
   //Override del método base findAll para filtrar por propiedades
-  async findAll(
+  async findAllDeprecated(
     paginationDto: PractitionerFilteredPaginationDto
   ): Promise<{ data: Practitioner[]; meta: PaginationMetadata }> {
     try {
@@ -279,13 +279,12 @@ export class PractitionerService extends BaseService<
       //crea un query builder base para traer la entidad con las relaciones que necesita el Serializer
       const queryBuilderBase = this.repository
         .createQueryBuilder('practitioner')
-        .leftJoinAndSelect('practitioner.person', 'person')
         .leftJoinAndSelect(
           'practitioner.specialistAttentionHour',
           'specialistAttentionHour'
         )
         .leftJoinAndSelect('practitioner.degree', 'degree')
-        .leftJoinAndSelect('practitioner.speciality', 'speciality')
+        .leftJoinAndSelect('practitioner.specialities', 'speciality')
         .leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
 
       //añade las condiciones where al query builder
@@ -400,6 +399,71 @@ export class PractitionerService extends BaseService<
     }
   }
 
+  async findAllPaginated(
+    filteredDto: PractitionerFilteredPaginationDto,
+  ): Promise<{ data: Practitioner[]; lastPage: number; total: number; msg?: string }> {
+    try {
+      const { page, limit, ...filters } = filteredDto;
+
+      const queryBuilder = this.repository
+        .createQueryBuilder('practitioner')
+        .leftJoinAndSelect('practitioner.degree', 'degree')
+        .leftJoinAndSelect('practitioner.specialities', 'specialities')
+        .leftJoinAndSelect('practitioner.acceptedSocialWorks', 'socialWorks')
+        .leftJoinAndSelect('practitioner.specialistAttentionHour', 'appointments')
+        .leftJoinAndSelect('practitioner.favorite', 'favorite')
+        .leftJoinAndSelect('practitioner.office', 'office')
+        .where('practitioner.deletedAt IS NULL');
+
+      // Filtros por relaciones
+      if (filters.degree) {
+        queryBuilder.andWhere('degree.id = :degreeId', { degreeId: filters.degree });
+      }
+
+      if (filters.speciality) {
+        queryBuilder.andWhere('specialities.id = :specialityId', { specialityId: filters.speciality });
+      }
+
+      if (filters.socialWorkId) {
+        queryBuilder.andWhere('socialWorks.id = :socialWorkId', { socialWorkId: filters.socialWorkId });
+      }
+
+      // Filtros de office
+      if (filters.officeName) {
+        queryBuilder.andWhere('office.name = :officeName', { officeName: filters.officeName });
+      }
+
+      // Filtros de appointment
+      if (filters.appointmentDay) {
+        queryBuilder.andWhere('appointments.day = :appointmentDay', { appointmentDay: filters.appointmentDay });
+      }
+
+      // Filtros generales
+      for (const key in filters) {
+        if (Object.prototype.hasOwnProperty.call(filters, key) && filters[key] !== undefined && filters[key] !== null) {
+          if (key !== 'degree' && key !== 'speciality' && key !== 'socialWorkId' && key !== 'officeName' && key !== 'appointmentDay') {
+            queryBuilder.andWhere(`practitioner.${key} = :${key}`, { [key]: filters[key] });
+          }
+        }
+      }
+
+      const [practitioners, total] = await queryBuilder
+        .skip((page - 1) * limit)
+        .take(limit)
+        .getManyAndCount();
+
+      const lastPage = Math.ceil(total / limit);
+      let msg = '';
+      if (total === 0) msg = 'No se encontraron datos';
+      return { data: practitioners, lastPage, total, msg };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+
+  // otros
+  
   // async findTurnsBySpecialistId(specialistId: string): Promise<Turn[]> {
   //   try {
   //     const practitioner = await this.repository

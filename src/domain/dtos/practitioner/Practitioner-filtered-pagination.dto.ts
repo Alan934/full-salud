@@ -10,7 +10,6 @@ import {
   //IsUUID,
   MaxLength
 } from 'class-validator';
-import { PaginationDto } from '../../../common/dtos/pagination-common.dto';
 import { Filter } from '../../../common/util/dynamic-query-builder.util';
 import { TransformQueryBoolean } from '../../../common/util/custom-dto-properties-decorators/transform-boolean-decorator.util';
 import { Gender } from '../../enums';
@@ -79,4 +78,10 @@ export class PractitionerFilteredPaginationDto
   //@IsUUID()
   //@IsNotEmpty()
   socialWorkId?: string;
+  
+  @IsOptional()
+  officeName: string;
+
+  @IsOptional()
+  appointmentDay: string;
 }

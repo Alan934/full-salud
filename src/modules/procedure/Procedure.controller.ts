@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { ProcedureService } from './Procedure.service';
+import { ProcedureService } from './procedure.service';
 import { Procedure } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

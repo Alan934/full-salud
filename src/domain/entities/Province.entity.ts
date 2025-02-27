@@ -1,6 +1,6 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Country } from './Country.entity';
+import { Country } from './country.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity('province')

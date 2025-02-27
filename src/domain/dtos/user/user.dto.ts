@@ -22,7 +22,7 @@ import { ShortBaseDto } from '../../../common/dtos';
 import { Gender } from '../../enums';
 import { DocumentType } from '../../enums';
 import { Column } from 'typeorm';
-import { CreateSocialWorkDto } from '../social-work/SocialWork.dto';
+import { CreateSocialWorkDto } from '../social-work/social-work.dto';
 //asdadads
 
 export class UserDto {

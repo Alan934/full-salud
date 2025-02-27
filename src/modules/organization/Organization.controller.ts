@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { OrganizationService } from './Organization.service';
+import { OrganizationService } from './organization.service';
 import { Organization } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
@@ -9,7 +9,7 @@ import {
 } from '../../domain/dtos';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
-import { OrganizationPaginationDto } from '../../domain/dtos/organization/Organization-filtered-pagination.dto';
+import { OrganizationPaginationDto } from '../../domain/dtos/organization/organization-filtered-pagination.dto';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { PaginationMetadata } from '../../common/util/pagination-data.util';
 

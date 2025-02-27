@@ -13,7 +13,7 @@ import {
   UpdateDepartmentDto
 } from '../../domain/dtos';
 import { Department } from '../../domain/entities';
-import { DepartmentService } from './Department.service';
+import { DepartmentService } from './department.service';
 import { PaginationDto } from '../../common/dtos/pagination-common.dto';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';

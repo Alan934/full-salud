@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { DiagnosticService } from './Diagnostic.service';
-import { DiagnosticController } from './Diagnostic.controller';
+import { DiagnosticService } from './diagnostic.service';
+import { DiagnosticController } from './diagnostic.controller';
 import { Diagnostic } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { LocationService } from './Location.service';
+import { LocationService } from './location.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Location } from '../../domain/entities';
 import { CreateLocationDto, SerializerLocationDto, UpdateOfficeDto } from '../../domain/dtos';

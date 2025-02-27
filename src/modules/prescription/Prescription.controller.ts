@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { PrescriptionService } from './Prescription.service';
+import { PrescriptionService } from './prescription.service';
 import { Prescription } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

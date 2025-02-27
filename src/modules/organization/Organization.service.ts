@@ -17,7 +17,7 @@ import {
 } from '../../domain/dtos';
 import { Organization, Appointment } from '../../domain/entities';
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
-import { BranchService } from '../branch/Branch.service';
+import { BranchService } from '../branch/branch.service';
 
 @Injectable()
 export class OrganizationService extends BaseService<

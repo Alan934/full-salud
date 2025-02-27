@@ -1,5 +1,5 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ProvinceService } from './Province.service';
+import { ProvinceService } from './province.service';
 import { Province } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

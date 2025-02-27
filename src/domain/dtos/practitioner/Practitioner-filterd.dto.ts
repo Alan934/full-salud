@@ -8,7 +8,7 @@ import {
     MaxLength } 
     from "class-validator";
 import { TransformQueryBoolean } from "../../../common/util/custom-dto-properties-decorators/transform-boolean-decorator.util";
-import { Gender } from "../../../domain/enums";
+import { Gender } from "../../enums";
 
 export class PractitionerFilteredDto{
     @IsOptional()

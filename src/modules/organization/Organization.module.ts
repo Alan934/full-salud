@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { OrganizationService } from './Organization.service';
-import { OrganizationController } from './Organization.controller';
+import { OrganizationService } from './organization.service';
+import { OrganizationController } from './organization.controller';
 import { Organization } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { BranchModule } from '../branch/Branch.module';
+import { BranchModule } from '../branch/branch.module';
 
 @Module({
   imports: [

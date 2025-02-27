@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { CountryService } from './Country.service';
+import { CountryService } from './country.service';
 import { Country } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

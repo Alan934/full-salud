@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { NotificationService } from './Notification.service';
+import { NotificationService } from './notification.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Notification } from '../../domain/entities';
 import {

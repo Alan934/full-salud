@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
-import { PractitionerService } from './Practitioner.service';
-import { PractitionerController } from './Practitioner.controller';
+import { PractitionerService } from './practitioner.service';
+import { PractitionerController } from './practitioner.controller';
 import { ProfessionalDegree, Location, Patient, Practitioner, PractitionerRole } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';

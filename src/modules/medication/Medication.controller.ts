@@ -7,10 +7,10 @@ import {
   UpdateMedicationDto
 } from '../../domain/dtos';
 import { Medication } from '../../domain/entities';
-import { MedicationService } from './Medication.service';
+import { MedicationService } from './medication.service';
 
-@ApiTags('Medicines')
-@Controller('medicines')
+@ApiTags('Medication')
+@Controller('medication')
 export class MedicationController extends ControllerFactory<
   Medication,
   CreateMedicationDto,

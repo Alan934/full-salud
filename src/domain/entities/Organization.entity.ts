@@ -7,7 +7,7 @@ import {
   ManyToOne,
   OneToMany
 } from 'typeorm';
-import { ValueAddedTax  } from './ValueAddedTax.entity';
+import { ValueAddedTax  } from './value-added-tax.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrganizationType, FinancialTransaction, Branch } from '.';
 

@@ -16,7 +16,7 @@ import {
 } from '@nestjs/common';
 import { Express } from 'express';
 import 'multer';
-import { AppointmentService } from './Appointment.service';
+import { AppointmentService } from './appointment.service';
 import { Appointment } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {

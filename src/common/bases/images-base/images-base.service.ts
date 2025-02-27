@@ -1,4 +1,4 @@
-import { MediaResource } from '../../../domain/entities/MediaResource.entity';
+import { MediaResource } from '../../../domain/entities/media-resource.entity';
 import { DeepPartial, Repository } from 'typeorm';
 import {
   v2 as cloudinary,

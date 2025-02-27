@@ -7,7 +7,7 @@ import {
   UpdateBranchDto
 } from '../../domain/dtos';
 import { Branch } from '../../domain/entities';
-import { BranchService } from './Branch.service';
+import { BranchService } from './branch.service';
 
 @ApiTags('Branch')
 @Controller('branch')

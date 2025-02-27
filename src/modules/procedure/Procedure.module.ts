@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ProcedureService } from './Procedure.service';
-import { ProcedureController } from './Procedure.controller';
+import { ProcedureService } from './procedure.service';
+import { ProcedureController } from './procedure.controller';
 import { Procedure } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

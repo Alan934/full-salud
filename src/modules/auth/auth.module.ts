@@ -10,7 +10,7 @@ import { AuthController } from './auth.controller';
 // import { SecretaryNotificationPreferencesModule } from '../secretary_notification_preferences/secretary-notification-preferences.module';
 // import { SpecialistsSecretaryNotificationPreferencesModule } from '../specialists_secretary_notification_preferences/specialists-secretary-notification-preferences.module';
 import { PatientModule } from '../patient/patient.module';
-import { PractitionerModule } from '../practitioner/Practitioner.module';
+import { PractitionerModule } from '../practitioner/practitioner.module';
 // import { NotificationsModule } from '../notifications/notifications.module';
 import { JwtModule } from '@nestjs/jwt';
 import { envConfig } from '../../config/envs';

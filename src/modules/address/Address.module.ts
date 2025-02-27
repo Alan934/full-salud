@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { AddressService } from './Address.service';
-import { AddressController } from './Address.controller';
+import { AddressService } from './address.service';
+import { AddressController } from './address.controller';
 import { Address } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 

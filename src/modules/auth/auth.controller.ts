@@ -30,4 +30,11 @@ export class AuthController {
     return this.authService.createAdmin(createUserDto);
   }
 
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{ url: string }> {
+    const url = await this.authService.uploadImage(file);
+    return { url };
+  }
+
 }

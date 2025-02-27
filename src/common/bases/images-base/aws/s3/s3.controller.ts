@@ -14,7 +14,7 @@ import {
 import { Express } from 'express';
 import 'multer';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { MediaResource } from '../../../../../domain/entities/MediaResource.entity';
+import { MediaResource } from '../../../../../domain/entities/media-resource.entity';
 import {
   ApiBadRequestResponse,
   ApiBody,

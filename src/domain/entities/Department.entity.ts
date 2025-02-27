@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { Province } from './Province.entity';
+import { Province } from './province.entity';
 
 @Entity('department')
 export class Department extends Base {

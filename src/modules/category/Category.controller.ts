@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { CategoryService } from './Category.service';
+import { CategoryService } from './category.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Category } from '../../domain/entities';
 import { CreateCategoryDto, SerializerCategoryDto, UpdateCategoryDto } from '../../domain/dtos';

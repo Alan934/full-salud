@@ -10,8 +10,8 @@ import {
 } from '..';
 import { Expose, Type } from 'class-transformer';
 import { Role, AppointmentStatus } from '../../enums';
-import { SerializerPatientAppointmentDto } from '../patient-appointment/PatientAppointment-serializer.dto';
-import { Practitioner } from '../../../domain/entities';
+import { SerializerPatientAppointmentDto } from '../patient-appointment/patient-appointment-serializer.dto';
+import { Practitioner } from '../../entities';
 
 export class SerializerAppointmentDto extends FullBaseDto {
   @Expose()
