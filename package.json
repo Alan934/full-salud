@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.4.0",
     "@nestjs/typeorm": "^10.0.2",
+    "@vercel/blob": "^0.27.2",
     "api-full-salud": "file:",
     "axios": "^1.7.9",
     "bcrypt": "^5.1.1",

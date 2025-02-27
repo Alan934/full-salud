@@ -24,6 +24,7 @@ const enVarsSchema = joi
     S3_SECRET_ACCESS_KEY: joi.string().allow(),
     S3_REGION: joi.string().allow(),
     S3_BUCKET_NAME: joi.string().allow(),
+    BLOB_READ_WRITE_TOKEN: joi.string().allow(),
   })
   .unknown()
   .required(); // unknown() permite que se añadan variables de entorno no definidas en el esquema
@@ -55,6 +56,7 @@ interface EnvVars {
   S3_SECRET_ACCESS_KEY: string;
   S3_REGION: string;
   S3_BUCKET_NAME: string;
+  BLOB_READ_WRITE_TOKEN: string;
 }
 
 //Exportamos las envs validadas
@@ -77,7 +79,8 @@ export const envConfig: EnvVars = {
   S3_ACCESS_KEY_ID: envVars.S3_ACCESS_KEY_ID,
   S3_SECRET_ACCESS_KEY: envVars.S3_SECRET_ACCESS_KEY,
   S3_REGION: envVars.S3_REGION,
-  S3_BUCKET_NAME: envVars.S3_BUCKET_NAME
+  S3_BUCKET_NAME: envVars.S3_BUCKET_NAME,
+  BLOB_READ_WRITE_TOKEN: envVars.BLOB_READ_WRITE_TOKEN,
 };
 
 

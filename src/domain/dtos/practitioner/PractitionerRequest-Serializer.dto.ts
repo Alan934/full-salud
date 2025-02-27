@@ -1,8 +1,8 @@
 import { Expose } from 'class-transformer';
 import { ShortBaseDto } from 'src/common/dtos';
 import { Gender } from 'src/domain/enums';
-import { SerializerPractitionerRoleDto } from '../practitioner-role/PractitionerRole-serializer.dto';
-import { SerializerSocialWorkDto } from '../social-work/SocialWork-serializer.dto';
+import { SerializerPractitionerRoleDto } from '../practitioner-role/practitioner-role-serializer.dto';
+import { SerializerSocialWorkDto } from '../social-work/social-work-serializer.dto';
 import { SerializerLocationDto } from '../location/Location-serializer.dto';
 import { SerializerAppointmentDto } from '../appointment/Appointment-serializer.dto';
 

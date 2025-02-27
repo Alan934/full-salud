@@ -1,9 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {  AuthUserDto, UserDto } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
 import { Roles } from './guards/auth.guard';
 import { Role } from '../../domain/enums';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Authentication')
 @Controller('auth')
