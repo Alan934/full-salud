@@ -93,9 +93,9 @@ export class SerializerPractitionerDto extends FullBaseDto {
   @Type(() => SerializerShortPractitionerRoleDto)
   practitionerRole: SerializerShortPractitionerRoleDto[];
 
-  @Expose()
-  @Type(() => SerializerShortSocialWorkDto)
-  acceptedSocialWorks: SerializerShortSocialWorkDto[];
+  // @Expose()
+  // @Type(() => SerializerShortSocialWorkDto)
+  // acceptedSocialWorks: SerializerShortSocialWorkDto[];
 
   @Expose()
   @Type(() => ShortSerializerPractitionerAppointmentDto)

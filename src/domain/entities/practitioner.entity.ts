@@ -22,21 +22,18 @@ import { IsOptional } from 'class-validator';
 
 @Entity('practitioner')
 export class Practitioner extends User {
-  @Expose()
   @Column({
     type: 'varchar',
     nullable: true,
   })
   license: string;
 
-  @Expose()
   @Column({
     type: 'float',
     default: 0.0,
   })
   rating: number = 0;
 
-  @Expose()
   @Column({
     type: 'boolean',
     nullable: true,
@@ -45,14 +42,20 @@ export class Practitioner extends User {
   })
   homeService: boolean;
 
-  @Expose()
+  @Column({
+    type: 'boolean',
+    nullable: true,
+    name: 'accepted_social_works',
+    default: false,
+  })
+  acceptedSocialWorks: boolean;
+
   @ManyToOne(() => ProfessionalDegree, {
     eager: true,
   })
   @JoinColumn({ name: 'degree_id' })
   degree: ProfessionalDegree;
 
-  @Expose()
   @ManyToMany(() => PractitionerRole, (practitioner) => practitioner.practitioners, {
     eager: true,
     nullable: true,
@@ -70,7 +73,6 @@ export class Practitioner extends User {
   })
   specialities: PractitionerRole[];
 
-  @Expose()
   @OneToMany(
     () => PractitionerAppointment,
     (specialistAttentionHour) => specialistAttentionHour.practitioner,
@@ -85,7 +87,6 @@ export class Practitioner extends User {
   )
   specialistAttentionHour: PractitionerAppointment[];
 
-  @Expose()
   @OneToOne(() => PatientPractitionerFavorite, (favorite) => favorite.practitioner)
   favorite: PatientPractitionerFavorite;
 

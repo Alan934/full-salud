@@ -22,12 +22,12 @@ export class SerializerPractitionerDto extends SerializerUserDto {
   homeService: boolean;
 
   @Expose()
-  @Type(() => SerializerShortPractitionerRoleDto)
-  specialities: SerializerShortPractitionerRoleDto[];
+  @ApiProperty({ example: 'false' })
+  acceptedSocialWorks: boolean;
 
   @Expose()
-  @Type(() => SerializerShortSocialWorkDto)
-  acceptedSocialWorks: SerializerShortSocialWorkDto[];
+  @Type(() => SerializerShortPractitionerRoleDto)
+  specialities: SerializerShortPractitionerRoleDto[];
 
   @Expose()
   @Type(() => ShortSerializerPractitionerAppointmentDto)

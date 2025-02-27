@@ -123,7 +123,7 @@ export abstract class User extends Base {
   })
   addresses: Address[];
 
-  @ManyToOne(() => SocialWork, (socialWork) => socialWork.users, {
+  @ManyToOne(() => SocialWork, {
     nullable: true,
     onDelete: 'SET NULL',
   })

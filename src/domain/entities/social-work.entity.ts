@@ -40,6 +40,6 @@ export class SocialWork extends Base {
   @ApiProperty({ example: 'https://osepmendoza.com.ar/web/' })
   website?: string;
 
-  @OneToMany(() => User, (user) => user.socialWork)
-  users: User[];
+  // @OneToMany(() => User, (user) => user.socialWork)
+  // users: User[];
 }

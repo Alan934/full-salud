@@ -31,16 +31,21 @@ export class CreatePractitionerDto extends OmitType(UserDto, ['role'] as const) 
   @ApiProperty({ type: [ShortBaseDto] })
   specialities?: ShortBaseDto[];
 
-  @ValidateNested({ each: true })
-  @Type(() => ShortBaseDto)
-  @IsOptional()
-  @ApiProperty({ type: [ShortBaseDto] })
-  acceptedSocialWorks?: ShortBaseDto[];
+  // @ValidateNested({ each: true })
+  // @Type(() => ShortBaseDto)
+  // @IsOptional()
+  // @ApiProperty({ type: [ShortBaseDto] })
+  // acceptedSocialWorks?: ShortBaseDto[];
 
   @IsOptional()
   @IsBoolean()
   @ApiProperty({ example: false })
   homeService?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({ example: false })
+  acceptedSocialWorks?: boolean;
 
   @ValidateNested({ each: true })
   @Type(() => CreatePractitionerAppointmentDto)

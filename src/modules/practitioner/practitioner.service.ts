@@ -285,7 +285,7 @@ export class PractitionerService extends BaseService<
         )
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.specialities', 'speciality')
-        .leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
+        //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
 
       //añade las condiciones where al query builder
       const query = DynamicQueryBuilder.buildSelectQuery<Practitioner>(
@@ -389,7 +389,7 @@ export class PractitionerService extends BaseService<
         .leftJoinAndSelect('practitioner.specialistAttentionHour', 'specialistAttentionHour')
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.speciality', 'speciality')
-        .leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work')
+        //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work')
         .leftJoinAndSelect('practitioner.turns', 'turn')
         //.leftJoinAndSelect('turn.Patient', 'Patient') // Opcional: otras relaciones de Turn
         .getMany();
@@ -409,7 +409,7 @@ export class PractitionerService extends BaseService<
         .createQueryBuilder('practitioner')
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.specialities', 'specialities')
-        .leftJoinAndSelect('practitioner.acceptedSocialWorks', 'socialWorks')
+        //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'socialWorks')
         .leftJoinAndSelect('practitioner.specialistAttentionHour', 'appointments')
         .leftJoinAndSelect('practitioner.favorite', 'favorite')
         .leftJoinAndSelect('practitioner.office', 'office')
