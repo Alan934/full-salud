@@ -409,7 +409,7 @@ export class PractitionerService extends BaseService<
         .createQueryBuilder('practitioner')
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.specialities', 'specialities')
-        //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'socialWorks')
+        .leftJoinAndSelect('practitioner.socialWork', 'socialWorks')
         .leftJoinAndSelect('practitioner.specialistAttentionHour', 'appointments')
         .leftJoinAndSelect('practitioner.favorite', 'favorite')
         .leftJoinAndSelect('practitioner.office', 'office')
@@ -460,29 +460,5 @@ export class PractitionerService extends BaseService<
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-
-
-  // otros
-  
-  // async findTurnsBySpecialistId(specialistId: string): Promise<Turn[]> {
-  //   try {
-  //     const practitioner = await this.repository
-  //       .createQueryBuilder('practitioner')
-  //       .leftJoinAndSelect('practitioner.turns', 'turn')
-  //       .leftJoinAndSelect('turn.Patient', 'Patient')
-  //       .where('practitioner.id = :id', { id: specialistId })
-  //       .getOne();
-  
-  //     if (!practitioner) {
-  //       throw new ErrorManager.createSignatureError(
-  //         `Specialist with id ${specialistId} not found`
-  //       );
-  //     }
-  
-  //     return practitioner.turns;
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
   
 }
