@@ -1,6 +1,6 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsNumber, IsString } from 'class-validator';
-import { CreateMedicationDto } from '../medication/Medication.dto';
+import { CreateMedicationDto } from '../medication/medication.dto';
 import { Transform, Type } from 'class-transformer';
 
 export class FilteredMedicationRequestDto {

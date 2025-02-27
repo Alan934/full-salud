@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsNumber, IsString, ValidateNested } from 'class-validator';
-import { CreateMedicationDto } from '../medication/Medication.dto';
+import { CreateMedicationDto } from '../medication/medication.dto';
 
 export class CreateMedicationRequestDto {
   @IsNotEmpty()
