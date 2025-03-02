@@ -51,13 +51,13 @@ export class PatientService extends BaseService<
   
       const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
   
-      let socialWorkEnrollment: SocialWorkEnrollment | null = null;
-      if (socialWorkEnrollmentId) {
-        socialWorkEnrollment = await this.socialWorkEnrollmentRepository.findOne({ where: { id: socialWorkEnrollmentId } });
-        if (!socialWorkEnrollment) {
-          throw new ErrorManager(`Social Work with ID ${socialWorkEnrollmentId} not found`, 400);
-        }
-      }
+      // let socialWorkEnrollment: SocialWorkEnrollment | null = null;
+      // if (socialWorkEnrollmentId) {
+      //   socialWorkEnrollment = await this.socialWorkEnrollmentRepository.findOne({ where: { id: socialWorkEnrollmentId } });
+      //   if (!socialWorkEnrollment) {
+      //     throw new ErrorManager(`Social Work with ID ${socialWorkEnrollmentId} not found`, 400);
+      //   }
+      // }
 
       const patient = this.patientRepository.create({
         ...userData,
@@ -66,7 +66,7 @@ export class PatientService extends BaseService<
         email,
         phone,
         username,
-        socialWorkEnrollment,        
+        //socialWorkEnrollment,        
         role: Role.PATIENT,
       });
 
