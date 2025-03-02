@@ -3,11 +3,8 @@ import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
 import { Role } from '../enums/role.enum';
-
 import { ApiProperty } from '@nestjs/swagger';
 import { Address } from './address.entity';
-import { Exclude, Expose } from 'class-transformer';
-import { SocialWork } from './social-work.entity';
 import { SocialWorkEnrollment } from './social-work-enrollment.entity';
 
 @Entity('user')
@@ -129,5 +126,6 @@ export abstract class User extends Base {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'social_work_enrollment_id' })
+  @ApiProperty({ type: () => SocialWorkEnrollment })
   socialWorkEnrollment?: SocialWorkEnrollment;
 }
