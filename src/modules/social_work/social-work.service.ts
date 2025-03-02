@@ -20,7 +20,7 @@ export class SocialWorkService extends BaseService<
 
   async createSocialWork(createSocialWorkDto: CreateSocialWorkDto) {
     try {
-      const { name, phone, plan, memberNum, website } = createSocialWorkDto;
+      const { name, phone, website } = createSocialWorkDto;
 
       const existingSocialWork = await this.socialWorkRepository.findOne({
         where: { name },
@@ -33,8 +33,6 @@ export class SocialWorkService extends BaseService<
       const socialWork = this.socialWorkRepository.create({
         name,
         phone,
-        plan,
-        memberNum,
         website,
       });
 

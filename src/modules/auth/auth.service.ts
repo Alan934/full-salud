@@ -49,7 +49,7 @@ export class AuthService extends BaseService<
     await this.ensureAdminExists();
   }
 
-  async loginUser(loginDto: AuthUserDto): Promise<UserDto & { accessToken: string; refreshToken: string }> {
+  async loginUser(loginDto: AuthUserDto)/*: Promise<UserDto & { accessToken: string; refreshToken: string }>*/ {
     const { email, username, password } = loginDto;
     try {
       let user: User | undefined = await this.patientRepository.findOne({

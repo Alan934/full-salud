@@ -209,7 +209,6 @@ export class PractitionerService extends BaseService<
     }
   }
 
-
   // Recuperar un especialista eliminado
   async recover(id: string): Promise<{ message: string }> {
     try {
@@ -262,10 +261,10 @@ export class PractitionerService extends BaseService<
       }),
     speciality: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
       queryBuilder.andWhere('practitioner_role.id = :id', { id: value }),
-    socialWorkId: (
+    socialWorkEnrollmentId: (
       queryBuilder: SelectQueryBuilder<Practitioner>,
       value: string
-    ) => queryBuilder.andWhere('social_work.id = :id', { id: value }),
+    ) => queryBuilder.andWhere('social_work_enrrollment.id = :id', { id: value }),
     degree: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
       queryBuilder.andWhere('degree.id = :id', { id: value })
   };
@@ -409,7 +408,7 @@ export class PractitionerService extends BaseService<
         .createQueryBuilder('practitioner')
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.specialities', 'specialities')
-        .leftJoinAndSelect('practitioner.socialWork', 'socialWorks')
+        .leftJoinAndSelect('practitioner.socialWorkEnrollment', 'socialWorkEnrollment')
         .leftJoinAndSelect('practitioner.specialistAttentionHour', 'appointments')
         .leftJoinAndSelect('practitioner.favorite', 'favorite')
         .leftJoinAndSelect('practitioner.office', 'office')
@@ -424,8 +423,8 @@ export class PractitionerService extends BaseService<
         queryBuilder.andWhere('specialities.id = :specialityId', { specialityId: filters.speciality });
       }
 
-      if (filters.socialWorkId) {
-        queryBuilder.andWhere('socialWorks.id = :socialWorkId', { socialWorkId: filters.socialWorkId });
+      if (filters.socialWorkEnrollmentId) {
+        queryBuilder.andWhere('socialWorkEnrollment.id = :socialWorkEnrollmentId', { socialWorkEnrollmentId: filters.socialWorkEnrollmentId });
       }
 
       // Filtros de office

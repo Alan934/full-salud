@@ -20,16 +20,6 @@ export class CreateSocialWorkDto {
 
   @IsOptional()
   @IsString()
-  @ApiProperty({ example: 'Basico' })
-  plan?: string;
-
-  @IsOptional()
-  @IsString()
-  @ApiProperty({ example: '4567' })
-  memberNum?: string;
-
-  @IsOptional()
-  @IsString()
   @ApiProperty({ example: 'https://osepmendoza.com.ar/web/' })
   website?: string;
 

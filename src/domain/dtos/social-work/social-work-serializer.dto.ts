@@ -12,14 +12,6 @@ export class SerializerSocialWorkDto extends FullBaseDto {
   phone: string;
 
   @Expose()
-  @ApiProperty({ example: 'Basico' })
-  plan: string;
-
-  @Expose()
-  @ApiProperty({ example: '4567' })
-  memberNum: string;
-
-  @Expose()
   @ApiProperty({ example: 'https://osepmendoza.com.ar/web/' })
   website: string;
 }

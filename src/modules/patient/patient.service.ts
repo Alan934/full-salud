@@ -7,7 +7,7 @@ import {
   SerializerUserDto,
   UpdatePatientDto
 } from '../../domain/dtos';
-import { Patient, Practitioner, SocialWork } from '../../domain/entities';
+import { Patient, Practitioner, SocialWorkEnrollment } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { EntityManager, Repository } from 'typeorm';
 import { Role } from '../../domain/enums';
@@ -24,7 +24,7 @@ export class PatientService extends BaseService<
   constructor(
     @InjectRepository(Patient) protected patientRepository: Repository<Patient>,
     @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
-    @InjectRepository(SocialWork) private readonly socialWorkRepository: Repository<SocialWork>,
+    @InjectRepository(SocialWorkEnrollment) private readonly socialWorkEnrollmentRepository: Repository<SocialWorkEnrollment>,
     @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
   ) {
     super(patientRepository);
@@ -32,7 +32,7 @@ export class PatientService extends BaseService<
 
   async createPatient(createPatientDto: CreatePatientDto) {
     try {
-      const { dni, email, phone, username, password, socialWorkId, ...userData } = createPatientDto;
+      const { dni, email, phone, username, password, socialWorkEnrollmentId, ...userData } = createPatientDto;
       
       const existingPatient = await this.patientRepository.findOne({
         where: [{ dni }, { email }, { phone }, { username }],
@@ -51,11 +51,11 @@ export class PatientService extends BaseService<
   
       const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
   
-      let socialWork: SocialWork | null = null;
-      if (socialWorkId) {
-        socialWork = await this.socialWorkRepository.findOne({ where: { id: socialWorkId } });
-        if (!socialWork) {
-          throw new ErrorManager(`Social Work with ID ${socialWorkId} not found`, 400);
+      let socialWorkEnrollment: SocialWorkEnrollment | null = null;
+      if (socialWorkEnrollmentId) {
+        socialWorkEnrollment = await this.socialWorkEnrollmentRepository.findOne({ where: { id: socialWorkEnrollmentId } });
+        if (!socialWorkEnrollment) {
+          throw new ErrorManager(`Social Work with ID ${socialWorkEnrollmentId} not found`, 400);
         }
       }
 
@@ -66,7 +66,7 @@ export class PatientService extends BaseService<
         email,
         phone,
         username,
-        socialWork,        
+        socialWorkEnrollment,        
         role: Role.PATIENT,
       });
 

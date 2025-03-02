@@ -19,18 +19,10 @@ export class SocialWorkEnrollment extends Base {
   plan?: string;
 
   @ManyToOne(() => SocialWork, {
-    eager: true,
-    nullable: false
+    nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'social_work_id' })
-  socialWork: SocialWork;
-  @OneToOne(() => Patient, {
-    eager: true,
-    nullable: false
-  })
-
-  @JoinColumn({ name: 'patient_id' })
-  patient: Patient;
-
+  socialWork?: SocialWork;
 
 }

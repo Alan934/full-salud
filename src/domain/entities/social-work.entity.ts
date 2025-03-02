@@ -23,23 +23,6 @@ export class SocialWork extends Base {
     type: 'varchar',
     nullable: true
   })
-  @ApiProperty({ example: 'Basico' })
-  plan?: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: true
-  })
-  @ApiProperty({ example: '4567' })
-  memberNum?: string;
-
-  @Column({
-    type: 'varchar',
-    nullable: true
-  })
   @ApiProperty({ example: 'https://osepmendoza.com.ar/web/' })
   website?: string;
-
-  // @OneToMany(() => User, (user) => user.socialWork)
-  // users: User[];
 }

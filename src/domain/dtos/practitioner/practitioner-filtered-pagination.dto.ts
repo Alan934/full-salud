@@ -77,7 +77,7 @@ export class PractitionerFilteredPaginationDto
   @IsOptional()
   //@IsUUID()
   //@IsNotEmpty()
-  socialWorkId?: string;
+  socialWorkEnrollmentId?: string;
   
   @IsOptional()
   officeName: string;
