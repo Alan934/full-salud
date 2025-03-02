@@ -2,7 +2,7 @@ import { Expose } from 'class-transformer';
 import { ShortBaseDto } from 'src/common/dtos';
 import { Gender } from 'src/domain/enums';
 import { SerializerPractitionerRoleDto } from '../practitioner-role/practitioner-role-serializer.dto';
-import { SerializerSocialWorkDto } from '../social-work/social-work-serializer.dto';
+import { SerializerSocialWorkEnrollmentDto } from '../social-work-enrollment/social-work-enrollment-serializer.dto';
 import { SerializerLocationDto } from '../location/Location-serializer.dto';
 import { SerializerAppointmentDto } from '../appointment/Appointment-serializer.dto';
 
@@ -37,7 +37,7 @@ export class PractitionerRequestDto
   speciality?: SerializerPractitionerRoleDto;
 
   @Expose()
-  socialWorkId?: SerializerSocialWorkDto;
+  socialWorkEnrollmentId?: SerializerSocialWorkEnrollmentDto;
 
   @Expose()  
   officeName: SerializerLocationDto;

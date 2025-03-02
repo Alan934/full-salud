@@ -60,5 +60,5 @@ export class PractitionerFilteredDto{
     @IsOptional()
     // @IsUUID()
     // @IsNotEmpty()
-    socialWorkId?: string;
+    socialWorkEnrollmentId?: string;
 }

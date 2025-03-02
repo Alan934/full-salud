@@ -127,7 +127,8 @@ export abstract class User extends Base {
   @OneToOne(() => SocialWorkEnrollment, {
     nullable: true,
     onDelete: 'SET NULL',
+    lazy: true,
   })
   @JoinColumn({ name: 'social_work_enrollment_id' })
-  socialWorkEnrollment?: SocialWorkEnrollment;
+  socialWorkEnrollment: Promise<SocialWorkEnrollment>;
 }
