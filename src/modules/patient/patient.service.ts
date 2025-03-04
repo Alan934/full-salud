@@ -32,7 +32,7 @@ export class PatientService extends BaseService<
 
   async createPatient(createPatientDto: CreatePatientDto) {
     try {
-      const { dni, email, phone, username, password, socialWorkEnrollmentId, ...userData } = createPatientDto;
+      const { dni, email, phone, username, password, /*socialWorkEnrollmentId,*/ ...userData } = createPatientDto;
       
       const existingPatient = await this.patientRepository.findOne({
         where: [{ dni }, { email }, { phone }, { username }],

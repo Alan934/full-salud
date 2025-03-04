@@ -23,6 +23,7 @@ import { Gender } from '../../enums';
 import { DocumentType } from '../../enums';
 import { Column } from 'typeorm';
 import { CreateSocialWorkDto } from '../social-work/social-work.dto';
+import { SerializerSocialWorkEnrollmentDto } from '../social-work-enrollment/social-work-enrollment-serializer.dto';
 //asdadads
 
 export class UserDto {
@@ -128,7 +129,7 @@ export class UserDto {
 
   @IsOptional()
   @IsUUID()
-  @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
+  @ApiProperty({ type: () => SerializerSocialWorkEnrollmentDto })
   socialWorkEnrollmentId?: string;
 
 }

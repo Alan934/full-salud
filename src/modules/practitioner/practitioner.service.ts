@@ -24,7 +24,6 @@ import {
 import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
-// import { PersonsService } from '../persons/persons.service';
 import axios from 'axios';
 import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/practitioner.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/practitioner-filtered-pagination.dto';
@@ -40,7 +39,6 @@ export class PractitionerService extends BaseService<
 > {
   constructor(
     @InjectRepository(Practitioner) protected repository: Repository<Practitioner>,
-    //@Inject() protected personService: PersonsService
     @InjectRepository(PractitionerRole) private readonly specialityRepository: Repository<PractitionerRole>,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Location) private readonly officeRepository: Repository<Location>,
@@ -330,7 +328,6 @@ export class PractitionerService extends BaseService<
           await manager.delete(PractitionerAppointment, { practitioner: entity });
           await manager.delete(ChargeItem, { practitioner: entity });
           await manager.remove(Practitioner, entity);
-          //await this.personService.removeWithManager(entity.person.id, manager);
           return `Entity with id ${id} deleted`;
         }
       );
@@ -345,10 +342,6 @@ export class PractitionerService extends BaseService<
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
           await manager.softDelete(ChargeItem, { practitioner: entity });
-          // await this.personService.softRemoveWithManager(
-          //   entity.person.id,
-          //   manager
-          // );
           await manager.softRemove(entity);
           return `Entity with id ${id} soft deleted`;
         }
@@ -367,10 +360,6 @@ export class PractitionerService extends BaseService<
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
           const recovered = await manager.recover(entity);
-          // await this.personService.restoreWithManager(
-          //   entity.person.id,
-          //   manager
-          // );
           await manager.restore(ChargeItem, { practitioner: entity });
           return recovered;
         }
@@ -383,8 +372,7 @@ export class PractitionerService extends BaseService<
   async findAllWithTurns(): Promise<Practitioner[]> {
     try {
       return await this.repository
-        .createQueryBuilder('practitioner')
-        .leftJoinAndSelect('practitioner.person', 'person')
+        .createQueryBuilder('practitioner')      
         .leftJoinAndSelect('practitioner.specialistAttentionHour', 'specialistAttentionHour')
         .leftJoinAndSelect('practitioner.degree', 'degree')
         .leftJoinAndSelect('practitioner.speciality', 'speciality')

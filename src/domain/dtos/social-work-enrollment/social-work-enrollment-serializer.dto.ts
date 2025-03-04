@@ -14,5 +14,6 @@ export class SerializerSocialWorkEnrollmentDto extends ShortBaseDto {
 
   @Expose()
   @Type(() => SerializerSocialWorkDto)
+  @ApiProperty({ type: () => SerializerSocialWorkDto })
   socialWork?: SerializerSocialWorkDto;
 }
