@@ -129,6 +129,7 @@ export class UserDto {
 
   @IsOptional()
   @IsUUID()
+  @ApiProperty({ type: SerializerSocialWorkEnrollmentDto })
   socialWorkEnrollmentId?: string;
 
 }

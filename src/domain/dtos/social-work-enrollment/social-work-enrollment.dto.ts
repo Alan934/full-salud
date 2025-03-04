@@ -7,6 +7,7 @@ import {
   ValidateNested
 } from 'class-validator';
 import { ShortBaseDto } from '../../../common/dtos';
+import { SerializerSocialWorkDto } from '../social-work/social-work-serializer.dto';
 
 export class CreateSocialWorkEnrollmentDto {
   @IsNotEmpty()
@@ -24,6 +25,7 @@ export class CreateSocialWorkEnrollmentDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
+  @ApiProperty({ type: () => SerializerSocialWorkDto })
   socialWork?: ShortBaseDto;
 }
 

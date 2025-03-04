@@ -25,6 +25,7 @@ export class SocialWorkEnrollment extends Base {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'social_work_id' })
+  @ApiProperty({ type: () => SerializerSocialWorkDto })
   socialWork?: SocialWork;
 
 }
