@@ -56,10 +56,10 @@ export class SerializerUserDto extends FullBaseDto {
   })
   role: Role;
 
-  @Expose()
-  @Type(() => SerializerSocialWorkEnrollmentDto)
-  @ApiProperty({ type: SerializerSocialWorkEnrollmentDto })
-  socialWorkEnrollmentId?: SerializerSocialWorkEnrollmentDto;
+  // @Expose()
+  // @Type(() => SerializerSocialWorkEnrollmentDto)
+  // @ApiProperty({ type: SerializerSocialWorkEnrollmentDto })
+  // socialWorkEnrollmentId?: SerializerSocialWorkEnrollmentDto;
 }
 
 export class SerializerShortUserDto extends ShortBaseDto {
