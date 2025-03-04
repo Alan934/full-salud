@@ -121,11 +121,11 @@ export abstract class User extends Base {
   })
   addresses: Address[];
 
-  // @OneToOne(() => SocialWorkEnrollment, {
-  //   nullable: true,
-  //   onDelete: 'SET NULL',
-  // })
-  // @JoinColumn({ name: 'social_work_enrollment_id' })
-  // @ApiProperty({ type: () => SocialWorkEnrollment })
-  // socialWorkEnrollment?: SocialWorkEnrollment;
+  @OneToOne(() => SocialWorkEnrollment, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn({ name: 'social_work_enrollment_id' })
+  @ApiProperty({ type: () => SocialWorkEnrollment })
+  socialWorkEnrollment?: SocialWorkEnrollment;
 }
