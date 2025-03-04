@@ -126,6 +126,5 @@ export abstract class User extends Base {
     onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'social_work_enrollment_id' })
-  @ApiProperty({ type: () => SocialWorkEnrollment })
   socialWorkEnrollment?: SocialWorkEnrollment;
 }
