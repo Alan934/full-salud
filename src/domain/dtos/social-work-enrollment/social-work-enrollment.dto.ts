@@ -25,7 +25,6 @@ export class CreateSocialWorkEnrollmentDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  @ApiProperty({ type: () => SerializerSocialWorkDto })
   socialWork?: ShortBaseDto;
 }
 
