@@ -38,7 +38,7 @@ export class PatientAppointment extends Base {
   })
   day: Day;
 
-  @ManyToOne(() => Appointment, (turn) => turn.attentionHourPatient)
+  @ManyToOne(() => Appointment, (turn) => turn.patientAppointment)
   @JoinColumn({ name: 'turn_id' })
   turn: Appointment;
 }

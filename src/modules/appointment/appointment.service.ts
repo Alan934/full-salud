@@ -98,8 +98,8 @@ export class AppointmentService extends BaseService<
       // After saving, populate the practitionerIds
       savedTurn.practitionerId = specialists.map(specialist => specialist.id);
 
-      if (createTurnDto.attentionHourPatient && createTurnDto.attentionHourPatient.length > 0) {
-        const attentionHours = createTurnDto.attentionHourPatient.map((hourData) => {
+      if (createTurnDto.patientAppointment && createTurnDto.patientAppointment.length > 0) {
+        const attentionHours = createTurnDto.patientAppointment.map((hourData) => {
           return queryRunner.manager.create(PatientAppointment, {
             openingHour: hourData.openingHour,
             closeHour: hourData.closeHour,
@@ -109,7 +109,7 @@ export class AppointmentService extends BaseService<
         });
   
         await queryRunner.manager.save(PatientAppointment, attentionHours);
-        savedTurn.attentionHourPatient = attentionHours;
+        savedTurn.patientAppointment = attentionHours;
       }
       
       await queryRunner.commitTransaction();

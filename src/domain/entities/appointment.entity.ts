@@ -93,7 +93,7 @@ export class Appointment extends Base {
       onUpdate: 'CASCADE'
     }
   )
-  attentionHourPatient: PatientAppointment[];
+  patientAppointment: PatientAppointment[];
 
 }
 

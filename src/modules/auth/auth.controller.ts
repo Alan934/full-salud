@@ -1,10 +1,12 @@
-import { Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import {  AuthUserDto, UserDto } from '../../domain/dtos';
-import { ApiTags } from '@nestjs/swagger';
-import { Roles } from './guards/auth.guard';
+import {  AuthUserDto } from '../../domain/dtos';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard, Roles } from './guards/auth.guard';
 import { Role } from '../../domain/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { User, Token } from './decorators';
+import { CurrentUser } from './interfaces/current-user.interface';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -20,9 +22,11 @@ export class AuthController {
     return await this.authService.loginUser(loginDto);
   }
 
-  @Post('/refresh')
-  async refreshToken(@Body('refreshToken') refreshToken: string): Promise<{ accessToken: string }> {
-    return await this.authService.refreshToken(refreshToken);
+  @UseGuards( AuthGuard )
+  @Post('verify')
+  @ApiBearerAuth('bearerAuth')
+  verifyToken( @User() user: CurrentUser, @Token() token: string) {
+    return this.authService.generateRefreshToken(token);
   }
   
   @Post('/create')

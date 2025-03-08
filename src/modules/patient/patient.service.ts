@@ -4,16 +4,16 @@ import { BaseService } from '../../common/bases/base.service';
 import {
   CreatePatientDto,
   SerializerPatientDto,
-  SerializerUserDto,
   UpdatePatientDto
 } from '../../domain/dtos';
 import { Patient, Practitioner, SocialWorkEnrollment } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
-import { EntityManager, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class PatientService extends BaseService<
@@ -72,11 +72,12 @@ export class PatientService extends BaseService<
 
       const savedPatient = await this.patientRepository.save(patient);
 
-      const tokens = await this.authService.generateRefreshToken(savedPatient);
+      const payload: JwtPayload = { id: savedPatient.id, email: savedPatient.email, role: savedPatient.role, name: savedPatient.name, lastName: savedPatient.lastName};
+      const token = await this.authService.signJWT(payload);
 
       const patientDto = plainToInstance(SerializerPatientDto, savedPatient);
 
-      return { ...patientDto, ...tokens };
+      return { ...patientDto, accesttoken: token };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

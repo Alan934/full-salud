@@ -69,6 +69,6 @@ export class SerializerAppointmentDto extends FullBaseDto {
 
   @Expose()
   @Type(() => SerializerPatientAppointmentDto)
-  attentionHourPatient: SerializerPatientAppointmentDto[];
+  patientAppointment: SerializerPatientAppointmentDto[];
 }
 

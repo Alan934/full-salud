@@ -1,17 +1,20 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { envConfig } from '../../../config/envs';
+import { AuthService } from '../auth.service';
   
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private jwtService: JwtService) {}
+  constructor(
+    @Inject() private readonly authService: AuthService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -21,11 +24,17 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: envConfig.JWT_SECRET,
-      });
+      
+      const result = await this.authService.generateRefreshToken(token);
 
-      request['profile'] = payload;
+      if (!result) {
+        throw new UnauthorizedException('Token not found in request (AuthGuard called?)');
+      }
+
+      const { accessToken: newToken, ...user } = result;
+
+      request['profile'] = user;
+      request['token'] = newToken;
 
       return true;
     } catch {

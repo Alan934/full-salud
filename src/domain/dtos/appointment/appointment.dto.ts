@@ -28,7 +28,7 @@ export class CreateAppointmentDto {
   @IsOptional()
   @ValidateNested({ each: true })
   @Type(() => CreatePatientAppointmentDto)
-  attentionHourPatient?: CreatePatientAppointmentDto[];
+  patientAppointment?: CreatePatientAppointmentDto[];
 
   @IsOptional()
   @IsString()

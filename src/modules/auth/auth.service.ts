@@ -1,11 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
   UserDto,
   UpdateUserDto,
-  UserPaginationDto,
   AuthUserDto,
   SerializerUserDto
 } from '../../domain/dtos';
@@ -13,7 +12,6 @@ import 'multer';
 import { Patient, Practitioner, User } from '../../domain/entities';
 import { Role } from '../../domain/enums/role.enum';
 import {
-  DataSource,
   Repository,
 } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -21,6 +19,7 @@ import { plainToInstance } from 'class-transformer';
 import { JwtService } from '@nestjs/jwt';
 import { envConfig } from '../../config/envs';
 import { put } from '@vercel/blob';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService extends BaseService<
@@ -30,17 +29,9 @@ export class AuthService extends BaseService<
 > {
   constructor(
     @InjectRepository(User) protected repository: Repository<User>,
-    // protected readonly patientsNotificationPreferencesService: PatientsNotificationPreferencesService,
-    // protected readonly specialistsNotificationPreferencesService: SpecialistsNotificationPreferencesService,
-    // protected readonly institutionsNotificationPreferencesService: InstitutionsNotificationPreferencesService,
-    // protected readonly adminsNotificationPreferencesService: AdminsNotificationPreferencesService,
-    // protected readonly secretaryNotificationPreferencesService: SecretaryNotificationPreferencesService,
-    // protected readonly specialistsSecretaryNotificationPreferencesService: SpecialistsSecretaryNotificationPreferencesService,
-    // protected readonly notificationsService: NotificationsService,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
     @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
     private readonly jwtService: JwtService,
-    private readonly dataSource: DataSource
   ) {
     super(repository);
   }
@@ -49,10 +40,14 @@ export class AuthService extends BaseService<
     await this.ensureAdminExists();
   }
 
+  async signJWT(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
+  }
+
   async loginUser(loginDto: AuthUserDto)/*: Promise<UserDto & { accessToken: string; refreshToken: string }>*/ {
     const { email, username, password } = loginDto;
     try {
-      let user: User | undefined = await this.patientRepository.findOne({
+      const user: User | undefined = await this.patientRepository.findOne({
         where: [{ email: email ?? undefined }, { username: username ?? undefined }],
       }) || await this.practitionerRepository.findOne({
         where: [{ email: email ?? undefined }, { username: username ?? undefined }],
@@ -70,55 +65,34 @@ export class AuthService extends BaseService<
         throw new ErrorManager('Invalid email, username, or password', 401);
       }
 
-      const payload = { sub: user.id, email: user.email, role: user.role };
-      const accessToken = await this.jwtService.signAsync(payload, {
-        secret: envConfig.JWT_SECRET,
-        expiresIn: '15m',
-      });
-      const refreshToken = await this.jwtService.signAsync(payload, {
-        secret: envConfig.JWT_REFRESH_SECRET,
-        expiresIn: '1d',
-      });
+      const payload: JwtPayload = { id: user.id, email: user.email, role: user.role, name: user.name, lastName: user.lastName };
+      const accessToken = await this.signJWT(payload);
 
       const userDto = plainToInstance(SerializerUserDto, user);
-      return { ...userDto, accessToken, refreshToken };
+      const { id, name, lastName, email: newEmail, role, urlImg, ...rest} = userDto;
+      return { id, name, lastName, email: newEmail, role, urlImg, accessToken };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
   
-  async generateRefreshToken(user: User): Promise<{ accessToken: string; refreshToken: string }> {
-    const payload = { sub: user.id, email: user.email, role: user.role };
-  
-    const accessToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_SECRET,
-      expiresIn: '15m',
-    });
-  
-    const refreshToken = await this.jwtService.signAsync(payload, {
-      secret: envConfig.JWT_REFRESH_SECRET,
-      expiresIn: '1d',
-    });
-  
-    return { accessToken, refreshToken };
-  }
-  
-  async refreshToken(oldRefreshToken: string): Promise<{ accessToken: string }> {
+  async generateRefreshToken(token: string) {
     try {
-      const payload = await this.jwtService.verifyAsync(oldRefreshToken, {
-        secret: envConfig.JWT_REFRESH_SECRET,
+      const { sub, iat, exp, ...user} = this.jwtService.verify(token, {
+        secret: envConfig.JWT_SECRET,
       });
-  
-      const newAccessToken = await this.jwtService.signAsync(
-        { sub: payload.sub, email: payload.email, role: payload.role },
-        { secret: envConfig.JWT_SECRET, expiresIn: '15m' }
-      );
-  
-      return { accessToken: newAccessToken };
+
+      const userDto = plainToInstance(SerializerUserDto, user);
+
+      return {
+        ...userDto,
+        accessToken: await this.signJWT(user)
+      }
+      
     } catch (error) {
-      throw new ErrorManager('Invalid or expired refresh token', 401);
+      console.log(error);
     }
-  } 
+  }
 
   async createAdmin(createUserDto: AuthUserDto): Promise<UserDto> {
     try {
@@ -174,7 +148,7 @@ export class AuthService extends BaseService<
 
   async getUserById(userId: string): Promise<User> {
     try {
-      let user: User | undefined = await this.patientRepository.findOne({
+      const user: User | undefined = await this.patientRepository.findOne({
         where: [{ id: userId ?? undefined }],
       }) || await this.practitionerRepository.findOne({
         where: [{ id: userId ?? undefined }],
@@ -193,11 +167,31 @@ export class AuthService extends BaseService<
   }
 
   async uploadImage(file: Express.Multer.File): Promise<string> {
-    const blob = await put(file.originalname, file.buffer, {
-      access: 'public',
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
-    return blob.url;
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Validar el tipo de archivo
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException('Invalid file type. Only JPEG, PNG, GIF, and WEBP are allowed');
+    }
+
+    // Validar el tamaño del archivo
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxFileSize) {
+      throw new BadRequestException('File size exceeds the maximum allowed size of 5MB');
+    }
+
+    try {
+      const blob = await put(file.originalname, file.buffer, {
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+
+      return blob.url;
+    } catch (error) {
+      throw new BadRequestException('Failed to upload image');
+    }
   }
-    
 }

@@ -30,6 +30,7 @@ import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitione
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { SerializerPractitionerDto } from '../../domain/dtos';
+import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
 @Injectable()
 export class PractitionerService extends BaseService<
@@ -68,7 +69,7 @@ export class PractitionerService extends BaseService<
           400,
         );
       }
-  
+
       // Consultar SISA para validar al médico
       const sisaUrl = `https://sisa.msal.gov.ar/sisa/services/rest/profesional/obtener?nrodoc=${dni}&usuario=jlllado&clave=$FullSalud123`;
       const sisaResponse = await axios.get(sisaUrl);
@@ -125,11 +126,12 @@ export class PractitionerService extends BaseService<
   
       const savedPractitioner = await this.repository.save(practitioner);
 
-      const tokens = await this.authService.generateRefreshToken(savedPractitioner);
+      const payload: JwtPayload = { id: savedPractitioner.id, email: savedPractitioner.email, role: savedPractitioner.role, name: savedPractitioner.name, lastName: savedPractitioner.lastName };
+      const token = await this.authService.signJWT(payload);
 
       const practitionerDto = plainToInstance(SerializerPractitionerDto, savedPractitioner);
 
-      return { ...practitionerDto, ...tokens };
+      return { ...practitionerDto, accessToken: token };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
