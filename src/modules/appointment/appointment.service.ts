@@ -7,7 +7,7 @@ import { PatientAppointment, Patient, Practitioner, Appointment } from '../../do
 import { AppointmentStatus, Role } from '../../domain/enums';
 import { Express } from 'express';
 import 'multer';
-import { EntityManager, In, Repository } from 'typeorm';
+import { EntityManager, In, Not, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 
 @Injectable()
@@ -208,6 +208,47 @@ export class AppointmentService extends BaseService<
     }
   }
 
+  async getTurnsBySpecialistAll(
+    specialistId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    turns: Appointment[];
+    total: number;
+    page: number;
+    limit: number;
+    previousPage: number | null;
+  }> {
+    try {
+      const [data, total] = await this.repository.findAndCount({
+        where: {
+          practitioners: { id: specialistId },
+          status: Not(AppointmentStatus.NO_SHOW),
+          deletedAt: null,
+        },
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+  
+      if (!data.length) {
+        throw new NotFoundException(
+          `No turns found for specialist with ID ${specialistId}`,
+        );
+      }
+  
+      return {
+        turns: data,
+        total,
+        page,
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
+      };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
   // Turnos de un paciente por ID
   async getTurnsByPatient(patientId: string, page: number = 1, limit: number = 10): Promise<{ 
     turns: Appointment[]; 
@@ -238,6 +279,47 @@ export class AppointmentService extends BaseService<
         limit,
         previousPage: page > 1 ? page - 1 : null,
         turns: data, 
+      };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async getTurnsByPatientAll(
+    patientId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<{
+    turns: Appointment[];
+    total: number;
+    page: number;
+    limit: number;
+    previousPage: number | null;
+  }> {
+    try {
+      const [data, total] = await this.repository.findAndCount({
+        where: {
+          patient: { id: patientId },
+          status: Not(AppointmentStatus.NO_SHOW),
+          deletedAt: null,
+        },
+        relations: ['patient', 'practitioners'],
+        skip: (page - 1) * limit,
+        take: limit,
+      });
+  
+      if (!data.length) {
+        throw new NotFoundException(
+          `No turns found for patient with ID ${patientId}`,
+        );
+      }
+  
+      return {
+        turns: data,
+        total,
+        page,
+        limit,
+        previousPage: page > 1 ? page - 1 : null,
       };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
@@ -327,6 +409,69 @@ export class AppointmentService extends BaseService<
 
       Object.assign(turn, updateTurnDto);
       return await this.repository.save(turn);
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  // Verificar superposición de turnos
+  async checkOverlapAndUpdateTurn(
+    id: string,
+    updateTurnDto: UpdateAppointmentDto,
+  ): Promise<SerializerAppointmentDto> {
+    try {
+
+      const { date, hour } = updateTurnDto;
+  
+      // Validar que la fecha y hora estén presentes
+      if (!date || !hour) {
+        throw new BadRequestException('Date and hour are required');
+      }
+    
+      // Validar el formato de la fecha (YYYY-MM-DD)
+      const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+      if (!dateRegex.test(date)) {
+        throw new BadRequestException('Invalid date format. Use YYYY-MM-DD');
+      }
+    
+      // Validar el formato de la hora (HH:MM)
+      const hourRegex = /^\d{2}:\d{2}$/;
+      if (!hourRegex.test(hour)) {
+        throw new BadRequestException('Invalid hour format. Use HH:MM');
+      }
+    
+      // Obtener el turno existente
+      const existingTurn = await this.repository.findOne({
+        where: { id, deletedAt: null },
+        relations: ['practitioners'],
+      });
+    
+      if (!existingTurn) {
+        throw new NotFoundException(`Turn with ID ${id} not found`);
+      }
+    
+      // Verificar si hay superposición con otros turnos
+      const overlappingTurn = await this.repository
+        .createQueryBuilder('appointment')
+        .where('appointment.date = :date', { date })
+        .andWhere('appointment.hour = :hour', { hour })
+        .andWhere('appointment.id != :id', { id }) // Excluir el turno actual
+        .andWhere('appointment.deletedAt IS NULL')
+        .getOne();
+    
+      if (overlappingTurn) {
+        throw new BadRequestException(
+          'The provided date and hour overlap with an existing turn',
+        );
+      }
+    
+      // Actualizar el turno si no hay superposición
+      Object.assign(existingTurn, updateTurnDto);
+      const updatedTurn = await this.repository.save(existingTurn);
+    
+      return plainToClass(SerializerAppointmentDto, updatedTurn, {
+        excludeExtraneousValues: true,
+      });
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

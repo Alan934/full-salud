@@ -2,41 +2,31 @@ import {
   Body,
   Controller,
   Param,
-  ParseEnumPipe,
   ParseUUIDPipe,
   Patch,
-  FileTypeValidator,
-  ParseFilePipe,
   Post,
-  UploadedFiles,
-  UseInterceptors,
   Get,
   Query,
-  ParseIntPipe
+  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
-import { Express } from 'express';
 import 'multer';
 import { AppointmentService } from './appointment.service';
 import { Appointment } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateAppointmentDto,
-  CreateTurnDtoWithFiles,
   SerializerAppointmentDto,
   UpdateAppointmentDto
 } from '../../domain/dtos';
 import {
   ApiBody,
-  ApiConsumes,
   ApiOperation,
   ApiResponse,
   ApiTags,
   ApiCreatedResponse,
-  ApiNotFoundResponse,
   ApiParam
 } from '@nestjs/swagger';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { AppointmentStatus } from '../../domain/enums';
 import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Appointment')
@@ -130,6 +120,34 @@ export class AppointmentController extends ControllerFactory<
       previousPage,
     };
   }
+
+  @Get('specialist-all/:specialistId')
+  @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación, exluyendo estado no_show' })
+  @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
+  @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
+  @ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista' })
+  async getTurnsBySpecialistAll(
+    @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerAppointmentDto[] 
+  }> {
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getTurnsBySpecialistAll(specialistId, pageNumber, limitNumber);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
+      total, 
+      page: pageNumber,
+      limit: limitNumber,
+      previousPage,
+    };
+  }
   
   @Get('patient/:patientId')
   @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación' })
@@ -150,6 +168,34 @@ export class AppointmentController extends ControllerFactory<
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getTurnsByPatient(patientId, pageNumber, limitNumber);
+    return { 
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
+      total, 
+      page: pageNumber,
+      limit: limitNumber,
+      previousPage,
+    };
+  }
+
+  @Get('patient-all/:patientId')
+  @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación, exluyendo estado no_show' })
+  @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
+  @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
+  @ApiResponse({ status: 404, description: 'No se encontraron turnos para el paciente' })
+  async getTurnsByPatientAll(
+    @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10'
+  ): Promise<{ 
+    total: number; 
+    page: number; 
+    limit: number; 
+    previousPage: number | null;
+    turns: SerializerAppointmentDto[] 
+  }> {
+    const pageNumber = Number(page);
+    const limitNumber = Number(limit);
+    const { turns, total, previousPage } = await this.service.getTurnsByPatientAll(patientId, pageNumber, limitNumber);
     return { 
       turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
       total, 
@@ -222,6 +268,28 @@ export class AppointmentController extends ControllerFactory<
   ): Promise<SerializerAppointmentDto> {
     const turn = await this.service.updateTurn(id, updateTurnDto);
     return toDto(SerializerAppointmentDto, turn);
+  }
+
+  @Patch('check-overlap/:id')
+  @ApiOperation({ description: 'Verificar superposición y actualizar un turno' })
+  @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
+  @ApiBody({ type: UpdateAppointmentDto })
+  @ApiResponse({ status: 200, description: 'Turno actualizado correctamente', type: SerializerAppointmentDto })
+  @ApiResponse({ status: 400, description: 'Superposición de turnos o datos inválidos' })
+  @ApiResponse({ status: 404, description: 'Turno no encontrado' })
+  async checkOverlapAndUpdateTurn(
+    @Param('id') id: string,
+    @Body() updateTurnDto: UpdateAppointmentDto,
+  ): Promise<SerializerAppointmentDto> {
+    try {
+      const updatedTurn = await this.service.checkOverlapAndUpdateTurn(id, updateTurnDto);
+      return updatedTurn;
+    } catch (error) {
+      if (error instanceof BadRequestException || error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new BadRequestException('Failed to update turn');
+    }
   }
 
 }
