@@ -11,7 +11,7 @@ import { ValueAddedTax  } from './value-added-tax.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { OrganizationType, FinancialTransaction, Branch } from '.';
 
-//Esta entidad anteriormente se denominaba Institution
+//Esta entidad anteriormente se denominaba institution
 @Entity('organization')
 export class Organization extends Base {
   @Column({
@@ -38,16 +38,16 @@ export class Organization extends Base {
   @ManyToOne(() => OrganizationType, {
     eager: true
   })
-  @JoinColumn({ name: 'institution_type_id' })
-  institutionType: OrganizationType;
+  @JoinColumn({ name: 'organization_type_id' })
+  organizationType: OrganizationType;
 
-  @ManyToMany(() => FinancialTransaction, (commission) => commission.institutions)
+  @ManyToMany(() => FinancialTransaction, (commission) => commission.organizations)
   commissions: FinancialTransaction[];
 
-  @OneToMany(() => Branch, (headquarters) => headquarters.institution, {
+  @OneToMany(() => Branch, (branch) => branch.organization, {
     cascade: ['soft-remove', 'recover'],
     orphanedRowAction: 'soft-delete',
     eager: true
   })
-  headquarters: Branch[];
+  branch: Branch[];
 }

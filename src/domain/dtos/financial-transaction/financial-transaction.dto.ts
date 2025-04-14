@@ -24,7 +24,7 @@ export class CreateFinancialTransactionDto {
   @ValidateNested()
   @Expose()
   @Type(() => ShortBaseDto)
-  institutions?: ShortBaseDto[];
+  organizations?: ShortBaseDto[];
 }
 
 export class UpdateFinancialTransactionDto {
@@ -39,5 +39,5 @@ export class UpdateFinancialTransactionDto {
   @ArrayNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  institutions?: ShortBaseDto[];
+  organizations?: ShortBaseDto[];
 }

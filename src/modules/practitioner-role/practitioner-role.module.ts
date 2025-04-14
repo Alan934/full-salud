@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PractitionerRoleService } from './practitioner-role.service';
 import { PractitionerRoleController } from './practitioner-role.controller';
 import { PractitionerRole } from '../../domain/entities';

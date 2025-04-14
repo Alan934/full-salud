@@ -25,12 +25,14 @@ import { EntityManager, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import { CreatePractitionerDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/practitioner.dto';
+import { CreatePractitionerDto, PractitionerByNameAndLicenseDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/practitioner.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/practitioner-filtered-pagination.dto';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { SerializerPractitionerDto } from '../../domain/dtos';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class PractitionerService extends BaseService<
@@ -40,11 +42,11 @@ export class PractitionerService extends BaseService<
 > {
   constructor(
     @InjectRepository(Practitioner) protected repository: Repository<Practitioner>,
-    @InjectRepository(PractitionerRole) private readonly specialityRepository: Repository<PractitionerRole>,
+    @InjectRepository(PractitionerRole) private readonly practitionerRoleRepository: Repository<PractitionerRole>,
     @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
-    @InjectRepository(Location) private readonly officeRepository: Repository<Location>,
-    @InjectRepository(ProfessionalDegree) private readonly degreeRepository: Repository<ProfessionalDegree>,
+    @InjectRepository(ProfessionalDegree) private readonly professionalDegreeRepository: Repository<ProfessionalDegree>,
     @Inject(forwardRef(() => AuthService)) private readonly authService: AuthService,
+    private readonly httpService: HttpService,
   ) {
     super(repository);
   }
@@ -52,9 +54,9 @@ export class PractitionerService extends BaseService<
   // Crear un nuevo especialista
   async createSpecialist(createSpecialistDto: CreatePractitionerDto) {
     try {
-      const { password, dni, license, email, username, officeId, ...userData } = createSpecialistDto;
+      const { password, dni, license, email, username, ...userData } = createSpecialistDto;
   
-      // Validar en Specialist y Patient
+      // Validar existencia previa
       const existingUser = await this.repository.findOne({
         where: [{ dni }, { email }, { username }, { phone: userData.phone }],
       });
@@ -70,46 +72,8 @@ export class PractitionerService extends BaseService<
         );
       }
 
-      // Consultar SISA para validar al médico
-      const sisaUrl = `https://sisa.msal.gov.ar/sisa/services/rest/profesional/obtener?nrodoc=${dni}&usuario=jlllado&clave=$FullSalud123`;
-      const sisaResponse = await axios.get(sisaUrl);
-      const sisaData = sisaResponse.data;  
- 
-      // Validar respuesta del SISA
-      if (sisaData.resultado !== 'OK') {
-        throw new ErrorManager('No valid professional found in SISA', 400);
-      }
-  
-      if (sisaData.numeroDocumento !== dni) {
-        throw new ErrorManager('DNI does not match with SISA records', 400);
-      }
-  
-      // Validar si la matrícula proporcionada coincide con una habilitada en SISA
-      const matriculas = Array.isArray(sisaData.matriculas)
-        ? sisaData.matriculas
-        : sisaData.matriculas
-        ? [sisaData.matriculas]
-        : [];
-  
-      const validMatricula = matriculas.find(
-        (matricula) =>
-          matricula.estado === 'Habilitado' && matricula.matricula === license,
-      );
-  
-      if (!validMatricula) {
-        throw new ErrorManager(
-          `No valid license (${license}) found for this professional in SISA`,
-          400,
-        );
-      }
-
-      let office: Location | null = null;
-      if (officeId) {
-        office = await this.officeRepository.findOne({ where: { id: officeId } });
-        if (!office) {
-          throw new ErrorManager(`Office with ID ${officeId} not found`, 400);
-        }
-      }
+      // Validar en SISA
+      await this.validatePractitionerInSisa(dni, license);
   
       const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
   
@@ -121,7 +85,6 @@ export class PractitionerService extends BaseService<
         license,
         email,
         username,
-        office,
       });
   
       const savedPractitioner = await this.repository.save(practitioner);
@@ -135,7 +98,54 @@ export class PractitionerService extends BaseService<
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
-  }  
+  }
+
+  //Verify practitioner in SISA
+  async validatePractitionerInSisa(dni: string, license: string): Promise<boolean> {
+    try {
+      // Configuración de la llamada al SISA
+      const sisaUrl = `https://sisa.msal.gov.ar/sisa/services/rest/profesional/obtener?nrodoc=${dni}&usuario=jlllado&clave=$FullSalud123`;
+      
+      const response = await firstValueFrom(
+        this.httpService.get(sisaUrl)
+      );
+
+      const sisaData = response.data;
+
+      // Validar respuesta del SISA
+      if (sisaData.resultado !== 'OK') {
+        throw new ErrorManager('No valid professional found in SISA', 400);
+      }
+
+      // Validar coincidencia de DNI
+      if (sisaData.numeroDocumento !== dni) {
+        throw new ErrorManager('DNI does not match with SISA records', 400);
+      }
+
+      // Validar matrícula
+      const matriculas = Array.isArray(sisaData.matriculas)
+        ? sisaData.matriculas
+        : sisaData.matriculas
+        ? [sisaData.matriculas]
+        : [];
+
+      const validMatricula = matriculas.find(
+        (matricula) =>
+          matricula.estado === 'Habilitado' && matricula.matricula === license,
+      );
+
+      if (!validMatricula) {
+        throw new ErrorManager(
+          `No valid license (${license}) found for this professional in SISA`,
+          400,
+        );
+      }
+
+      return true;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
 
   // Obtener todos los especialistas
   async getAll(): Promise<Practitioner[]> {
@@ -151,7 +161,7 @@ export class PractitionerService extends BaseService<
     try {
       const practitioner = await this.repository.findOne({
         where: { id },
-        relations: ['specialities', 'degree'],
+        relations: ['practitionerRole', 'professionalDegree'],
       });
 
       if (!practitioner) {
@@ -164,29 +174,69 @@ export class PractitionerService extends BaseService<
     }
   }
 
+  async findByNameAndLicense(filterDto: PractitionerByNameAndLicenseDto): Promise<Practitioner> {
+    try {
+      const { name, license } = filterDto;
+      
+      if (!name && !license) {
+        throw new ErrorManager('At least one filter parameter (name or license) is required', 400);
+      }
+  
+      const queryBuilder = this.repository.createQueryBuilder('practitioner')
+        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
+        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .where('practitioner.deletedAt IS NULL');
+  
+      if (name && license) {
+        queryBuilder.andWhere('(practitioner.name LIKE :name OR practitioner.lastName LIKE :name) AND practitioner.license = :license', { 
+          name: `%${name}%`, 
+          license 
+        });
+      } else if (name) {
+        queryBuilder.andWhere('practitioner.name LIKE :name OR practitioner.lastName LIKE :name', { 
+          name: `%${name}%` 
+        });
+      } else if (license) {
+        queryBuilder.andWhere('practitioner.license = :license', { 
+          license 
+        });
+      }
+  
+      const practitioner = await queryBuilder.getOne();
+  
+      if (!practitioner) {
+        throw new NotFoundException('No practitioner found with the provided filters');
+      }
+  
+      return practitioner;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
    // Actualizar un especialista
    async update(id: string, updateSpecialistDto: UpdatePractitionerDto): Promise<Practitioner> {
     try {
       const practitioner = await this.getOne(id);
 
-      const { specialities, degreeId, ...updatedData } = updateSpecialistDto;
+      const { practitionerRole, professionalDegreeId, ...updatedData } = updateSpecialistDto;
 
-      if (specialities) {
-        const specialityEntities = await this.specialityRepository.findByIds(
-          specialities.map((s) => s.id),
+      if (practitionerRole) {
+        const practitionerRoleEntities = await this.practitionerRoleRepository.findByIds(
+          practitionerRole.map((s) => s.id),
         );
-        if (specialityEntities.length !== specialities.length) {
-          throw new ErrorManager('Some specialities not found', 400);
+        if (practitionerRoleEntities.length !== practitionerRole.length) {
+          throw new ErrorManager('Some practitionerRole not found', 400);
         }
-        practitioner.specialities = specialityEntities;
+        practitioner.practitionerRole = practitionerRoleEntities;
       }
 
-      if (degreeId) {
-        const degreeEntity = await this.degreeRepository.findOne({ where: { id: degreeId } });
-        if (!degreeEntity) {
-          throw new ErrorManager(`Degree with id "${degreeId}" not found`, 400);
+      if (professionalDegreeId) {
+        const professionalDegreeEntity = await this.professionalDegreeRepository.findOne({ where: { id: professionalDegreeId } });
+        if (!professionalDegreeEntity) {
+          throw new ErrorManager(`professionalDegree with id "${professionalDegreeId}" not found`, 400);
         }
-        practitioner.degree = degreeEntity;
+        practitioner.professionalDegree = professionalDegreeEntity;
       }
 
       Object.assign(practitioner, updatedData);
@@ -259,14 +309,14 @@ export class PractitionerService extends BaseService<
       queryBuilder.andWhere('practitioner.license = :license', {
         license: value
       }),
-    speciality: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
+    practitionerRole: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
       queryBuilder.andWhere('practitioner_role.id = :id', { id: value }),
     socialWorkEnrollmentId: (
       queryBuilder: SelectQueryBuilder<Practitioner>,
       value: string
     ) => queryBuilder.andWhere('social_work_enrrollment.id = :id', { id: value }),
-    degree: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('degree.id = :id', { id: value })
+    professionalDegree: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
+      queryBuilder.andWhere('professionalDegree.id = :id', { id: value })
   };
 
   //Override del método base findAll para filtrar por propiedades
@@ -279,11 +329,11 @@ export class PractitionerService extends BaseService<
       const queryBuilderBase = this.repository
         .createQueryBuilder('practitioner')
         .leftJoinAndSelect(
-          'practitioner.specialistAttentionHour',
-          'specialistAttentionHour'
+          'practitioner.practitionerAppointment',
+          'practitionerAppointment'
         )
-        .leftJoinAndSelect('practitioner.degree', 'degree')
-        .leftJoinAndSelect('practitioner.specialities', 'speciality')
+        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
         //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
 
       //añade las condiciones where al query builder
@@ -375,9 +425,9 @@ export class PractitionerService extends BaseService<
     try {
       return await this.repository
         .createQueryBuilder('practitioner')      
-        .leftJoinAndSelect('practitioner.specialistAttentionHour', 'specialistAttentionHour')
-        .leftJoinAndSelect('practitioner.degree', 'degree')
-        .leftJoinAndSelect('practitioner.speciality', 'speciality')
+        .leftJoinAndSelect('practitioner.practitionerAppointment', 'practitionerAppointment')
+        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
         //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work')
         .leftJoinAndSelect('practitioner.turns', 'turn')
         //.leftJoinAndSelect('turn.Patient', 'Patient') // Opcional: otras relaciones de Turn
@@ -396,30 +446,24 @@ export class PractitionerService extends BaseService<
 
       const queryBuilder = this.repository
         .createQueryBuilder('practitioner')
-        .leftJoinAndSelect('practitioner.degree', 'degree')
-        .leftJoinAndSelect('practitioner.specialities', 'specialities')
+        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
         .leftJoinAndSelect('practitioner.socialWorkEnrollment', 'socialWorkEnrollment')
-        .leftJoinAndSelect('practitioner.specialistAttentionHour', 'appointments')
+        .leftJoinAndSelect('practitioner.practitionerAppointment', 'appointments')
         .leftJoinAndSelect('practitioner.favorite', 'favorite')
-        .leftJoinAndSelect('practitioner.office', 'office')
         .where('practitioner.deletedAt IS NULL');
 
       // Filtros por relaciones
-      if (filters.degree) {
-        queryBuilder.andWhere('degree.id = :degreeId', { degreeId: filters.degree });
+      if (filters.professionalDegree) {
+        queryBuilder.andWhere('professionalDegree.id = :professionalDegreeId', { professionalDegreeId: filters.professionalDegree });
       }
 
-      if (filters.speciality) {
-        queryBuilder.andWhere('specialities.id = :specialityId', { specialityId: filters.speciality });
+      if (filters.practitionerRole) {
+        queryBuilder.andWhere('practitionerRole.id = :practitionerRoleId', { practitionerRoleId: filters.practitionerRole });
       }
 
       if (filters.socialWorkEnrollmentId) {
         queryBuilder.andWhere('socialWorkEnrollment.id = :socialWorkEnrollmentId', { socialWorkEnrollmentId: filters.socialWorkEnrollmentId });
-      }
-
-      // Filtros de office
-      if (filters.officeName) {
-        queryBuilder.andWhere('office.name = :officeName', { officeName: filters.officeName });
       }
 
       // Filtros de appointment
@@ -430,7 +474,7 @@ export class PractitionerService extends BaseService<
       // Filtros generales
       for (const key in filters) {
         if (Object.prototype.hasOwnProperty.call(filters, key) && filters[key] !== undefined && filters[key] !== null) {
-          if (key !== 'degree' && key !== 'speciality' && key !== 'socialWorkId' && key !== 'officeName' && key !== 'appointmentDay') {
+          if (key !== 'professionalDegree' && key !== 'practitionerRole' && key !== 'socialWorkId' && key !== 'locationName' && key !== 'appointmentDay') {
             queryBuilder.andWhere(`practitioner.${key} = :${key}`, { [key]: filters[key] });
           }
         }

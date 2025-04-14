@@ -5,7 +5,6 @@ import { SerializerPatientNotificationPreferenceDto, SerializerShortPatientNotif
 import { PatientNotificationPreference } from '../../domain/entities';
 import { PatientNotificationPreferenceService } from './patient-notification-preference.service';
 
-
 @ApiTags("Patient's Notification Preferences")
 @Controller('patients-notification-preferences')
 export class PatientNotificationPreferenceController extends NotificationPreferencesControllerFactory<

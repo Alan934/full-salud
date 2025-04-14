@@ -5,7 +5,7 @@ export class CreateProfessionalDegreeDto {
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ example: 'Doctor' })
-  degree: string;
+  professionalDegree: string;
 }
 
 export class UpdateProfessionalDegreeDto extends PartialType(CreateProfessionalDegreeDto) {}

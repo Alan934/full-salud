@@ -15,11 +15,11 @@ export class PractitionerSecretary extends Base {
   })
   practitioner: Practitioner;
 
-  @OneToOne(() => Location, (office) => office.secretary, {
+  @OneToOne(() => Location, (location) => location.secretary, {
     eager: true
   })
   @JoinColumn({
-    name: 'office_id'
+    name: 'location_id'
   })
-  office: Location;
+  location: Location;
 }

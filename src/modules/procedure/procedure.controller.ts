@@ -4,7 +4,7 @@ import { Procedure } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateProcedureDto,
-  SerializerPracticeDto,
+  SerializerprocedureDto,
   UpdateProcedureDto
 } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,8 +15,8 @@ export class ProcedureController extends ControllerFactory<
   Procedure,
   CreateProcedureDto,
   UpdateProcedureDto,
-  SerializerPracticeDto
->(Procedure, CreateProcedureDto, UpdateProcedureDto, SerializerPracticeDto) {
+  SerializerprocedureDto
+>(Procedure, CreateProcedureDto, UpdateProcedureDto, SerializerprocedureDto) {
   constructor(protected service: ProcedureService) {
     super();
   }

@@ -29,6 +29,6 @@ export class ChargeItem extends Base {
     orphanedRowAction: 'soft-delete',
     eager: true
   })
-  @JoinColumn({ name: 'practice_id' })
-  practice: Procedure;
+  @JoinColumn({ name: 'procedure_id' })
+  procedure: Procedure;
 }

@@ -1,5 +1,5 @@
 import { FullBaseDto } from '../../../common/dtos';
-import { SerializerShortAddressDto } from '..';
+import { SerializerAddressDto, SerializerShortPractitionerDto, SerializerBranchDto } from '..';
 import { Expose, Type } from 'class-transformer';
 import { ApiProperty, OmitType } from '@nestjs/swagger';
 
@@ -17,8 +17,16 @@ export class SerializerLocationDto extends FullBaseDto {
   phone?: string;
 
   @Expose()
-  @Type(() => SerializerShortAddressDto)
-  address: SerializerShortAddressDto;
+  @Type(() => SerializerAddressDto)
+  address: SerializerAddressDto;
+
+  @Expose()
+  @Type(() => SerializerShortPractitionerDto)
+  practitioners: SerializerShortPractitionerDto[];
+
+  @Expose()
+  @Type(() => SerializerBranchDto)
+  branch: SerializerBranchDto;
 }
 
 export class SerializerShortLocationDto extends OmitType(SerializerLocationDto, [

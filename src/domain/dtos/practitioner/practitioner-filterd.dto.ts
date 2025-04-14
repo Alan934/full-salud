@@ -50,12 +50,12 @@ export class PractitionerFilteredDto{
     @IsOptional()
     // @IsNotEmpty()
     // @IsUUID()
-    degree?: string;
+    professionalDegree?: string;
 
     @IsOptional()
     // @IsNotEmpty()
     // @IsUUID()
-    speciality?: string;
+    practitionerRole?: string;
 
     @IsOptional()
     // @IsUUID()

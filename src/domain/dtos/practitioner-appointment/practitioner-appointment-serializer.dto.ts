@@ -19,7 +19,7 @@ export class ShortSerializerPractitionerAppointmentDto extends ShortBaseDto {
 
   @Expose()
   @Type(() => SerializerShortLocationDto)
-  office: SerializerShortLocationDto;
+  location: SerializerShortLocationDto;
 }
 
 export class SerializerPractitionerAppointmentDto extends FullBaseDto {
@@ -37,5 +37,5 @@ export class SerializerPractitionerAppointmentDto extends FullBaseDto {
 
   @Expose()
   @Type(() => SerializerLocationDto)
-  office: SerializerLocationDto;
+  location: SerializerLocationDto;
 }

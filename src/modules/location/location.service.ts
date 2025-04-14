@@ -2,65 +2,57 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
-import { CreateLocationDto, UpdateOfficeDto } from '../../domain/dtos';
-import {
-  Address,
-  Location,
-  PractitionerAppointment,
-  PractitionerSecretary
-} from '../../domain/entities';
-import { EntityManager, Repository } from 'typeorm';
+import { CreateLocationDto, UpdatelocationDto } from '../../domain/dtos';
+import { Branch, Location } from '../../domain/entities';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class LocationService extends BaseService<
   Location,
   CreateLocationDto,
-  UpdateOfficeDto
+  UpdatelocationDto
 > {
   constructor(
-    @InjectRepository(Location) protected officeRepository: Repository<Location>
+    @InjectRepository(Location) protected locationRepository: Repository<Location>,
+    @InjectRepository(Branch) protected branchRepository: Repository<Branch>
   ) {
-    super(officeRepository);
+    super(locationRepository);
   }
 
-  async createOffice(createOfficeDto: CreateLocationDto): Promise<Location> {
+  async createlocation(createlocationDto: CreateLocationDto): Promise<Location> {
     try {
-      const { name, phone, address, ...data } = createOfficeDto;
-      
-      const existingOffice = await this.officeRepository.findOne({
-        where: [{ phone }],
+      const { branchId, address, ...data } = createlocationDto;
+
+      const branch = await this.branchRepository.findOne({
+        where: { id: branchId },
       });
 
-      if (existingOffice) {
-        throw new ErrorManager(
-          'Office with provided phone already exists',
-          400,
-        );
+      if (!branch) {
+        throw new ErrorManager(`Branch with ID ${branchId} not found`, 404);
       }
 
-      const newOffice = this.officeRepository.create({
+      const newlocation = this.locationRepository.create({
         ...data,
-        name,
-        phone,
-        address,
+        branch,
+        address: address ? address : null,
       });
 
-      return await this.officeRepository.save(newOffice);
+      return await this.locationRepository.save(newlocation);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async getAll(page: number = 1, limit: number = 10): Promise<{ offices: Location[]; total: number; page: number; limit: number; previousPage: number | null; }> {
+  async getAll(page: number = 1, limit: number = 10): Promise<{ locations: Location[]; total: number; page: number; limit: number; previousPage: number | null; }> {
     try {
-      const [data, total] = await this.officeRepository.findAndCount({
+      const [data, total] = await this.locationRepository.findAndCount({
         where: { deletedAt: null },
         skip: (page - 1) * limit,
         take: limit,
       });
 
       return { 
-        offices: data, 
+        locations: data, 
         total, 
         page, 
         limit,
@@ -73,31 +65,38 @@ export class LocationService extends BaseService<
 
   async getOne(id: string): Promise<Location> {
     try {
-      const office = await this.officeRepository.findOne({
+      const location = await this.locationRepository.findOne({
         where: { id },
-        relations: ['address', 'practitioners']
+        relations: [
+          'address',
+          'address.locality',
+          'practitioners', 
+          'branch', 
+          'appointmentSlot', 
+          'secretary'
+        ],
       });
-
-      if (!office) {
-        throw new NotFoundException(`Office with ID ${id} not found`);
+  
+      if (!location) {
+        throw new NotFoundException(`location with ID ${id} not found`);
       }
-
-      return office;
+  
+      return location;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async update(id: string, updateOfficeDto: UpdateOfficeDto): Promise<Location> {
+  async update(id: string, updatelocationDto: UpdatelocationDto): Promise<Location> {
     try {
-      const office = await this.getOne(id);
+      const location = await this.getOne(id);
 
-      if (!office) {
-        throw new NotFoundException(`Office with ID ${id} not found`);
+      if (!location) {
+        throw new NotFoundException(`location with ID ${id} not found`);
       }
 
-      Object.assign(office, updateOfficeDto);
-      return await this.officeRepository.save(office);
+      Object.assign(location, updatelocationDto);
+      return await this.locationRepository.save(location);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -105,14 +104,14 @@ export class LocationService extends BaseService<
 
   async softDelete(id: string): Promise<{ message: string }> {
     try {
-      const office = await this.getOne(id);
+      const location = await this.getOne(id);
       
-      if (!office) {
-        throw new NotFoundException(`Office with ID ${id} not found`);
+      if (!location) {
+        throw new NotFoundException(`location with ID ${id} not found`);
       }
 
-      await this.officeRepository.softRemove(office);
-      return { message: 'Office soft deleted successfully' };
+      await this.locationRepository.softRemove(location);
+      return { message: 'location soft deleted successfully' };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -120,17 +119,17 @@ export class LocationService extends BaseService<
 
   async recover(id: string): Promise<{ message: string }> {
     try {
-      const office = await this.officeRepository.findOne({
+      const location = await this.locationRepository.findOne({
         where: { id },
         withDeleted: true,
       });
 
-      if (!office || !office.deletedAt) {
-        throw new NotFoundException(`Office with ID ${id} not found or not deleted`);
+      if (!location || !location.deletedAt) {
+        throw new NotFoundException(`location with ID ${id} not found or not deleted`);
       }
 
-      await this.officeRepository.recover(office);
-      return { message: 'Office recovered successfully' };
+      await this.locationRepository.recover(location);
+      return { message: 'location recovered successfully' };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

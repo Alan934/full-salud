@@ -4,7 +4,7 @@ import { Day } from '../enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { Branch, Location } from '.';
 
-//Esta entidad antes se denominaba AttentionHour
+//Esta entidad antes se denominaba attentionHour
 @Entity('appointment_slot ')
 export class AppointmentSlot  extends Base {
   @Column({
@@ -38,14 +38,14 @@ export class AppointmentSlot  extends Base {
   })
   day: Day;
 
-  @ManyToOne(() => Branch, (headquarters) => headquarters.attentionHours)
-  @JoinColumn({ name: 'headquarters_id' })
-  headquarters: Branch;
+  @ManyToOne(() => Branch, (branch) => branch.appointmentSlot)
+  @JoinColumn({ name: 'branch_id' })
+  branch: Branch;
 
   @ManyToOne(
     () => Location,
-    (office) => office.attentionHour
+    (location) => location.appointmentSlot
   )
   @JoinColumn({ name: 'practitioner_id' })
-  office: Location;
+  location: Location;
 }

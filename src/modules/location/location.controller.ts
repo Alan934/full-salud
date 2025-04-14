@@ -2,10 +2,8 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } f
 import { LocationService } from './location.service';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { Location } from '../../domain/entities';
-import { CreateLocationDto, SerializerLocationDto, UpdateOfficeDto } from '../../domain/dtos';
+import { CreateLocationDto, SerializerLocationDto, UpdatelocationDto } from '../../domain/dtos';
 import { ApiTags } from '@nestjs/swagger';
-import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
-import { Role } from '../../domain/enums/role.enum';
 import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Location')
@@ -13,44 +11,44 @@ import { toDto } from '../../common/util/transform-dto.util';
 export class LocationController extends ControllerFactory<
   Location,
   CreateLocationDto,
-  UpdateOfficeDto,
+  UpdatelocationDto,
   SerializerLocationDto
->(Location, CreateLocationDto, UpdateOfficeDto, SerializerLocationDto) {
-  constructor(protected readonly officesService: LocationService) {
+>(Location, CreateLocationDto, UpdatelocationDto, SerializerLocationDto) {
+  constructor(protected readonly locationsService: LocationService) {
     super();
   }
 
   @Post()
-  async createOffice(@Body() createOfficeDto: CreateLocationDto) {
-    return await this.officesService.createOffice(createOfficeDto);
+  async createlocation(@Body() createlocationDto: CreateLocationDto) {
+    return await this.locationsService.createlocation(createlocationDto);
   }
 
   @Get()
   async getAll(
     @Query('page') page: number = 1,
     @Query('limit') limit: number = 10
-  ): Promise<{ total: number; page: number; limit: number; offices: SerializerLocationDto[] }> {
-    const { offices, total } = await this.officesService.getAll(page, limit);
-    return { offices: offices.map((office) => toDto(SerializerLocationDto, office)), total, page, limit };
+  ): Promise<{ total: number; page: number; limit: number; locations: SerializerLocationDto[] }> {
+    const { locations, total } = await this.locationsService.getAll(page, limit);
+    return { locations: locations.map((location) => toDto(SerializerLocationDto, location)), total, page, limit };
   }
 
   @Get(':id')
-  async getOneOffice(@Param('id') id: string) {
-    return await this.officesService.getOne(id);
+  async getOnelocation(@Param('id') id: string) {
+    return await this.locationsService.getOne(id);
   }
 
   @Patch(':id')
-  async updateOffice(@Param('id') id: string, @Body() updateOfficeDto: UpdateOfficeDto) {
-    return await this.officesService.update(id, updateOfficeDto);
+  async updatelocation(@Param('id') id: string, @Body() updatelocationDto: UpdatelocationDto) {
+    return await this.locationsService.update(id, updatelocationDto);
   }
 
   @Delete(':id')
   async softDelete(@Param('id') id: string) {
-    return await this.officesService.softDelete(id);
+    return await this.locationsService.softDelete(id);
   }
 
   @Post('/recover/:id')
   async recover(@Param('id') id: string) {
-    return await this.officesService.recover(id);
+    return await this.locationsService.recover(id);
   }
 }

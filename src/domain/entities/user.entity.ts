@@ -1,5 +1,5 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, JoinTable, OneToOne } from 'typeorm';
 import { DocumentType } from '../enums/document-type.enum';
 import { Gender } from '../enums/gender.enum';
 import { Role } from '../enums/role.enum';
@@ -33,6 +33,14 @@ export abstract class User extends Base {
   username?: string | null;
 
   @Column({
+    type: 'boolean',
+    default: false,
+    nullable: true,
+  })
+  @ApiProperty({ example: false })
+  googleBool: boolean | null;
+
+  @Column({
     type: 'varchar',
     nullable: true
   })
@@ -45,7 +53,7 @@ export abstract class User extends Base {
     enum: Role,
   })
   @ApiProperty({
-    examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST],
+    examples: [Role.PATIENT, Role.ADMIN, Role.organization, Role.SPECIALIST],
   })
   role: Role;
 
@@ -88,6 +96,7 @@ export abstract class User extends Base {
     nullable: true,
     enum: DocumentType,
     name: 'document_type',
+    default: DocumentType.DNI,
   })
   @ApiProperty({ examples: [DocumentType.DNI, DocumentType.PASSPORT] })
   documentType: DocumentType | null;
@@ -128,4 +137,5 @@ export abstract class User extends Base {
   @JoinColumn({ name: 'social_work_enrollment_id' })
   @ApiProperty({ type: () => SocialWorkEnrollment })
   socialWorkEnrollment?: SocialWorkEnrollment;
+  passwordChangedAt: Date;
 }

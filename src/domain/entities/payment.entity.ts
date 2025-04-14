@@ -23,6 +23,6 @@ export class Payment extends Base {
   @ManyToOne(() => PractitionerRole, {
     eager: true
   })
-  @JoinColumn({ name: 'speciality_id' })
-  speciality: PractitionerRole;
+  @JoinColumn({ name: 'practitionerRole_id' })
+  practitionerRole: PractitionerRole;
 }

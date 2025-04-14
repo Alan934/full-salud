@@ -5,5 +5,5 @@ import { ShortBaseDto } from '../../../common/dtos';
 export class SerializerProfessionalDegreeDto extends ShortBaseDto {
   @Expose()
   @ApiProperty({ example: 'Doctor' })
-  degree: string;
+  professionalDegree: string;
 }

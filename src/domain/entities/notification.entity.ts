@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { User } from '.';
+import { Patient, Practitioner, User } from '.';
 import { Base } from '../../common/bases/base.entity';
 
 @Entity('notification')
@@ -9,10 +9,33 @@ export class Notification extends Base {
   })
   text: string;
 
-  @ManyToOne(() => User, {
-    onDelete: 'CASCADE', // Se elimina la notificacion cuando se elimina físicamente el usuario
-    nullable: false
+  @Column({
+    type: 'varchar'
   })
-  @JoinColumn({ name: 'user_id' })
-  user: User;
+  title: string;
+
+  @Column({
+    type: 'boolean'
+  })
+  read: boolean;// leido
+
+  // @ManyToOne(() => User, {
+  //   onDelete: 'CASCADE', // Se elimina la notificacion cuando se elimina físicamente el usuario
+  //   nullable: false
+  // })
+  // @JoinColumn({ name: 'user_id' })
+  // user: User;
+
+  @ManyToOne(() => Patient, {
+    onDelete: 'CASCADE', // Se elimina la notificacion cuando se elimina físicamente el usuario
+
+  })
+  @JoinColumn({ name: 'patient_id' })
+  patient?: Patient;
+
+  @ManyToOne(() => Practitioner, {
+    onDelete: 'CASCADE', // Se elimina la notificacion cuando se elimina físicamente el usuario
+  })
+  @JoinColumn({ name: 'practitioner_id' })
+  practitioner?: Practitioner;
 }

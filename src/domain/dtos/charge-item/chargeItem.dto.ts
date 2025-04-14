@@ -20,10 +20,10 @@ export class CreateChargeItemDto {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  practice: ShortBaseDto;
+  procedure: ShortBaseDto;
 }
 
-//no permite actualizar practice ni specialist, solo el price
+//no permite actualizar procedure ni specialist, solo el price
 export class UpdateChargeItemDto {
   @IsNotEmpty()
   @IsNumber({ maxDecimalPlaces: 4 })

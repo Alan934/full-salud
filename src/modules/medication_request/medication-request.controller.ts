@@ -9,10 +9,10 @@ import {
   Put,
   Query
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { MedicationRequest } from '../../domain/entities/medication-request.entity';
-import { toDto, toDtoList } from '../../common/util/transform-dto.util';
+import { toDto } from '../../common/util/transform-dto.util';
 import { MedicationRequestsService } from './medication-request.service';
 import { SerializerMedicationRequestDto } from '../../domain/dtos/medication-request/medication-request-serializer.dto';
 import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/medication-request.dto';
@@ -42,23 +42,22 @@ export class MedicationRequestsController extends ControllerFactory<
 
   @Get('by-doctor')
   @ApiOperation({
-    summary: 'Obtener todas las recetas asociadas a un doctor'
+    summary: 'Obtener todas las recetas asociadas a un doctor, filtradas por periodo(day, week, month)'
   })
   @ApiResponse({ type: SerializerMedicationRequestDto, isArray: true })
   async findAllMedicationRequestByDoctorId(
     @Query('doctorId') doctorId: string,
     @Query('page') page: number = 1,
-    @Query('limit') limit:  number = 10,
-  ): Promise<{
-    data:SerializerMedicationRequestDto[]; 
-    total: number; 
-    lastPage: number}> {
-    const {data, total, lastPage} = await this.service.findAllMedicationRequestByDoctorId(doctorId, page, limit);
-    const serializedData = data.map((medication)=> toDto(SerializerMedicationRequestDto, medication))
+    @Query('limit') limit: number = 10,
+    @Query('period') period?: string
+  ): Promise<{ data: SerializerMedicationRequestDto[]; total: number; lastPage: number}> {
+    const { data, total, lastPage } = await this.service.findAllMedicationRequestByDoctorId(doctorId, page, limit, period);
+    const serializedData = data.map((medication) => toDto(SerializerMedicationRequestDto, medication));
     return {
       data: serializedData,
-      total, lastPage
-    };
+      total,
+      lastPage
+    }
   }
 
   @Get('by-patient')
@@ -122,6 +121,8 @@ export class MedicationRequestsController extends ControllerFactory<
       summary: 'Obtener todas las recetas filtradas'
     })
     @ApiResponse({ type: SerializerMedicationRequestDto, isArray: true })
+    @ApiQuery({ name: 'startDate', required: false, type: String, description: 'Fecha inicial'})
+    @ApiQuery({ name: 'endDate', required: false, type: String, description: 'Fecha final'})
     async findAllFiltered(
       @Query() filteredDto: FilteredMedicationRequestDto,
     ): Promise<{

@@ -1,12 +1,9 @@
 import { Injectable, NotFoundException,  } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-
 import { CreatePatientPractitionerFavoriteDto } from '../../domain/dtos/patient-practitioner-favorite/patient-practitioner-favorite.dto';
 import { UpdatePatientPractitionerFavoriteDto } from '../../domain/dtos/patient-practitioner-favorite/patient-practitioner-favorite.dto';
 import { BaseService } from '../../common/bases/base.service';
-
 import { PatientPractitionerFavorite } from '../../domain/entities/patient-practitioner-favorite.entity';
-
 import { Repository} from 'typeorm';
 import { Patient, Practitioner } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
@@ -17,8 +14,6 @@ export class PatientPractitionerFavoriteService extends BaseService<
 PatientPractitionerFavorite, CreatePatientPractitionerFavoriteDto, UpdatePatientPractitionerFavoriteDto>{
   constructor(
     @InjectRepository(PatientPractitionerFavorite) protected repository: Repository<PatientPractitionerFavorite>,
-    // @InjectRepository(User) protected userRepository: Repository<User>,
-    // @InjectRepository(Specialist) protected specialistRepository: Repository<Specialist>,
   ){
     super(repository);
   }

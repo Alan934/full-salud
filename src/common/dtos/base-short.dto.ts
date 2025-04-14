@@ -8,4 +8,7 @@ export class ShortBaseDto {
   @IsUUID()
   @ApiProperty({ example: '50436717-8608-4bff-bf41-373f14a8b888' })
   id: string;
+
+  @Expose()
+  createdAt: string;
 }

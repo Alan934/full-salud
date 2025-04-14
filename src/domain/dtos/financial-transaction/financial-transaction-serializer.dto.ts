@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { ShortBaseDto } from '../../../common/dtos';
-import { SerializerShortInstitutionDto } from '../organization/organization-serializer.dto';
+import { SerializerShortorganizationDto } from '../organization/organization-serializer.dto';
 
 export class SerializerFinancialTransactionDto extends ShortBaseDto {
   @Expose()
@@ -16,8 +16,8 @@ export class SerializerFinancialTransactionDto extends ShortBaseDto {
   minimunPatients: number;
 
   @Expose()
-  @Type(() => SerializerShortInstitutionDto)
-  institutions: SerializerShortInstitutionDto[];
+  @Type(() => SerializerShortorganizationDto)
+  organizations: SerializerShortorganizationDto[];
 }
 
 export class ShortCommissionDto extends ShortBaseDto {

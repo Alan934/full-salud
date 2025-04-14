@@ -36,7 +36,7 @@ export class OrganizationPaginationDto extends PaginationDto implements Filter {
     example: '5e139f43-891f-49e0-8fc1-8ca17d8fc6bf',
     type: 'string'
   })
-  institutionType?: string;
+  organizationType?: string;
 
   @IsUUID()
   @IsOptional()

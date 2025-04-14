@@ -1,7 +1,7 @@
 import { Base } from '../../common/bases/base.entity';
 import { Column, Entity } from 'typeorm';
 
-//Esta entidad anteriormente se denominaba InstitutionType
+//Esta entidad anteriormente se denominaba organizationType
 @Entity('organization_type')
 export class OrganizationType extends Base {
   @Column({

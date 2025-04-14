@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import { Day } from '../../enums';
+import { SerializerLocationDto } from '../location/location-serializer.dto';
 
 export class SerializerPatientAppointmentDto extends FullBaseDto {
   @Expose()
@@ -17,6 +18,10 @@ export class SerializerPatientAppointmentDto extends FullBaseDto {
     example: Object.values(Day).join(', ')
   })
   day: Day;
+  
+  @Expose()
+  @Type(() => SerializerLocationDto)
+  locations: SerializerLocationDto[];
 }
 
 export class SerializerShortPatientAppointmentDto extends ShortBaseDto {

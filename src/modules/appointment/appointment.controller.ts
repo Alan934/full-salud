@@ -51,11 +51,10 @@ export class AppointmentController extends ControllerFactory<
   @ApiResponse({ status: 404, description: 'Especialista no encontrado' })
   async createTurnWithPatient(
     @Body() createTurnDto: CreateAppointmentDto,
-  ): Promise<SerializerAppointmentDto> {
-    const turn = await this.service.createTurn(createTurnDto);
-    return toDto(SerializerAppointmentDto, turn);
+  ) {
+    return await this.service.createTurn(createTurnDto);
   }
-  
+
   @Get(':id')
   @ApiOperation({ description: 'Obtener un turno por su ID' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
@@ -92,7 +91,7 @@ export class AppointmentController extends ControllerFactory<
       previousPage,
     };
   }
-  
+
   @Get('specialist/:specialistId')
   @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación' })
   @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
@@ -102,19 +101,19 @@ export class AppointmentController extends ControllerFactory<
     @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10'
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerAppointmentDto[] 
+    turns: SerializerAppointmentDto[]
   }> {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getTurnsBySpecialist(specialistId, pageNumber, limitNumber);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
-      total, 
+    return {
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)),
+      total,
       page: pageNumber,
       limit: limitNumber,
       previousPage,
@@ -130,25 +129,54 @@ export class AppointmentController extends ControllerFactory<
     @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10'
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerAppointmentDto[] 
+    turns: SerializerAppointmentDto[]
   }> {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getTurnsBySpecialistAll(specialistId, pageNumber, limitNumber);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
-      total, 
+    return {
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)),
+      total,
       page: pageNumber,
       limit: limitNumber,
       previousPage,
     };
   }
-  
+
+  @Get('stats/:specialistId')
+@ApiOperation({ description: 'Obtener estadísticas de turnos para un especialista, filtradas por periodo (opcional: week omonth o year)' })
+@ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
+@ApiResponse({
+  status: 200,
+  description: 'Estadísticas de turnos obtenidas correctamente',
+  schema: {
+    example: {
+      completedStats: { count: 10, percentage: 50 },
+      canceledStats: { count: 10, percentage: 50 },
+      totalTurns: 20,
+      period: { start: '2024-03-01', end: '2024-04-01' }
+    }
+  }
+})
+@ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista en el periodo indicado' })
+async getTurnStatsForSpecialist(
+  @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
+  @Query('period') period?: 'month' | 'year'
+): Promise<{
+  completedStats: { count: number; percentage: number };
+  canceledStats: { count: number; percentage: number };
+  totalTurns: number;
+  period?: { start: string; end: string };
+}> {
+  const stats = await this.service.getTurnStatsForSpecialist(specialistId, period);
+  return stats;
+}
+
   @Get('patient/:patientId')
   @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
@@ -158,19 +186,19 @@ export class AppointmentController extends ControllerFactory<
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10'
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerAppointmentDto[] 
+    turns: SerializerAppointmentDto[]
   }> {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getTurnsByPatient(patientId, pageNumber, limitNumber);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
-      total, 
+    return {
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)),
+      total,
       page: pageNumber,
       limit: limitNumber,
       previousPage,
@@ -186,25 +214,25 @@ export class AppointmentController extends ControllerFactory<
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10'
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerAppointmentDto[] 
+    turns: SerializerAppointmentDto[]
   }> {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getTurnsByPatientAll(patientId, pageNumber, limitNumber);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
-      total, 
+    return {
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)),
+      total,
       page: pageNumber,
       limit: limitNumber,
       previousPage,
     };
   }
-  
+
   @Get('completed/patient/:patientId')
   @ApiOperation({ description: 'Obtener turnos completados por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
@@ -214,34 +242,46 @@ export class AppointmentController extends ControllerFactory<
     @Param('patientId', new ParseUUIDPipe({ version: '4' })) patientId: string,
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10'
-  ): Promise<{ 
-    total: number; 
-    page: number; 
-    limit: number; 
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
     previousPage: number | null;
-    turns: SerializerAppointmentDto[] 
+    turns: SerializerAppointmentDto[]
   }> {
     const pageNumber = Number(page);
     const limitNumber = Number(limit);
     const { turns, total, previousPage } = await this.service.getCompletedTurnsByPatient(patientId, pageNumber, limitNumber);
-    return { 
-      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)), 
-      total, 
+    return {
+      turns: turns.map((turn) => toDto(SerializerAppointmentDto, turn)),
+      total,
       page: pageNumber,
       limit: limitNumber,
       previousPage,
     };
-  }  
+  }
 
-  @Patch('/remove/:id')
+  @Patch('/cancel/:id')
   @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiResponse({ status: 200, description: 'Turno eliminado correctamente', schema: { example: { message: 'Turn deleted successfully', deletedTurn: { /* ejemplo del turno */ } } } })
   @ApiResponse({ status: 404, description: 'Turno no encontrado' })
   async removeTurn(
     @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
-  ): Promise<{ message: string; deletedTurn: Appointment }> {
-    return this.service.removeTurn(id);
+  ): Promise<{ message: string }> {
+    return this.service.removeTurn(id, null);
+  }
+
+  @Patch('/reprogram/:id')
+  @ApiOperation({ description: 'Reprogramar un turno' })
+  @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
+  @ApiResponse({ status: 200, description: 'Turno eliminado correctamente', schema: { example: { turn: { /* ejemplo del turno */ } } } })
+  @ApiResponse({ status: 404, description: 'Turno no encontrado' })
+  async reprogramTurn(
+    @Param('id', new ParseUUIDPipe({ version: '4' })) id: string,
+  ): Promise<{ turn: SerializerAppointmentDto }> {
+    const turn = await this.service.reprogramTurn(id);
+    return { turn: toDto(SerializerAppointmentDto, turn) };
   }
 
   @Patch('/recover/:id')

@@ -14,8 +14,8 @@ export class CreatePaymentDto {
 
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
-  speciality: ShortBaseDto;
+  practitionerRole: ShortBaseDto;
 }
 export class UpdatePaymentDto extends PartialType(
-  OmitType(CreatePaymentDto, ['socialWork', 'speciality'] as const)
+  OmitType(CreatePaymentDto, ['socialWork', 'practitionerRole'] as const)
 ) {}

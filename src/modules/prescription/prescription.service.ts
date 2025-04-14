@@ -28,17 +28,17 @@ export class PrescriptionService extends BaseService<
         async (entityManager: EntityManager) => {
           const specialist: Practitioner = await entityManager.findOne(Practitioner, {
             where: { id: createDto.practitioner.id },
-            relations: ['specialities'], // Asegúrate de incluir la relación
+            relations: ['practitionerRole'], // Asegúrate de incluir la relación
           });
   
-          if (!specialist || !specialist.specialities || specialist.specialities.length === 0) {
+          if (!specialist || !specialist.practitionerRole || specialist.practitionerRole.length === 0) {
             throw new ErrorManager(
-              'Specialist does not have any specialities assigned',
+              'Specialist does not have any practitionerRole assigned',
               HttpStatus.BAD_REQUEST
             );
           }
   
-          if (specialist.specialities.some((speciality) => speciality.canPrescribe)) {
+          if (specialist.practitionerRole.some((practitionerRole) => practitionerRole.canPrescribe)) {
             if (!createDto.indications && !createDto.observations) {
               throw new ErrorManager(
                 'Either indications field or observations field must not be empty',

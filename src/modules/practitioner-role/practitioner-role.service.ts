@@ -1,4 +1,4 @@
-import { Injectable, Inject, forwardRef, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { CreatePractitionerRoleDto, UpdatePractitionerRoleDto } from '../../domain/dtos';
@@ -13,15 +13,15 @@ export class PractitionerRoleService extends BaseService<
   UpdatePractitionerRoleDto
 > {
   constructor(
-    @InjectRepository(PractitionerRole) protected specialityRepository: Repository<PractitionerRole>,
+    @InjectRepository(PractitionerRole) protected practitionerRoleRepository: Repository<PractitionerRole>,
   ) {
-    super(specialityRepository);
+    super(practitionerRoleRepository);
   }
 
-  async createSpeciality(createSpecialityDto: CreatePractitionerRoleDto): Promise<PractitionerRole> {
+  async createpractitionerRole(createpractitionerRoleDto: CreatePractitionerRoleDto): Promise<PractitionerRole> {
     try {
-      const newSpeciality = this.specialityRepository.create(createSpecialityDto);
-      return await this.specialityRepository.save(newSpeciality);
+      const newpractitionerRole = this.practitionerRoleRepository.create(createpractitionerRoleDto);
+      return await this.practitionerRoleRepository.save(newpractitionerRole);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -29,16 +29,16 @@ export class PractitionerRoleService extends BaseService<
 
   async getOne(id: string): Promise<PractitionerRole> {
     try {
-      const speciality = await this.specialityRepository.findOne({
+      const practitionerRole = await this.practitionerRoleRepository.findOne({
         where: { id, deletedAt: null },
         relations: ['tags'],
       });
 
-      if (!speciality) {
-        throw new NotFoundException(`Speciality with ID ${id} not found`);
+      if (!practitionerRole) {
+        throw new NotFoundException(`practitionerRole with ID ${id} not found`);
       }
 
-      return speciality;
+      return practitionerRole;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -46,7 +46,7 @@ export class PractitionerRoleService extends BaseService<
 
   async getAll(): Promise<PractitionerRole[]> {
     try {
-      return await this.specialityRepository.find({
+      return await this.practitionerRoleRepository.find({
         where: { deletedAt: null },
         relations: ['tags'],
       });
@@ -55,12 +55,12 @@ export class PractitionerRoleService extends BaseService<
     }
   }
 
-  async updateSpeciality(id: string, updateSpecialityDto: UpdatePractitionerRoleDto): Promise<PractitionerRole> {
+  async updatepractitionerRole(id: string, updatepractitionerRoleDto: UpdatePractitionerRoleDto): Promise<PractitionerRole> {
     try {
-      const speciality = await this.getOne(id);
+      const practitionerRole = await this.getOne(id);
 
-      Object.assign(speciality, updateSpecialityDto);
-      return await this.specialityRepository.save(speciality);
+      Object.assign(practitionerRole, updatepractitionerRoleDto);
+      return await this.practitionerRoleRepository.save(practitionerRole);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -68,26 +68,26 @@ export class PractitionerRoleService extends BaseService<
 
   async softDelete(id: string): Promise<void> {
     try {
-      const speciality = await this.getOne(id);
-      await this.specialityRepository.softRemove(speciality);
+      const practitionerRole = await this.getOne(id);
+      await this.practitionerRoleRepository.softRemove(practitionerRole);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  async recoverSpeciality(id: string): Promise<PractitionerRole> {
+  async recoverpractitionerRole(id: string): Promise<PractitionerRole> {
     try {
-      const speciality = await this.specialityRepository.findOne({
+      const practitionerRole = await this.practitionerRoleRepository.findOne({
         where: { id },
         withDeleted: true,
       });
 
-      if (!speciality) {
-        throw new NotFoundException(`Speciality with ID ${id} not found or not deleted`);
+      if (!practitionerRole) {
+        throw new NotFoundException(`practitionerRole with ID ${id} not found or not deleted`);
       }
 
-      await this.specialityRepository.recover(speciality);
-      return speciality;
+      await this.practitionerRoleRepository.recover(practitionerRole);
+      return practitionerRole;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

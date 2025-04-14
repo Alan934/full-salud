@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
@@ -28,34 +28,43 @@ export class OrganizationService extends BaseService<
   constructor(
     @InjectRepository(Organization)
     protected repository: Repository<Organization>,
-    @Inject() protected readonly headquartersService: BranchService
+    @Inject() protected readonly branchService: BranchService
   ) {
     super(repository);
   }
 
-  //condiciones que se agregarán al query builder para filtrar institutions
-  private institutionsConditions: Conditions<Organization> = {
+  //condiciones que se agregarán al query builder para filtrar organizations
+  private organizationsConditions: Conditions<Organization> = {
     cuit: (queryBuilder: SelectQueryBuilder<Organization>, value: string) =>
-      queryBuilder.andWhere('institution.cuit = :cuit', { cuit: value }),
+      queryBuilder.andWhere('organization.cuit = :cuit', { cuit: value }),
     businessName: (
       queryBuilder: SelectQueryBuilder<Organization>,
       value: string
     ) =>
-      queryBuilder.andWhere('institution.business_name LIKE :businessName', {
+      queryBuilder.andWhere('organization.business_name LIKE :businessName', {
         businessName: `%${value}%`
       }),
-    institutionType: (
+    organizationType: (
       queryBuilder: SelectQueryBuilder<Organization>,
       value: string
     ) =>
       queryBuilder.andWhere(
-        'institution.institution_type_id = :institutionType',
-        { institutionType: value }
+        'organization.organization_type_id = :organizationType',
+        { organizationType: value }
       ),
     iva: (queryBuilder: SelectQueryBuilder<Organization>, value: string) =>
-      queryBuilder.andWhere('institution.iva_id = :iva', { iva: value })
-    /* day: (queryBuilder: SelectQueryBuilder<Institution>, value: Day) => queryBuilder.andWhere('attention_hours.day = :day', { day: value }),*/
+      queryBuilder.andWhere('organization.iva_id = :iva', { iva: value })
+    /* day: (queryBuilder: SelectQueryBuilder<organization>, value: Day) => queryBuilder.andWhere('attention_hours.day = :day', { day: value }),*/
   };
+
+  async create(createDto: CreateOrganizationDto): Promise<Organization> {
+    try {
+      const organization = this.repository.create(createDto);
+      return await this.repository.save(organization);
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
 
   //override del método base findAll para agregar el filtrado por propiedades
   override async findAll(
@@ -65,12 +74,12 @@ export class OrganizationService extends BaseService<
       const { page, limit } = paginationDto;
 
       const queryBuilderBase = this.repository
-        .createQueryBuilder('institution')
-        /* .innerJoinAndSelect('institution.attentionHours', 'attention_hours') */
-        .innerJoinAndSelect('institution.institutionType', 'institution_type');
+        .createQueryBuilder('organization')
+        /* .innerJoinAndSelect('organization.appointmentSlot', 'attention_hours') */
+        .innerJoinAndSelect('organization.organizationType', 'organization_type');
       const query = DynamicQueryBuilder.buildSelectQuery<Organization>(
         queryBuilderBase,
-        this.institutionsConditions,
+        this.organizationsConditions,
         paginationDto
       );
 
@@ -100,6 +109,31 @@ export class OrganizationService extends BaseService<
     }
   }
 
+  async getOne(id: string): Promise<Organization> {
+    try {
+      const organization = await this.repository.findOne({
+        where: { id },
+        relations: [
+          'iva', 
+          'organizationType', 
+          'commissions', 
+          'branch', 
+          'branch.address', 
+          'branch.appointmentSlot', 
+          'branch.locations'
+        ],
+      });
+  
+      if (!organization) {
+        throw new NotFoundException(`Organization with ID ${id} not found`);
+      }
+  
+      return organization;
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
   override async remove(id: string): Promise<string> {
     try {
       const entity = await this.findOne(id);
@@ -108,18 +142,9 @@ export class OrganizationService extends BaseService<
           await manager //eliminar la institucion de turno
             .createQueryBuilder()
             .update(Appointment)
-            .set({ institution: null })
-            .where('institution_id = :id', { id: entity.id })
+            .set({ organization: null })
+            .where('organization_id = :id', { id: entity.id })
             .execute();
-          await Promise.all(
-            entity.headquarters.map(
-              async (headquarters) =>
-                await this.headquartersService.removeWithManager(
-                  headquarters.id,
-                  manager
-                )
-            )
-          );
           await manager.remove(Organization, entity);
           return `Entity with id ${id} deleted`;
         }
@@ -134,20 +159,21 @@ export class OrganizationService extends BaseService<
       const entity = await this.findOne(id);
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
-          await Promise.all(
-            entity.headquarters.map(
-              async (headquarters) =>
-                await this.headquartersService.softRemoveWithManager(
-                  headquarters.id,
-                  manager
-                )
-            )
-          );
 
           await manager.softRemove(Organization, entity);
           return `Entity with id ${id} soft deleted`;
         }
       );
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async update(id: string, updateDto: UpdateOrganizationDto): Promise<Organization> {
+    try {
+      const organization = await this.getOne(id);
+      Object.assign(organization, updateDto);
+      return await this.repository.save(organization);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
@@ -168,15 +194,6 @@ export class OrganizationService extends BaseService<
 
       return this.repository.manager.transaction(
         async (manager: EntityManager) => {
-          await Promise.all(
-            entity.headquarters.map(
-              async (headquarters) =>
-                await this.headquartersService.restoreWithManager(
-                  headquarters.id,
-                  manager
-                )
-            )
-          );
 
           return await manager.recover(entity);
         }

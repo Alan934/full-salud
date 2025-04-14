@@ -1,10 +1,9 @@
 import { Role } from '../../enums/role.enum';
 import {
-  IsArray,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
-  IsNumberString,
   IsOptional,
   IsString,
   IsStrongPassword,
@@ -12,19 +11,13 @@ import {
   MaxLength,
   ValidateNested
 } from 'class-validator';
-import { Expose, Type } from 'class-transformer';
-import { Express } from 'express';
 import 'multer';
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
-import { OmitFieldForRoles } from '../../../common/util/custom-dto-properties-decorators/validate-omit-field-for-roles.util';
 import { IsOptionalIf } from '../../../common/util/custom-dto-properties-decorators/validate-is-optional-if-decorator.util';
 import { ShortBaseDto } from '../../../common/dtos';
 import { Gender } from '../../enums';
 import { DocumentType } from '../../enums';
-import { Column } from 'typeorm';
-import { CreateSocialWorkDto } from '../social-work/social-work.dto';
-import { SerializerSocialWorkEnrollmentDto } from '../social-work-enrollment/social-work-enrollment-serializer.dto';
-//asdadads
+import { Type } from 'class-transformer';
 
 export class UserDto {
 
@@ -62,10 +55,10 @@ export class UserDto {
   @MaxLength(20, {
     message: 'Password must be at most 20 characters long'
   })
-  //si se crea secretary, patient o institution, la contraseña es opcional
+  //si se crea secretary, patient o organization, la contraseña es opcional
   @IsOptionalIf(
     (dto) =>
-      dto.role == Role.INSTITUTION ||
+      dto.role == Role.organization ||
       dto.role == Role.SECRETARY ||
       dto.role == Role.PATIENT
   )
@@ -73,9 +66,14 @@ export class UserDto {
   password?: string;
 
   @IsOptional()
+  @IsBoolean()
+  @ApiProperty({ example: false })
+  googleBool?: boolean;
+
+  @IsOptional()
   @IsEnum(Role)
   @ApiProperty({
-    examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST]
+    examples: [Role.PATIENT, Role.ADMIN, Role.organization, Role.SPECIALIST]
   })
   role: Role;
 
@@ -149,6 +147,7 @@ export class AuthUserDto {
   @ApiProperty({ example: 'Clave1*' })
   password: string;
 
+  
 }
 
 //"reescribe" profile image, no permite actualizar rol

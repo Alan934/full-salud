@@ -15,7 +15,7 @@ export class CreatePractitionerSecretaryDto {
   @ValidateNested()
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
-  office: ShortBaseDto;
+  location: ShortBaseDto;
 }
 
 export class UpdatePractitionerSecretaryDto extends PartialType(

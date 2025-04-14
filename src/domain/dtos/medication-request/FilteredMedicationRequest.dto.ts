@@ -1,5 +1,5 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsNumber, IsString, IsDateString } from 'class-validator';
 import { CreateMedicationDto } from '../medication/medication.dto';
 import { Transform, Type } from 'class-transformer';
 
@@ -24,6 +24,7 @@ export class FilteredMedicationRequestDto {
   @ApiProperty({ example: 'Infección respiratoria.' })
   diagnosis?: string;
 
+  @IsOptional()
   @IsBoolean()
   @ApiProperty({ example: false })
   @Transform(({ value }) => {
@@ -47,11 +48,16 @@ export class FilteredMedicationRequestDto {
   @ApiProperty({ type: [CreateMedicationDto] })
   medicines?: CreateMedicationDto[]; 
 
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174002' })
+  medicineId?: string;
+
   //nuevos atributos
   @IsOptional()
   @IsBoolean()
   @ApiProperty({ example: true })
-  prolonged_treatment?: boolean;
+  prolongedTreatment?: boolean;
 
   @IsOptional()
   @IsBoolean()
@@ -61,22 +67,32 @@ export class FilteredMedicationRequestDto {
   @IsOptional()
   @IsString()
   @ApiProperty({ example: 'Paracetamol' })
-  generic_name?: string;
+  genericName?: string;
 
   @IsOptional()
   @IsString()
   @ApiProperty({ example: 'Tabletas recubiertas' })
-  medicine_presentation?: string;
+  medicinePresentation?: string;
   
   @IsOptional()
   @IsString()
   @ApiProperty({ example: 'Oral' })
-  medicine_pharmaceutical_form?: string;
+  medicinePharmaceuticalForm?: string;
 
   @IsOptional()
   @IsNumber()
   @ApiProperty({ example: 20 })
-  medicine_quantity?: number;
+  medicineQuantity?: number;
+
+  @IsOptional()
+  @IsDateString()
+  @ApiProperty({ example: '2025-04-01', description: 'Filtrar recetas desde esta fecha (formato YYYY-MM-DD)' })
+  startDate?: string;
+
+  @IsOptional()
+  @IsDateString()
+  @ApiProperty({ example: '2025-04-10', description: 'Filtrar recetas hasta esta fecha (formato YYYY-MM-DD)' })
+  endDate?: string;
 
 }
 

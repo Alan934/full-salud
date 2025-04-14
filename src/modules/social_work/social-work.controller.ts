@@ -4,8 +4,6 @@ import { ControllerFactory } from '../../common/factories/controller.factory';
 import { SocialWork } from '../../domain/entities';
 import { CreateSocialWorkDto, SerializerSocialWorkDto, UpdateSocialWorkDto } from '../../domain/dtos';
 import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
-import { Role } from '../../domain/enums/role.enum';
 import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Social Work')

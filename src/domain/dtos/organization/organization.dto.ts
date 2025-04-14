@@ -38,6 +38,6 @@ export class CreateOrganizationDto {
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
   @ValidateNested()
-  institutionType: ShortBaseDto;
+  organizationType: ShortBaseDto;
 }
 export class UpdateOrganizationDto extends PartialType(CreateOrganizationDto) {}

@@ -22,58 +22,58 @@ export class PractitionerRoleController extends ControllerFactory<
   UpdatePractitionerRoleDto,
   SerializerPractitionerRoleDto
 ) {
-  constructor(protected service: PractitionerRoleService, private readonly specialitiesService: PractitionerRoleService) {
+  constructor(protected service: PractitionerRoleService, private readonly practitionerRoleService: PractitionerRoleService) {
     super();
   }
 
   @Post()
-  @ApiOperation({ summary: 'Create a new speciality' })
-  @ApiResponse({ status: 201, description: 'Speciality created successfully' })
-  async create(@Body() createSpecialityDto: CreatePractitionerRoleDto): Promise<PractitionerRole> {
-    return await this.specialitiesService.createSpeciality(createSpecialityDto);
+  @ApiOperation({ summary: 'Create a new practitionerRole' })
+  @ApiResponse({ status: 201, description: 'practitionerRole created successfully' })
+  async create(@Body() createpractitionerRoleDto: CreatePractitionerRoleDto): Promise<PractitionerRole> {
+    return await this.practitionerRoleService.createpractitionerRole(createpractitionerRoleDto);
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a speciality by ID' })
-  @ApiResponse({ status: 200, description: 'Speciality found' })
-  @ApiResponse({ status: 404, description: 'Speciality not found' })
+  @ApiOperation({ summary: 'Get a practitionerRole by ID' })
+  @ApiResponse({ status: 200, description: 'practitionerRole found' })
+  @ApiResponse({ status: 404, description: 'practitionerRole not found' })
   async getOne(@Param('id') id: string): Promise<PractitionerRole> {
-    return await this.specialitiesService.getOne(id);
+    return await this.practitionerRoleService.getOne(id);
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all specialities' })
-  @ApiResponse({ status: 200, description: 'List of specialities' })
+  @ApiOperation({ summary: 'Get all practitionerRole' })
+  @ApiResponse({ status: 200, description: 'List of practitionerRole' })
   async getAll(): Promise<PractitionerRole[]> {
-    return await this.specialitiesService.getAll();
+    return await this.practitionerRoleService.getAll();
   }
 
   @Patch(':id')
-  @ApiOperation({ summary: 'Update a speciality by ID' })
-  @ApiResponse({ status: 200, description: 'Speciality updated successfully' })
-  @ApiResponse({ status: 404, description: 'Speciality not found' })
+  @ApiOperation({ summary: 'Update a practitionerRole by ID' })
+  @ApiResponse({ status: 200, description: 'practitionerRole updated successfully' })
+  @ApiResponse({ status: 404, description: 'practitionerRole not found' })
   async update(
     @Param('id') id: string, 
-    @Body() updateSpecialityDto: UpdatePractitionerRoleDto
+    @Body() updatepractitionerRoleDto: UpdatePractitionerRoleDto
   ): Promise<PractitionerRole> {
-    return await this.specialitiesService.updateSpeciality(id, updateSpecialityDto);
+    return await this.practitionerRoleService.updatepractitionerRole(id, updatepractitionerRoleDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
-  @ApiOperation({ summary: 'Soft delete a speciality by ID' })
-  @ApiResponse({ status: 204, description: 'Speciality deleted successfully' })
-  @ApiResponse({ status: 404, description: 'Speciality not found' })
-  async removeSpeciality(@Param('id') id: string): Promise<void> {
-    await this.specialitiesService.softDelete(id);
+  @ApiOperation({ summary: 'Soft delete a practitionerRole by ID' })
+  @ApiResponse({ status: 204, description: 'practitionerRole deleted successfully' })
+  @ApiResponse({ status: 404, description: 'practitionerRole not found' })
+  async removepractitionerRole(@Param('id') id: string): Promise<void> {
+    await this.practitionerRoleService.softDelete(id);
   }
 
   @Patch('/recover/:id')
-  @ApiOperation({ summary: 'Recover a soft-deleted speciality by ID' })
-  @ApiResponse({ status: 200, description: 'Speciality recovered successfully' })
-  @ApiResponse({ status: 404, description: 'Speciality not found or not deleted' })
+  @ApiOperation({ summary: 'Recover a soft-deleted practitionerRole by ID' })
+  @ApiResponse({ status: 200, description: 'practitionerRole recovered successfully' })
+  @ApiResponse({ status: 404, description: 'practitionerRole not found or not deleted' })
   async recover(@Param('id') id: string): Promise<PractitionerRole> {
-    return await this.specialitiesService.recoverSpeciality(id);
+    return await this.practitionerRoleService.recoverpractitionerRole(id);
   }
 
 }

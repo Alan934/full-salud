@@ -67,12 +67,12 @@ export class PractitionerFilteredPaginationDto
   @IsOptional()
   //@IsNotEmpty()
   //@IsUUID()
-  degree?: string;
+  professionalDegree?: string;
 
   @IsOptional()
   //@IsNotEmpty()
   //@IsUUID()
-  speciality?: string;
+  practitionerRole?: string;
 
   @IsOptional()
   //@IsUUID()
@@ -80,7 +80,7 @@ export class PractitionerFilteredPaginationDto
   socialWorkEnrollmentId?: string;
   
   @IsOptional()
-  officeName: string;
+  locationName: string;
 
   @IsOptional()
   appointmentDay: string;

@@ -3,7 +3,7 @@ import { ControllerFactory } from '../../common/factories/controller.factory';
 import {
   CreateOrganizationTypeDto,
   UpdateOrganizationTypeDto,
-  SerializerInstitutionTypeDto
+  SerializerorganizationTypeDto
 } from '../../domain/dtos';
 import { OrganizationType } from '../../domain/entities';
 import { OrganizationTypeService } from './organization-type.service';
@@ -15,12 +15,12 @@ export class OrganizationTypeController extends ControllerFactory<
   OrganizationType,
   CreateOrganizationTypeDto,
   UpdateOrganizationTypeDto,
-  SerializerInstitutionTypeDto
+  SerializerorganizationTypeDto
 >(
   OrganizationType,
   CreateOrganizationTypeDto,
   UpdateOrganizationTypeDto,
-  SerializerInstitutionTypeDto
+  SerializerorganizationTypeDto
 ) {
   constructor(protected service: OrganizationTypeService) {
     super();

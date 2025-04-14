@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-// import { NotificationPreferencesServiceFactory } from '../../common/bases/notification-preferences-base.service';
 import {
   CreateNotificationPreferenceDto,
   UpdatePractitionerSecretaryNotificationPreferencesDto

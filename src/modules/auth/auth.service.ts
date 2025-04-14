@@ -1,5 +1,6 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { ChangePasswordDto } from '../../domain/dtos/password/chance-password';
 import { BaseService } from '../../common/bases/base.service';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
@@ -94,34 +95,22 @@ export class AuthService extends BaseService<
     }
   }
 
-  async createAdmin(createUserDto: AuthUserDto): Promise<UserDto> {
-    try {
-      const existingUser = await this.repository.findOne({
-        where: [
-          { email: createUserDto.email },
-          { username: createUserDto.username }
-        ],
-      });
-  
-      if (existingUser) {
-        throw new ErrorManager('Email or username already in use', 400);
-      }
-  
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-  
-      const newAdmin = this.repository.create({
-        ...createUserDto,
-        password: hashedPassword,
-        role: Role.ADMIN,
-      });
-  
-      const savedAdmin = await this.repository.save(newAdmin);
-  
-      return plainToInstance(UserDto, savedAdmin, { excludeExtraneousValues: true });
-  
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<{ message: string }> {
+
+    const user = await this.getUserById(userId);
+    const isPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+    if (!isPasswordValid) {
+      throw new ErrorManager('Current password is incorrect', 400);
     }
+
+    if (changePasswordDto.newPassword !== changePasswordDto.confirmNewPassword) {
+      throw new ErrorManager('New passwords do not match', 400);
+    }
+
+    user.password = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    await this.repository.save(user);
+
+    return { message: 'Password updated successfully' };
   }
 
   async ensureAdminExists() {
@@ -192,6 +181,51 @@ export class AuthService extends BaseService<
       return blob.url;
     } catch (error) {
       throw new BadRequestException('Failed to upload image');
+    }
+  }
+
+  async googleSignIn(req) {
+    if (!req.user) {
+      throw new HttpException('No user from Google', 400);
+    }
+
+    const { email, firstName, lastName, picture, birthDate, sex, phoneNumber, address, username } = req.user;
+    
+    const user: User | undefined = await this.patientRepository.findOne({
+      where: {googleBool: true, email: email},
+    }) || await this.practitionerRepository.findOne({
+      where: {googleBool: true, email: email},
+    }) || await this.repository.findOne({
+      where: {googleBool: true, email: email},
+    });
+
+    const exist: User | undefined = await this.patientRepository.findOne({
+      where: { email: email },
+    }) || await this.practitionerRepository.findOne({
+      where: { email: email },
+    }) || await this.repository.findOne({
+      where: { email: email },
+    });
+
+    if(!user && exist) {
+      return new HttpException('Email already in use', 400);
+    }
+
+    if(user) {
+      const payload: JwtPayload = { id: user.id, email: user.email, role: user.role, name: user.name, lastName: user.lastName };
+      const accessToken = await this.signJWT(payload);
+
+      const userDto = plainToInstance(SerializerUserDto, user);
+      const { id, name, lastName, email: newEmail, role, urlImg, ...rest} = userDto;
+      return { id, name, lastName, email: newEmail, role, urlImg, accessToken };
+    } else {
+      return {
+        email: email,
+        name: firstName,
+        lastName: lastName,
+        username: username,
+        urlImg: picture,
+      }
     }
   }
 }

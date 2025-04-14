@@ -26,15 +26,11 @@ export class CreateBranchDto {
   @ApiProperty({ example: '123456789' })
   phone: string;
 
+  @IsOptional()
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
   @ValidateNested()
-  user: ShortBaseDto;
-
-  @IsNotEmpty()
-  @Type(() => ShortBaseDto)
-  @ValidateNested()
-  institution: ShortBaseDto;
+  organization: ShortBaseDto;
 
   @IsOptional()
   @IsNotEmpty()
@@ -47,16 +43,17 @@ export class CreateBranchDto {
   @IsBoolean()
   @ApiProperty({
     example: 'false',
-    description: 'Marca a una sede como principal'
+    description: 'Marca a una sede como principal',
+    default: false
   })
   isMainBranch: boolean;
 
   @ValidateNested()
   @IsOptional()
   @Type(() => CreateAppointmentSlotDto)
-  attentionHours?: CreateAppointmentSlotDto[];
+  appointmentSlot?: CreateAppointmentSlotDto[];
 }
 
 export class UpdateBranchDto extends PartialType(
-  OmitType(CreateBranchDto, ['user', 'institution'] as const)
+  OmitType(CreateBranchDto, ['organization'] as const)
 ) {}

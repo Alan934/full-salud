@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer';
 import {
   Column,
   Entity,
@@ -13,7 +12,6 @@ import {
   ProfessionalDegree,
   Location,
   PractitionerRole,
-  SocialWork,
   PractitionerAppointment
 } from '.';
 import { User } from './user.entity';
@@ -53,29 +51,29 @@ export class Practitioner extends User {
   @ManyToOne(() => ProfessionalDegree, {
     eager: true,
   })
-  @JoinColumn({ name: 'degree_id' })
-  degree: ProfessionalDegree;
+  @JoinColumn({ name: 'professionalDegree_id' })
+  professionalDegree: ProfessionalDegree;
 
   @ManyToMany(() => PractitionerRole, (practitioner) => practitioner.practitioners, {
     eager: true,
     nullable: true,
   })
   @JoinTable({
-    name: 'practitioners_specialities',
+    name: 'practitioners_practitionerRole',
     joinColumn: {
       name: 'practitioner_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-      name: 'speciality_id',
+      name: 'practitionerRole_id',
       referencedColumnName: 'id',
     },
   })
-  specialities: PractitionerRole[];
+  practitionerRole: PractitionerRole[];
 
   @OneToMany(
     () => PractitionerAppointment,
-    (specialistAttentionHour) => specialistAttentionHour.practitioner,
+    (practitionerAppointment) => practitionerAppointment.practitioner,
     {
       eager: true,
       cascade: true,
@@ -85,18 +83,15 @@ export class Practitioner extends User {
       onDelete: 'CASCADE',
     },
   )
-  specialistAttentionHour: PractitionerAppointment[];
+  practitionerAppointment: PractitionerAppointment[];
+
+  @Column({
+    type: 'time',
+    nullable: true,
+  })
+  consultationTime: string;
 
   @OneToOne(() => PatientPractitionerFavorite, (favorite) => favorite.practitioner)
   favorite: PatientPractitionerFavorite;
-
-  @Expose()
-  @IsOptional()
-  @ManyToOne(() => Location, (office) => office.practitioners, {
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
-  @JoinColumn({ name: 'office_id' })
-  office?: Location;
 
 }

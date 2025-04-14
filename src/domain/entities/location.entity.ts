@@ -1,9 +1,9 @@
 import { Base } from '../../common/bases/base.entity';
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { Address, AppointmentSlot , Practitioner, PractitionerSecretary } from '.';
+import { Column, Entity, JoinColumn, ManyToMany, ManyToOne, OneToMany, OneToOne } from 'typeorm';
+import { Address, AppointmentSlot , Branch, PractitionerAppointment, PractitionerSecretary } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 
-//Esta entidad anteriormente se denominaba Office
+//Esta entidad anteriormente se denominaba office
 @Entity('location')
 export class Location extends Base {
   @Column({
@@ -23,29 +23,32 @@ export class Location extends Base {
   })
   phone: string;
 
-  @OneToMany(() => Practitioner, (practitioner) => practitioner.office, {
-    cascade: true,
-  })
-  practitioners: Practitioner[];  
+  @OneToMany(
+    () => PractitionerAppointment,
+    (practitionerAppointment) => practitionerAppointment.location,
+    { cascade: true }
+  )
+  practitionerAppointments: PractitionerAppointment[];  
 
   @OneToOne(() => Address, {
     cascade: true,
     eager: true,
-    onUpdate: 'CASCADE'
+    onUpdate: 'CASCADE',
+    nullable: true
   })
   @JoinColumn({
     name: 'address_id'
   })
   address: Address;
 
-  @OneToOne(() => PractitionerSecretary, (secretary) => secretary.office, {
+  @OneToOne(() => PractitionerSecretary, (secretary) => secretary.location, {
     lazy: true
   })
   secretary: Promise<PractitionerSecretary> | PractitionerSecretary;
 
   @OneToMany(
     () => AppointmentSlot ,
-    (attentionHour) => attentionHour.office,
+    (appointmentSlot) => appointmentSlot.location,
     {
       eager: true,
       cascade: true,
@@ -55,5 +58,13 @@ export class Location extends Base {
       onDelete: 'CASCADE',
     },
   )
-  attentionHour: AppointmentSlot [];
+  appointmentSlot: AppointmentSlot [];
+
+  @ManyToOne(() => Branch, (branch) => branch.locations, {
+    onDelete: 'CASCADE', // Si se elimina la branch, se eliminan sus locations
+    nullable: true,
+  })
+  @JoinColumn({ name: 'branch_id' })
+  branch: Branch;
+
 }

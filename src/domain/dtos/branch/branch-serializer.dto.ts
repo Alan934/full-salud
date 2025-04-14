@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import {
-  SerializerUserDto,
-  SerializerShortInstitutionDto,
-  SerializerShortAddressDto,
-  SerializerAppointmentSlotDto
+  SerializerShortorganizationDto,
+  SerializerAddressDto,
+  SerializerAppointmentSlotDto,
+  SerializerLocationDto
 } from '..';
 
 export class SerializerBranchDto extends FullBaseDto {
@@ -22,20 +22,20 @@ export class SerializerBranchDto extends FullBaseDto {
   phone: string;
 
   @Expose()
-  @Type(() => SerializerUserDto)
-  user: SerializerUserDto;
+  @Type(() => SerializerShortorganizationDto)
+  organization: SerializerShortorganizationDto;
 
   @Expose()
-  @Type(() => SerializerShortInstitutionDto)
-  institution: SerializerShortInstitutionDto;
+  @Type(() => SerializerLocationDto)
+  location: SerializerLocationDto;
 
   @Expose()
-  @Type(() => SerializerShortAddressDto)
-  address: SerializerShortAddressDto;
+  @Type(() => SerializerAddressDto)
+  address: SerializerAddressDto;
 
   @Expose()
   @Type(() => SerializerAppointmentSlotDto)
-  attentionHours: SerializerAppointmentSlotDto[];
+  appointmentSlot: SerializerAppointmentSlotDto[];
 }
 
 export class SerializerShortBranchDto extends ShortBaseDto {

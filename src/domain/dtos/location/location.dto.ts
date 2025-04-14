@@ -24,18 +24,23 @@ export class CreateLocationDto {
   })
   phone?: string;
 
-  //recibe una nueva dirección
   @ValidateNested()
   @IsOptional()
-  @IsNotEmpty()
   @Type(() => CreateAddressDto)
   address?: CreateAddressDto;
+
+  @IsOptional()
+  @ApiProperty({
+    example: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+    description: 'ID de la branch a la que pertenece la location'
+  })
+  branchId: string;
 
   @ValidateNested({ each: true })
   @Type(() => CreateAppointmentSlotDto)
   @IsOptional()
   @ApiProperty({ type: [CreateAppointmentSlotDto] })
-  attentionHour?: CreateAppointmentSlotDto[];
+  appointmentSlot?: CreateAppointmentSlotDto[];
 }
 
 export class CreateLocationWithIdDto extends CreateAddressDto {
@@ -50,7 +55,7 @@ export class CreateLocationWithIdDto extends CreateAddressDto {
   id?: string;
 }
 
-export class UpdateOfficeDto extends PartialType(
+export class UpdatelocationDto extends PartialType(
   OmitType(CreateLocationDto, ['address'] as const)
 ) {
   //recibe opcionalmente una dirección actualizada

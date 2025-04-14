@@ -47,7 +47,7 @@ export class CreatePractitionerAppointmentDto {
   @ValidateNested()
   @IsOptional()
   @Type(() => CreateLocationWithIdDto)
-  office?: CreateLocationWithIdDto;
+  location?: CreateLocationWithIdDto;
 }
 
 export class UpdatePractitionerAppointmentDto extends PartialType(

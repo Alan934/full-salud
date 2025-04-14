@@ -8,6 +8,7 @@ import {
     ManyToOne,
 } from 'typeorm';
 import {
+    Appointment,
     Medication,
     Patient,
     Practitioner,
@@ -50,40 +51,41 @@ export class MedicationRequest extends Base {
     //Nuevos atributos de figma
     @Column({
         type: 'boolean',
-        nullable:false
+        nullable:true
     })
-    prolonged_treatment: boolean;
+    prolongedTreatment: boolean;
 
     @Column({
         type: 'boolean',
-        nullable:false
+        nullable:true
     })
     hiv: boolean;
 
     @Column({
         type: 'varchar',
-        nullable:false
+        nullable:true
     })
-    generic_name: string;
+    genericName: string;
 
     @Column({
         type: 'varchar',
-        nullable:false
+        nullable:true
     })
-    medicine_presentation: string;
+    medicinePresentation: string;
 
     @Column({
         type: 'varchar',
-        nullable:false
+        nullable:true
     })
-    medicine_pharmaceutical_form: string;
+    medicinePharmaceuticalForm: string;
 
     @Column({
         type: 'int',
-        nullable:false
+        nullable:true
     })
-    medicine_quantity: number;
-     
+    medicineQuantity: number;
 
-
+    @ManyToOne(() => Appointment, (appointment) => appointment.medicationRequests)
+    @JoinColumn({ name: 'appointment_id' })
+    appointment: Appointment;
 }

@@ -40,7 +40,7 @@ export class CreateAppointmentSlotDto {
   @ValidateNested()
   @IsOptional()
   @Type(() => ShortBaseDto)
-  headquarters?: ShortBaseDto;
+  branch?: ShortBaseDto;
 }
 
 export class UpdateAppointmentSlotDto extends PartialType(

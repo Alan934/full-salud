@@ -47,12 +47,13 @@ export class CreateAppointmentDto {
   @Type(() => CreatePatientDto)
   @ApiProperty({
     example: {
-      documentType: '56895458',
+      documentType: 'dni',
       dni: '12345678',
       name: 'Juan',
       lastName: 'Pérez',
       email: 'juan.perez@gmail.com',
       phone: '123456789',
+
     },
   })
   patient?: CreatePatientDto;
@@ -100,6 +101,11 @@ export class UpdateAppointmentDto extends PartialType(CreateAppointmentDto) {
     ]
   })
   status?: AppointmentStatus;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ example: '20a05b0e-d872-4fe5-bf9f-4b6b010b443d' })
+  userId?: string;
 }
 
 export class CreateTurnDtoWithFiles {
@@ -115,4 +121,9 @@ export class CreateTurnDtoWithFiles {
     description: 'Imagénes de derivaciones en formato PNG, JPG o JPEG'
   })
   derivationImages?: Express.Multer.File[];
+}
+
+export class TimeDTO {
+  appointment_hour: string
+  consultationtime: string
 }

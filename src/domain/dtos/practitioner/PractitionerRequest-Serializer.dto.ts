@@ -31,16 +31,16 @@ export class PractitionerRequestDto
   birth?: string;
 
   @Expose()
-  degree?: string;
+  professionalDegree?: string;
 
   @Expose()
-  speciality?: SerializerPractitionerRoleDto;
+  practitionerRole?: SerializerPractitionerRoleDto;
 
   @Expose()
   socialWorkEnrollmentId?: SerializerSocialWorkEnrollmentDto;
 
   @Expose()  
-  officeName: SerializerLocationDto;
+  locationName: SerializerLocationDto;
 
   @Expose()
   appointmentDay: SerializerAppointmentDto[];

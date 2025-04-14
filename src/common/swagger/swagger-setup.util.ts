@@ -22,6 +22,14 @@ export const setupSwagger = (app: INestApplication) => {
     .setTitle('Full Salud API')
     .setDescription('')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT', // Optional: Specifies the format of the token
+      },
+      'bearerAuth', // Name of the security scheme
+    )
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

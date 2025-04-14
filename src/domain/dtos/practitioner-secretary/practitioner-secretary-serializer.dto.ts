@@ -15,7 +15,7 @@ export class SerializerPractitionerSecretaryDto extends FullBaseDto {
 
   @Expose()
   @Type(() => SerializerLocationDto)
-  office: SerializerLocationDto;
+  location: SerializerLocationDto;
 }
 
 export class SerializerShortSpecialistSecretaryDto extends OmitType(
@@ -28,5 +28,5 @@ export class SerializerShortSpecialistSecretaryDto extends OmitType(
 
   @Expose()
   @Type(() => SerializerShortLocationDto)
-  office: SerializerShortLocationDto;
+  location: SerializerShortLocationDto;
 }

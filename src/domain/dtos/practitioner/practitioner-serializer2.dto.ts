@@ -87,7 +87,7 @@ export class SerializerPractitionerDto extends FullBaseDto {
 
   @Expose()
   @Type(() => SerializerProfessionalDegreeDto)
-  degree: SerializerProfessionalDegreeDto;
+  professionalDegree: SerializerProfessionalDegreeDto;
 
   @Expose()
   @Type(() => SerializerShortPractitionerRoleDto)
@@ -99,7 +99,7 @@ export class SerializerPractitionerDto extends FullBaseDto {
 
   @Expose()
   @Type(() => ShortSerializerPractitionerAppointmentDto)
-  specialistAttentionHour: ShortSerializerPractitionerAppointmentDto[];
+  practitionerAppointment: ShortSerializerPractitionerAppointmentDto[];
 
   @Expose()
   @Type(() => SerializerAppointmentDto)

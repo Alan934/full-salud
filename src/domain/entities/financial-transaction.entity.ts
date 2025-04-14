@@ -17,19 +17,19 @@ export class FinancialTransaction extends Base {
   })
   minimunPatients: number;
 
-  @ManyToMany(() => Organization, (institution) => institution.commissions, {
+  @ManyToMany(() => Organization, (organization) => organization.commissions, {
     eager: true
   })
   @JoinTable({
-    name: 'commission_institutions',
+    name: 'commission_organizations',
     joinColumn: {
       name: 'comission_id',
       referencedColumnName: 'id'
     },
     inverseJoinColumn: {
-      name: 'institution_id',
+      name: 'organization_id',
       referencedColumnName: 'id'
     }
   })
-  institutions: Organization[];
+  organizations: Organization[];
 }

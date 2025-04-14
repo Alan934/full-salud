@@ -1,12 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
 import {
-  SerializerRelatedPersonDto,
-  SerializerShortAddressDto,
-  SerializerShortUserDto
+  SerializerShortAddressDto,  
 } from '..';
-import { FullBaseDto } from '../../../common/dtos';
-import { IsOptional } from 'class-validator';
 import { SerializerUserDto } from '../user/user-serializer.dto';
 
 export class SerializerPatientDto extends SerializerUserDto {

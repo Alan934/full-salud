@@ -18,6 +18,7 @@ import {
 } from '.';
 import { ApiProperty } from '@nestjs/swagger';
 import { AppointmentStatus } from '../enums/appointment-status.enum';
+import { MedicationRequest } from './medication-request.entity';
 
 // Esta entidad anteriormente se denominaba Turn
 @Entity('appointment')
@@ -68,9 +69,9 @@ export class Appointment extends Base {
     eager: false,
   })
   @JoinTable({
-    name: 'turns_practitioners',
+    name: 'appointment_practitioners',
     joinColumn: {
-      name: 'turn_id',
+      name: 'appointment_id',
       referencedColumnName: 'id',
     },
     inverseJoinColumn: {
@@ -84,7 +85,7 @@ export class Appointment extends Base {
 
   @OneToMany(
     () => PatientAppointment,
-    (attentionHour) => attentionHour.turn,
+    (appointmentSlot) => appointmentSlot.turn,
     {
       eager: true,
       cascade: true,
@@ -94,6 +95,25 @@ export class Appointment extends Base {
     }
   )
   patientAppointment: PatientAppointment[];
+
+  @OneToMany(() => MedicationRequest, (medicationRequest) => medicationRequest.appointment)
+  medicationRequests: MedicationRequest[];
+
+  @Column({ type: 'varchar', nullable: true })
+  email3?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  email24?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  whats3?: string;
+
+  @Column({ type: 'varchar', nullable: true })
+  whats24?: string;
+
+  @Column({ type: 'boolean', nullable: true, default: false})
+  reprogrammed?: boolean;
+
 
 }
 

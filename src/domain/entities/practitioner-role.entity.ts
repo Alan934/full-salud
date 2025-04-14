@@ -20,7 +20,7 @@ export class PractitionerRole extends Base {
   })
   canPrescribe: boolean;
 
-  @ManyToMany(() => Practitioner, (practitioner) => practitioner.specialities)
+  @ManyToMany(() => Practitioner, (practitioner) => practitioner.practitionerRole)
   practitioners: Practitioner[];
 
   @ManyToMany(() => Category, {
@@ -29,9 +29,9 @@ export class PractitionerRole extends Base {
     orphanedRowAction: 'soft-delete'
   })
   @JoinTable({
-    name: 'specialities_tags',
+    name: 'practitionerRole_tags',
     joinColumn: {
-      name: 'speciality_id',
+      name: 'practitionerRole_id',
       referencedColumnName: 'id'
     },
     inverseJoinColumn: {

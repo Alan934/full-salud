@@ -4,12 +4,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
-  OneToMany,
-  OneToOne
+  OneToMany
 } from 'typeorm';
-import { Address, AppointmentSlot , Organization, User } from '.';
+import { Address, AppointmentSlot , Organization, Location } from '.';
 
-//Esta entidad antes se denominaba Headquarters
+//Esta entidad antes se denominaba headquarters
 @Entity('branch')
 export class Branch extends Base {
   @Column({
@@ -35,8 +34,8 @@ export class Branch extends Base {
     onDelete: 'CASCADE',
     orphanedRowAction: 'soft-delete'
   })
-  @JoinColumn({ name: 'institution_id' })
-  institution: Organization;
+  @JoinColumn({ name: 'organization_id' })
+  organization: Organization;
 
   @ManyToOne(() => Address, {
     eager: true,
@@ -48,7 +47,7 @@ export class Branch extends Base {
 
   @OneToMany(
     () => AppointmentSlot ,
-    (attentionHour) => attentionHour.headquarters,
+    (appointmentSlot) => appointmentSlot.branch,
     {
       eager: true,
       cascade: true,
@@ -57,7 +56,7 @@ export class Branch extends Base {
       onUpdate: 'CASCADE'
     }
   )
-  attentionHours: AppointmentSlot [];
+  appointmentSlot: AppointmentSlot [];
 
   @Column({
     type: 'boolean',
@@ -66,4 +65,9 @@ export class Branch extends Base {
     name: 'is_main_branch'
   })
   isMainBranch: boolean;
+
+  @OneToMany(() => Location, (location) => location.branch, {
+    cascade: true, // Si se guarda la branch, se guardan sus locations
+  })
+  locations: Location[];
 }

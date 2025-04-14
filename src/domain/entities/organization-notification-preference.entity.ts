@@ -2,7 +2,7 @@ import { Column, Entity } from 'typeorm';
 import { MedicalProviderNotificationPreference } from './notification-preference.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-//Esta entidad anteriormente se denominaba InstitutionsNotificationPreferences
+//Esta entidad anteriormente se denominaba organizationsNotificationPreferences
 @Entity('organization_notification_preferences')
 export class OrganizationNotificationPreference extends MedicalProviderNotificationPreference {
   @Column({

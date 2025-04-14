@@ -15,5 +15,5 @@ export class SerializerPaymentDto extends ShortBaseDto {
 
   @Expose()
   @Type(() => SerializerShortPractitionerRoleDto)
-  speciality: SerializerShortPractitionerRoleDto;
+  practitionerRole: SerializerShortPractitionerRoleDto;
 }

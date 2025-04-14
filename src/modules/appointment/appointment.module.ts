@@ -1,13 +1,28 @@
 import { Module } from '@nestjs/common';
 import { AppointmentService } from './appointment.service';
 import { AppointmentController } from './appointment.controller';
-import { Patient, Appointment } from '../../domain/entities';
+import { Patient, Appointment, User } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { NotificationModule } from '../notification/notification.module';
+import { AuthModule } from '../auth/auth.module';
+// import { NotificationService } from '../notification/notification.service';
+// import { MailService } from '../mail/mail.service';
+// import { MailModule } from '../mail/mail.module';
+// import { BullModule } from '@nestjs/bull';
+// import { WhatsAppModule } from '../whatsapp/whatsapp.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Appointment, Patient])],
+  imports: [TypeOrmModule.forFeature([Appointment, Patient, User]),  NotificationModule, AuthModule,
+  // // WhatsAppModule,
+  // BullModule.registerQueue({
+  //   name: 'email', //queue name
+  // }),
+  // BullModule.registerQueue({
+  //   name: 'whatsapp', //queue name
+  // }),
+],
   controllers: [AppointmentController],
   providers: [AppointmentService],
-  exports: [AppointmentService]
+  exports: [AppointmentService, TypeOrmModule.forFeature([Appointment])]
 })
 export class AppointmentModule {}

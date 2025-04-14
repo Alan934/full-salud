@@ -7,11 +7,10 @@ import {
   SerializerPatientDto,
   UpdatePatientDto
 } from '../../domain/dtos';
-import { ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
-import { Role } from '../../domain/enums/role.enum';
-import { toDto, toDtoList } from '../../common/util/transform-dto.util';
-import { plainToInstance } from 'class-transformer';
+import { Role, DocumentType } from '../../domain/enums';
+import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Patient')
 @Controller('patient')
@@ -79,5 +78,23 @@ export class PatientController extends ControllerFactory<
   @Post('/recover/:id')
   async recover(@Param('id') id: string) {
     return await this.patientService.recover(id);
+  }
+
+  @Roles(Role.SPECIALIST, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('document/:type/:number')
+  @ApiOperation({ description: 'Get patient by document type and number' })
+  @ApiResponse({ 
+    status: 200, 
+    description: 'Patient found',
+    type: SerializerPatientDto 
+  })
+  @ApiResponse({ status: 400, description: 'Invalid document format' })
+  @ApiResponse({ status: 404, description: 'Patient not found' })
+  async getPatientByDocument(
+    @Param('type') type: DocumentType,
+    @Param('number') number: string
+  ) {
+    return await this.patientService.getByDocument(type, number);
   }
 }

@@ -10,7 +10,7 @@ import { ProfessionalDegreeService } from './professional-degree.service';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('ProfessionalDegree')
-@Controller('professional-degree')
+@Controller('professionalDegree')
 export class ProfessionalDegreeController extends ControllerFactory<
   ProfessionalDegree,
   CreateProfessionalDegreeDto,

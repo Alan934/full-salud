@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
-import { SerializerInstitutionTypeDto, SerializerValueAddedTaxDto } from '..';
+import { SerializerorganizationTypeDto, SerializerValueAddedTaxDto } from '..';
 
 export class SerializerOrganizationDto extends FullBaseDto {
   @Expose()
@@ -17,16 +17,16 @@ export class SerializerOrganizationDto extends FullBaseDto {
   iva: SerializerValueAddedTaxDto;
 
   @Expose()
-  @Type(() => SerializerInstitutionTypeDto)
-  institutionType: SerializerInstitutionTypeDto;
+  @Type(() => SerializerorganizationTypeDto)
+  organizationType: SerializerorganizationTypeDto;
 }
 
-export class SerializerShortInstitutionDto extends ShortBaseDto {
+export class SerializerShortorganizationDto extends ShortBaseDto {
   @Expose()
   @ApiProperty({ example: 'Centro Médico' })
   businessName: string;
 
   @Expose()
-  @Type(() => SerializerInstitutionTypeDto)
-  institutionType: SerializerInstitutionTypeDto;
+  @Type(() => SerializerorganizationTypeDto)
+  organizationType: SerializerorganizationTypeDto;
 }

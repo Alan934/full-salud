@@ -3,7 +3,6 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { FullBaseDto, ShortBaseDto } from '../../../common/dtos';
 import { Gender, Role, DocumentType } from '../../enums';
 import { SerializerSocialWorkEnrollmentDto } from '..';
-import { IsOptional } from 'class-validator';
 
 export class SerializerUserDto extends FullBaseDto {
   @Expose()
@@ -17,6 +16,10 @@ export class SerializerUserDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: 'juan123' })
   username: string;
+
+  @Expose()
+  @ApiProperty({ example: false })
+  googleBool: boolean;
 
   @Expose()
   @ApiProperty({ example: 'Juan' })

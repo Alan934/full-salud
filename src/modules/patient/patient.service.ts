@@ -9,7 +9,7 @@ import {
 import { Patient, Practitioner, SocialWorkEnrollment } from '../../domain/entities';
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { Repository } from 'typeorm';
-import { Role } from '../../domain/enums';
+import { Role, DocumentType } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
@@ -168,14 +168,40 @@ export class PatientService extends BaseService<
     }
   }
 
-  async getByDni(dni: string): Promise<Patient> {
+  async getByDocument(
+    type: DocumentType,
+    number: string
+  ): Promise<SerializerPatientDto> {
     try {
+      // Validaciones según el tipo de documento
+      switch (type) {
+        case DocumentType.DNI:
+          if (!/^\d{7,8}$/.test(number)) {
+            throw new ErrorManager('Invalid DNI format. Must be 7 or 8 digits', 400);
+          }
+          break;
+        case DocumentType.PASSPORT:
+          if (!/^[A-Za-z0-9]{6,12}$/.test(number)) {
+            throw new ErrorManager('Invalid Passport format', 400);
+          }
+          break;
+        default:
+          throw new ErrorManager('Invalid document type', 400);
+      }
+  
       const patient = await this.patientRepository.findOne({
-        where: { dni },
-        relations: ['user']
+        where: { 
+          documentType: type,
+          dni: number 
+        },
+        relations: ['socialWorkEnrollment']
       });
-
-      return patient;
+  
+      if (!patient) {
+        throw new NotFoundException(`Patient with ${type} ${number} not found`);
+      }
+  
+      return plainToInstance(SerializerPatientDto, patient);
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }

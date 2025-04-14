@@ -4,7 +4,7 @@ import { Day } from '../enums';
 import { ApiProperty } from '@nestjs/swagger';
 import { Appointment } from '.';
 
-// Esta entidad anteriormente se denominaba AttentionHourPatient
+// Esta entidad anteriormente se denominaba appointmentSlotPatient
 @Entity('patient_appointment')
 export class PatientAppointment extends Base {
   @Column({

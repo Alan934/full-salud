@@ -7,6 +7,7 @@ import { SerializerMedicationDto } from '../medication/medication-serializer.dto
 import { SerializerUserDto } from '../user/user-serializer.dto';
 import { SerializerPatientDto } from '../patient/patient-serializer.dto';
 import { SerializerPractitionerDto } from '../practitioner/practitioner-serializer.dto';
+import { SerializerAppointmentDto } from '../appointment/appointment-serializer.dto';
 
 export class SerializerMedicationRequestDto extends ShortBaseDto {
 
@@ -39,7 +40,7 @@ export class SerializerMedicationRequestDto extends ShortBaseDto {
 
   @Expose()
   @ApiProperty({ example: true })
-  prolonged_treatment: boolean;
+  prolongedTreatment: boolean;
 
   @Expose()
   @ApiProperty({ example: false })
@@ -47,17 +48,22 @@ export class SerializerMedicationRequestDto extends ShortBaseDto {
 
   @Expose()
   @ApiProperty({ example: 'Paracetamol' })
-  generic_name: string;
+  genericName: string;
 
   @Expose()
   @ApiProperty({ example: 'Tabletas recubiertas' })
-  medicine_presentation: string;
+  medicinePresentation: string;
   
   @Expose()
   @ApiProperty({ example: 'Oral' })
-  medicine_pharmaceutical_form: string;
+  medicinePharmaceuticalForm: string;
 
   @Expose()
   @ApiProperty({ example: 20 })
-  medicine_quantity: number;
+  medicineQuantity: number;
+
+  @Expose()
+  @Type(() => SerializerAppointmentDto)
+  @ApiProperty({ type: SerializerAppointmentDto })
+  appointment: SerializerAppointmentDto;
 }

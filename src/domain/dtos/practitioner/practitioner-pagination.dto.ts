@@ -58,7 +58,7 @@ export class PractitionerPaginationDto
   // birth?: string;
 
   // @IsOptional()
-  // degree?: string;
+  // ProfessionalDegree?: string;
 
   // @IsOptional()
   // practitionerRole?: string;

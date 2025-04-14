@@ -4,9 +4,10 @@ import { PractitionerController } from './practitioner.controller';
 import { ProfessionalDegree, Location, Patient, Practitioner, PractitionerRole } from '../../domain/entities';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Practitioner, PractitionerRole, ProfessionalDegree, Patient, Location]) ,
+  imports: [TypeOrmModule.forFeature([Practitioner, PractitionerRole, ProfessionalDegree, Patient, Location]), HttpModule ,
   forwardRef(() => AuthModule)],
   controllers: [PractitionerController],
   providers: [PractitionerService],
