@@ -8,7 +8,7 @@ import {
 } from '../../domain/dtos';
 import { Branch } from '../../domain/entities';
 import { BranchService } from './branch.service';
-import { toDto } from 'src/common/util/transform-dto.util';
+import { toDto } from '../../common/util/transform-dto.util';
 
 @ApiTags('Branch')
 @Controller('branch')

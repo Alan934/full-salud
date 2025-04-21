@@ -1,6 +1,6 @@
 import { Expose } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
-import { Gender } from 'src/domain/enums';
+import { ShortBaseDto } from '../../../common/dtos';
+import { Gender } from '../../../domain/enums';
 import { SerializerPractitionerRoleDto } from '../practitioner-role/practitioner-role-serializer.dto';
 import { SerializerSocialWorkEnrollmentDto } from '../social-work-enrollment/social-work-enrollment-serializer.dto';
 import { SerializerLocationDto } from '../location/Location-serializer.dto';

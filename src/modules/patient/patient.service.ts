@@ -1,4 +1,5 @@
 import { Injectable, forwardRef, Inject, NotFoundException } from '@nestjs/common';
+import * as bcrypt from 'bcrypt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import {
@@ -10,7 +11,6 @@ import { Patient, Practitioner, SocialWorkEnrollment } from '../../domain/entiti
 import { ErrorManager } from '../../common/exceptions/error.manager';
 import { Repository } from 'typeorm';
 import { Role, DocumentType } from '../../domain/enums';
-import * as bcrypt from 'bcrypt';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
 import { JwtPayload } from '../auth/interfaces/jwt-payload.interface';

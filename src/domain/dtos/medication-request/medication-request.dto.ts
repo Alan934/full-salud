@@ -2,6 +2,7 @@ import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { CreateMedicationDto } from '../medication/medication.dto';
+import { CreatePatientDto } from '../patient/patient.dto';
 
 export class CreateMedicationRequestDto {
   @IsNotEmpty()
@@ -23,10 +24,10 @@ export class CreateMedicationRequestDto {
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
   practitionerId: string; 
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174001' })
-  patientId: string; 
+  patientId?: string; 
 
   @IsNotEmpty()
   @ApiProperty({ type: [CreateMedicationDto] })
@@ -68,6 +69,22 @@ export class CreateMedicationRequestDto {
   @IsOptional()
   @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174002' })
   appointmentId: string;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => CreatePatientDto)
+  @ApiProperty({
+    example: {
+      documentType: 'dni',
+      dni: '12345678',
+      name: 'Juan',
+      lastName: 'Pérez',
+      email: 'juan.perez@gmail.com',
+      phone: '123456789',
+
+    },
+  })
+  patient?: CreatePatientDto;
 
 }
 

@@ -43,4 +43,4 @@ export * from './notification/notification.module';
 export * from './patient_appointment/patient-appointment.module';
 export * from './patient_practitioner_favorite/patient-practitioner-favorite.module';
 export * from './mail/mail.module';
-// export * from './whatsapp/whatsapp.module';
+export * from './whatsapp/whatsapp.module';

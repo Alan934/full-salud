@@ -14,7 +14,7 @@
   
     ],
 
-  "installCommand": "npm i && npm i @nestjs/core && npm install -g @nestjs/cli && npm install --save-dev @types/express && npm i @nestjs/platform-express && npm i express && npm i multer && npm i --save-dev @types/multer",
+  "installCommand": "npm i --save",
 
   "routes": [
 

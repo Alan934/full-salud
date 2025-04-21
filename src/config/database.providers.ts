@@ -4,16 +4,13 @@ import { envConfig } from './envs';
 export const databaseProviders: TypeOrmModuleOptions = {
   type: 'postgres',
   // type: 'mysql',
-  host: envConfig.HOST,
-  port: envConfig.DB_PORT || 3306,
-  database: envConfig.DB_NAME,
-  username: envConfig.DB_USERNAME,
-  password: envConfig.DB_PASSWORD || '',
+  host: envConfig.NODE_ENV === 'development' ? envConfig.HOST_DEV : envConfig.HOST,
+  port: envConfig.NODE_ENV === 'development' ? envConfig.DB_PORT_DEV : envConfig.DB_PORT,
+  database: envConfig.NODE_ENV === 'development' ? envConfig.DB_NAME_DEV : envConfig.DB_NAME,
+  username: envConfig.NODE_ENV === 'development' ? envConfig.DB_USERNAME_DEV : envConfig.DB_USERNAME,
+  password: envConfig.NODE_ENV === 'development' ? envConfig.DB_PASSWORD_DEV : envConfig.DB_PASSWORD,
   autoLoadEntities: true, // Carga las entidades automáticamente
   synchronize: envConfig.NODE_ENV === 'development', // Sincroniza la base de datos con las entidades (no recomendado para producción)
-  migrationsRun: envConfig.NODE_ENV === 'production',
-  migrations: [__dirname + '/../migrations/*{.ts,.js}'],
-  logging: envConfig.NODE_ENV != 'production', // Activa los logs de TypeORM cuando el entrono no es de producción
   extra: {
     // Configuraciones del pool de conexiones
     max: envConfig.NODE_ENV === 'production' ? 20 : 5, // Máximo de conexiones

@@ -16,7 +16,7 @@ import { IncompatableWith } from '../../../common/util/custom-dto-properties-dec
 import { CreatePatientAppointmentDto } from '../patient-appointment/patient-appointment.dto';
 import { CreatePatientDto } from '../patient/patient.dto';
 
-export class CreateAppointmentDto {
+export class CreateAppointmentDto{
   @IsOptional()
   @IsString()
   @Type(() => String)

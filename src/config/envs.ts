@@ -7,6 +7,11 @@ const enVarsSchema = joi
       .string()
       .valid('development', 'production')
       .default('development'),
+    HOST_DEV: joi.string(),
+    DB_PORT_DEV: joi.number(),
+    DB_USERNAME_DEV: joi.string(),
+    DB_PASSWORD_DEV: joi.string().allow(''),
+    DB_NAME_DEV: joi.string(),
     HOST: joi.string().default('localhost'),
     DB_PORT: joi.number().default(3306),
     JWT_SECRET: joi.string().required(),
@@ -28,6 +33,7 @@ const enVarsSchema = joi
     REDIS_HOST: joi.string().allow(),
     REDIS_PORT: joi.number().allow(),
     WHATSAPP_ACCESS_TOKEN: joi.string().allow(),
+    MONGO_URI: joi.string().allow(),
   })
   .unknown()
   .required(); // unknown() permite que se añadan variables de entorno no definidas en el esquema
@@ -39,6 +45,11 @@ if (error) {
 interface EnvVars {
   PORT: number;
   NODE_ENV: string;
+  HOST_DEV: string;
+  DB_PORT_DEV: number;
+  DB_USERNAME_DEV: string;
+  DB_PASSWORD_DEV: string;
+  DB_NAME_DEV: string;
   HOST: string;
   DB_PORT: number;
   DB_USERNAME: string;
@@ -60,11 +71,17 @@ interface EnvVars {
   REDIS_HOST: string;
   REDIS_PORT: number;
   WHATSAPP_ACCESS_TOKEN: string;
+  MONGO_URI: string;
 }
 //Exportamos las envs validadas
 export const envConfig: EnvVars = {
   PORT: envVars.PORT,
   NODE_ENV: envVars.NODE_ENV,
+  HOST_DEV: envVars.HOST_DEV,
+  DB_PORT_DEV: envVars.DB_PORT_DEV,
+  DB_USERNAME_DEV: envVars.DB_USERNAME_DEV,
+  DB_PASSWORD_DEV: envVars.DB_PASSWORD_DEV,
+  DB_NAME_DEV: envVars.DB_NAME_DEV,
   HOST: envVars.HOST,
   DB_PORT: envVars.DB_PORT,
   DB_USERNAME: envVars.DB_USERNAME,
@@ -86,4 +103,5 @@ export const envConfig: EnvVars = {
   REDIS_HOST: envVars.REDIS_HOST,
   REDIS_PORT: envVars.REDIS_PORT,
   WHATSAPP_ACCESS_TOKEN: envVars.WHATSAPP_ACCESS_TOKEN,
+  MONGO_URI: envVars.MONGO_URI,
 };

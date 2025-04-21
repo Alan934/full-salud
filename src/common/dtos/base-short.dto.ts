@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsNotEmpty,IsUUID } from 'class-validator';
+import { IsNotEmpty,IsOptional,IsUUID } from 'class-validator';
 
 export class ShortBaseDto {
   @Expose()
@@ -10,5 +10,6 @@ export class ShortBaseDto {
   id: string;
 
   @Expose()
+  @IsOptional()
   createdAt: string;
 }

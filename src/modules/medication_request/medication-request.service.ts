@@ -1,14 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import { MoreThan, Repository } from 'typeorm';
 import { MedicationRequest } from '../../domain/entities/medication-request.entity';
 import { ErrorManager } from '../../common/exceptions/error.manager';
-import { Appointment, Medication } from '../../domain/entities';
+import { Appointment, Medication, Patient } from '../../domain/entities';
 import { PatientService } from '../patient/patient.service';
 import { PractitionerService } from '../practitioner/practitioner.service';
 import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/medication-request.dto';
 import { FilteredMedicationRequestDto } from '../../domain/dtos/medication-request/FilteredMedicationRequest.dto';
+import { Role } from 'src/domain/enums';
+import { query } from 'express';
 
 @Injectable()
 export class MedicationRequestsService extends BaseService<
@@ -26,15 +28,52 @@ export class MedicationRequestsService extends BaseService<
     }
 
     override async create(createDto: CreateMedicationRequestDto): Promise<MedicationRequest> {
+        const queryRunner = this.repository.manager.connection.createQueryRunner();
+        
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+
         try {
             const doctor = await this.SpecialistService.findOne(createDto.practitionerId)
             if (!doctor) {
                 throw ErrorManager.createSignatureError('Doctor not found');
             }
 
-            const patient = await this.patientService.findOne(createDto.patientId)
-            if (!patient) {
-                throw ErrorManager.createSignatureError('Patient not found');
+            let patient: Patient
+
+            if(createDto.patientId) {
+                patient = await queryRunner.manager.findOne(Patient, {
+                    where: { id: createDto.patientId}
+                });
+
+                if(!patient){
+                    throw new NotFoundException(
+                        `Patient with id ${createDto.patientId} was not found, try again`
+                    )
+                }
+            } else if (createDto.patient) {
+                const existingPatient = await queryRunner.manager.findOne(Patient, {
+                    where: { dni: createDto.patient.dni },
+                })
+
+                if(existingPatient) {
+                    patient = existingPatient;
+                } else {
+                    patient = queryRunner.manager.create(Patient, {
+                        dni: createDto.patient.dni,
+                        name: createDto.patient.name,
+                        lastName: createDto.patient.lastName,
+                        email: createDto.patient.email,
+                        phone: createDto.patient.phone,
+                        documentType: createDto.patient.documentType,
+                        role: Role.PATIENT,
+                    });
+                    patient = await queryRunner.manager.save(patient);
+                }
+            } else {
+                throw new BadRequestException(
+                    'Either patientId or patient object must be provided'
+                );
             }
 
             const appointment = await this.appointmentRepository.findOne({
@@ -46,8 +85,7 @@ export class MedicationRequestsService extends BaseService<
             }
 
             //falta control de lista de medicine, conviene hacerlo en el servicio de medicine
-            return await this.repository.manager.transaction(
-                async (transactionalEntityManager) => {
+
                     const newMedicationRequest = new MedicationRequest();
                     //TODO añadir nuevos atributos
                     newMedicationRequest.prolongedTreatment = createDto.prolongedTreatment;
@@ -62,9 +100,11 @@ export class MedicationRequestsService extends BaseService<
                     newMedicationRequest.practitioner = doctor;
                     newMedicationRequest.patient = patient;
                     newMedicationRequest.appointment = appointment;
+
+
                     const medicines: Medication[] = [];
                     for (const medicineDto of createDto.medicines) {
-                        const medicine = await transactionalEntityManager.findOne(Medication, {
+                        const medicine = await queryRunner.manager.findOne(Medication, {
                             where: { id: medicineDto.id },
                         });
                         if (medicine) {
@@ -75,12 +115,18 @@ export class MedicationRequestsService extends BaseService<
                     }
 
                     newMedicationRequest.medicines = medicines;
-                    await transactionalEntityManager.save(MedicationRequest, newMedicationRequest);
-                    return newMedicationRequest;
-                }
-            );
+                    
+                    const savedMedicationRequest = await queryRunner.manager.save(MedicationRequest, newMedicationRequest);
+                   
+                    await queryRunner.commitTransaction();
+                    return savedMedicationRequest;
+                
+           
         } catch (error) {
+            await queryRunner.rollbackTransaction();
             throw ErrorManager.createSignatureError((error as Error).message);
+        } finally {
+            await queryRunner.release();
         }
     }
 

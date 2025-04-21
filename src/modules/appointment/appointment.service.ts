@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Logger,
   Injectable,
   NotFoundException
@@ -26,11 +25,8 @@ import { In, Not, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
 import { NotificationService } from '../notification/notification.service';
 import { AuthService } from '../auth/auth.service';
-import { readFile } from 'fs';
-// import { MailService } from '../mail/mail.service';
-// import { InjectQueue } from '@nestjs/bull';
-// import { Queue } from 'bull';
-// import { WhatsAppService } from '../whatsapp/whatsapp.service';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 @Injectable()
 export class AppointmentService extends BaseService<
@@ -43,10 +39,8 @@ export class AppointmentService extends BaseService<
     @InjectRepository(Appointment) protected repository: Repository<Appointment>,
     private readonly notificationService: NotificationService,
     private readonly authService: AuthService,
-    // @Inject() private readonly mailService: MailService,
-    // @InjectQueue('email') private readonly emailQueue: Queue,
-    // @InjectQueue('whatsapp') private readonly whatsappQueue: Queue,
-    // private readonly whatsappService: WhatsAppService
+    @InjectQueue('email') private readonly emailQueue: Queue,
+    @InjectQueue('whatsapp') private readonly whatsappQueue: Queue,
   ) {
     super(repository);
   }
@@ -207,105 +201,105 @@ export class AppointmentService extends BaseService<
       await queryRunner.commitTransaction();
 
       // Schedule emails only after the transaction is committed
-      // if (patient.email) {
-      //   const appointmentDate = new Date(`${createTurnDto.date}T${createTurnDto.hour}:00`);
-      //   const now = new Date();
-      //   const timeDifference = appointmentDate.getTime() - now.getTime(); // Difference in milliseconds
+      if (patient.email) {
+        const appointmentDate = new Date(`${createTurnDto.date}T${createTurnDto.hour}:00`);
+        const now = new Date();
+        const timeDifference = appointmentDate.getTime() - now.getTime(); // Difference in milliseconds
 
-      //   if (timeDifference < 24 * 60 * 60 * 1000) {
-      //     // If the appointment is less than 24 hours away, send a custom 3-hour reminder
-      //     const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
+        if (timeDifference < 24 * 60 * 60 * 1000) {
+          // If the appointment is less than 24 hours away, send a custom 3-hour reminder
+          const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
 
-      //     const new3 = await this.emailQueue.add(
-      //       'sendEmail',
-      //       {
-      //         to: patient.email,
-      //         subject: 'Reminder: Your appointment is soon',
-      //         text: `Dear ${patient.name}, your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}. Please be prepared.`,
-      //       },
-      //       { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          const new3 = await this.emailQueue.add(
+            'sendEmail',
+            {
+              to: patient.email,
+              subject: 'Reminder: Your appointment is soon',
+              text: `Dear ${patient.name}, your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}. Please be prepared.`,
+            },
+            { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.email3 = String(new3.id);
-      //   } else {
-      //     // Schedule 3-hour reminder
-      //     const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
-      //     const three = await this.emailQueue.add(
-      //       'sendEmail',
-      //       {
-      //         to: patient.email,
-      //         subject: 'Reminder: Your appointment is in 3 hours',
-      //         text: `Dear ${patient.name}, this is a reminder that your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}.`,
-      //       },
-      //       { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          savedTurn.email3 = String(new3.id);
+        } else {
+          // Schedule 3-hour reminder
+          const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
+          const three = await this.emailQueue.add(
+            'sendEmail',
+            {
+              to: patient.email,
+              subject: 'Reminder: Your appointment is in 3 hours',
+              text: `Dear ${patient.name}, this is a reminder that your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}.`,
+            },
+            { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.email3 = String(three.id);
+          savedTurn.email3 = String(three.id);
 
-      //     // Schedule 24-hour reminder
-      //     const twentyFourHoursBefore = new Date(appointmentDate.getTime() - 24 * 60 * 60 * 1000);
-      //     const twentyFour = await this.emailQueue.add(
-      //       'sendEmail',
-      //       {
-      //         to: patient.email,
-      //         subject: 'Reminder: Your appointment is in 24 hours',
-      //         text: `Dear ${patient.name}, this is a reminder that your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}.`,
-      //       },
-      //       { delay: twentyFourHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          // Schedule 24-hour reminder
+          const twentyFourHoursBefore = new Date(appointmentDate.getTime() - 24 * 60 * 60 * 1000);
+          const twentyFour = await this.emailQueue.add(
+            'sendEmail',
+            {
+              to: patient.email,
+              subject: 'Reminder: Your appointment is in 24 hours',
+              text: `Dear ${patient.name}, this is a reminder that your appointment is scheduled for ${createTurnDto.date} at ${createTurnDto.hour}.`,
+            },
+            { delay: twentyFourHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.email24 = String(twentyFour.id);
-      //   }
-      // }
+          savedTurn.email24 = String(twentyFour.id);
+        }
+      }
 
       // Schedule WhatsApp messages only after the transaction is committed
-      // if (patient.phone) {
-      //   const appointmentDate = new Date(`${createTurnDto.date}T${createTurnDto.hour}:00`);
-      //   const now = new Date();
-      //   const timeDifference = appointmentDate.getTime() - now.getTime(); // Difference in milliseconds
+      if (patient.phone) {
+        const appointmentDate = new Date(`${createTurnDto.date}T${createTurnDto.hour}:00`);
+        const now = new Date();
+        const timeDifference = appointmentDate.getTime() - now.getTime(); // Difference in milliseconds
 
-      //   if (timeDifference < 24 * 60 * 60 * 1000) {
-      //     // If the appointment is less than 24 hours away, send only a 3-hour reminder
-      //     const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
+        if (timeDifference < 24 * 60 * 60 * 1000) {
+          // If the appointment is less than 24 hours away, send only a 3-hour reminder
+          const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
 
-      //     const new3whats = await this.whatsappQueue.add(
-      //       'sendMessage',
-      //       {
-      //         to: patient.phone,
-      //         message: `Hola ${patient.name} te recordamos que tu turno es en 3 horas con el doctor Juan`,
-      //       },
-      //       { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          const new3whats = await this.whatsappQueue.add(
+            'sendMessage',
+            {
+              to: patient.phone,
+              message: `Hola ${patient.name} te recordamos que tu turno es en 3 horas con el doctor Juan`,
+            },
+            { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.whats3 = String(new3whats.id);
-      //   } else {
-      //     // Schedule 3-hour reminder
-      //     const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
-      //     const threeWhats = await this.whatsappQueue.add(
-      //       'sendMessage',
-      //       {
-      //         to: patient.phone,
-      //         message: patient.name,
-      //       },
-      //       { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          savedTurn.whats3 = String(new3whats.id);
+        } else {
+          // Schedule 3-hour reminder
+          const threeHoursBefore = new Date(appointmentDate.getTime() - 3 * 60 * 60 * 1000);
+          const threeWhats = await this.whatsappQueue.add(
+            'sendMessage',
+            {
+              to: patient.phone,
+              message: patient.name,
+            },
+            { delay: threeHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.whats3 = String(threeWhats.id);
+          savedTurn.whats3 = String(threeWhats.id);
 
-      //     // Schedule 24-hour reminder
-      //     const twentyFourHoursBefore = new Date(appointmentDate.getTime() - 24 * 60 * 60 * 1000);
-      //     const twentyFourWhats = await this.whatsappQueue.add(
-      //       'sendMessage',
-      //       {
-      //         to: patient.phone,
-      //         message: patient.name,
-      //       },
-      //       { delay: twentyFourHoursBefore.getTime() - Date.now() } // Delay in milliseconds
-      //     );
+          // Schedule 24-hour reminder
+          const twentyFourHoursBefore = new Date(appointmentDate.getTime() - 24 * 60 * 60 * 1000);
+          const twentyFourWhats = await this.whatsappQueue.add(
+            'sendMessage',
+            {
+              to: patient.phone,
+              message: patient.name,
+            },
+            { delay: twentyFourHoursBefore.getTime() - Date.now() } // Delay in milliseconds
+          );
 
-      //     savedTurn.whats24 = String(twentyFourWhats.id);
-      //   }
-      // }
+          savedTurn.whats24 = String(twentyFourWhats.id);
+        }
+      }
 
       
 
