@@ -1,32 +1,56 @@
-import { Controller, Get, Res, Param, Post } from '@nestjs/common';
+import { Controller, Get, Res, Param, Post, HttpCode, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { WhatsAppService } from './whatsapp.service';
-import * as QRCode from 'qrcode';
-import { Response } from 'express';
-import { OnEvent } from '@nestjs/event-emitter';
 
 @Controller('bot')
 export class WhatsAppController {
-  private qrCode: string;
   constructor(private whatsAppService: WhatsAppService) {}
 
-  @OnEvent('qrcode.created')
-  handleQrcodeCreatedEvent(qrCode: string) {
-    console.log('QR Code Event Received:', qrCode); // Debug log
-    this.qrCode = qrCode;
-  }
-
   @Get('qrcode')
-  async getQrCode(@Res() response: Response) {
-    if (!this.qrCode) {
-      return response.status(404).send('QR code not found');
+  async getQRCode(@Res() res) {
+    const qrCode = await this.whatsAppService.getQRCode();
+    if (qrCode) {
+      res.setHeader('Content-Type', qrCode.contentType);
+      res.send(qrCode.buffer);
+    } else {
+      res.status(500).send('Error fetching QR code image');
+    }
+  }
+  @Post('send-message')
+  @HttpCode(HttpStatus.OK) // Set default success status to 200 OK for POST
+  async sendMessage(
+    @Query('to') to: string,
+    @Query('message') message: string,
+  ) {
+    // Basic validation
+    if (!to || !message) {
+      throw new HttpException('Missing required query parameters: "to" and "message"', HttpStatus.BAD_REQUEST);
     }
 
-    response.setHeader('Content-Type', 'image/png');
-    QRCode.toFileStream(response, this.qrCode);
+    try {
+      await this.whatsAppService.sendMessage(to, message);
+      // Return a success response if the service call doesn't throw
+      return { success: true, message: 'Message send request processed.' };
+    } catch (error) {
+      // Catch errors from the service (e.g., external POST failed, WhatsApp send failed)
+      throw new HttpException(
+        (error as Error).message || 'Failed to send message',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
   }
 
   @Post('disconnect')
+  @HttpCode(HttpStatus.OK) // Set default success status to 200 OK
   async disconnect() {
-    await this.whatsAppService.disconnect();
+    try {
+      await this.whatsAppService.disconnect();
+      return { success: true, message: 'Disconnect request processed.' };
+    } catch (error) {
+      // Catch errors from the service
+      throw new HttpException(
+        (error as Error).message || 'Failed to process disconnect request',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

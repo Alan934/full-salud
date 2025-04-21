@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import * as joi from 'joi';
+
 const enVarsSchema = joi
   .object({
     PORT: joi.number().default(3000),
@@ -33,7 +34,6 @@ const enVarsSchema = joi
     REDIS_HOST: joi.string().allow(),
     REDIS_PORT: joi.number().allow(),
     WHATSAPP_ACCESS_TOKEN: joi.string().allow(),
-    MONGO_URI: joi.string().allow(),
   })
   .unknown()
   .required(); // unknown() permite que se añadan variables de entorno no definidas en el esquema
@@ -71,7 +71,6 @@ interface EnvVars {
   REDIS_HOST: string;
   REDIS_PORT: number;
   WHATSAPP_ACCESS_TOKEN: string;
-  MONGO_URI: string;
 }
 //Exportamos las envs validadas
 export const envConfig: EnvVars = {
@@ -103,5 +102,4 @@ export const envConfig: EnvVars = {
   REDIS_HOST: envVars.REDIS_HOST,
   REDIS_PORT: envVars.REDIS_PORT,
   WHATSAPP_ACCESS_TOKEN: envVars.WHATSAPP_ACCESS_TOKEN,
-  MONGO_URI: envVars.MONGO_URI,
 };

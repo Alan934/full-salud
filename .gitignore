@@ -2,8 +2,6 @@
 /dist
 /node_modules
 /build
-/.wwebjs_auth
-/.wwebjs_cache
 
 # Logs
 logs

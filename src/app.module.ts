@@ -9,13 +9,11 @@ import { PdfModule } from './modules/pdf/pdf.module';
 import { ConfigModule } from '@nestjs/config';
 import { BullModule } from '@nestjs/bull';
 import { envConfig } from './config/envs';
-import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailModule, WhatsAppModule } from './modules';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(databaseProviders),
-    EventEmitterModule.forRoot(),
     BullModule.forRoot({
       redis: {
         username: envConfig.REDIS_USERNAME,

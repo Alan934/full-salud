@@ -17,9 +17,10 @@ import {
   PatientAppointment,
   Patient,
   Practitioner,
-  Appointment
+  Appointment,
+  PractitionerAppointment
 } from '../../domain/entities';
-import { AppointmentStatus, Role } from '../../domain/enums';
+import { AppointmentStatus, Day, Role } from '../../domain/enums';
 import 'multer';
 import { In, Not, Repository } from 'typeorm';
 import { plainToClass } from 'class-transformer';
@@ -112,6 +113,35 @@ export class AppointmentService extends BaseService<
         throw new NotFoundException(
           `Practitioner with IDs ${notFoundIds.join(', ')} not found`
         );
+      }
+
+      // Validar que la fecha y el horario sea correcto
+      const dateOfWeek = this.getDayOfWeek(createTurnDto.date);
+      
+      console.log('dateOfWeek: ', dateOfWeek)
+      for(const specialist of specialists){
+        const availability = await queryRunner.manager.findOne(PractitionerAppointment, {
+          where: {
+            practitioner: specialist,
+            day: dateOfWeek
+          }
+        })
+        if (!availability) {
+          throw new BadRequestException(
+            `Practitioner with ID ${specialistIds} is not available on ${dateOfWeek}`
+          );
+        }
+
+        const appointmentHour = createTurnDto.hour;
+
+        if (
+          appointmentHour < availability.startHour ||
+          appointmentHour >= availability.endHour
+        ) {
+          throw new BadRequestException(
+            `Practitioner with ID ${specialistIds} is not available at ${createTurnDto.hour}`
+          );
+        }
       }
 
       const newTurn = queryRunner.manager.create(Appointment, {
@@ -321,6 +351,24 @@ export class AppointmentService extends BaseService<
     } finally {
       await queryRunner.release();
     }
+  }
+
+  getDayOfWeek(dateStr: string): Day {
+  const date = new Date(`${dateStr}T00:00:00`);
+    
+    const dayNumber = date.getDay();
+    
+    const dayMap: { [key: number]: Day } = {
+      0: Day.SUNDAY,
+      1: Day.MONDAY,
+      2: Day.TUESDAY,
+      3: Day.WEDNESDAY,
+      4: Day.THURSDAY,
+      5: Day.FRIDAY,
+      6: Day.SATURDAY,
+    };
+    
+    return dayMap[dayNumber];
   }
 
   async getOne(id: string): Promise<Appointment> {
@@ -1066,5 +1114,3 @@ export class AppointmentService extends BaseService<
     return turn;
   }
 }
-
-//mergeado con dev. para actualizar PR
