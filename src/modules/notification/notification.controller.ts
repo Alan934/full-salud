@@ -1,15 +1,11 @@
-import { Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Query } from '@nestjs/common';
+import { Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Query, UseGuards } from '@nestjs/common';
 import { NotificationService } from './notification.service';
-import { ControllerFactory } from '../../common/factories/controller.factory';
-import { Notification } from '../../domain/entities';
-import {
-  CreateNotificationDto,
-  SerializerNotificationDto,
-  UpdateNotificationDto
-} from '../../domain/dtos';
-import { ApiBody, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { SerializerNotificationDto } from '../../domain/dtos';
+import { ApiBearerAuth, ApiNotFoundResponse, ApiOkResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { toDto } from '../../common/util/transform-dto.util';
 import { PaginatedNotificationDto } from '../../domain/dtos/notification/paginatedNotificationsDto';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Notification')
 @Controller('notification')
@@ -30,6 +26,9 @@ export class NotificationController
     //super();
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get("getByPatient")
   @ApiOperation({ description: 'Buscar notificaciones por id de paciente ' })
   @ApiParam({ name: 'id', description: 'UUID de la notificacion', type: String })
@@ -52,6 +51,9 @@ export class NotificationController
       };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get("getByPractitioner")
   @ApiOperation({ description: 'Buscar notificaciones por id de paciente ' })
   @ApiParam({ name: 'id', description: 'UUID de la Notificacion', type: String })
@@ -75,6 +77,9 @@ export class NotificationController
       };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Delete('/soft-delete/:id')
   @ApiOperation({ description: 'Eliminar un registro lógicamente' })
   @ApiNotFoundResponse({
@@ -87,6 +92,9 @@ export class NotificationController
       return this.service.softRemove(id);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch('restore/:id')
   @ApiOperation({
     description: 'Recuperar un registro lógicamente eliminado'

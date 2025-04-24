@@ -26,7 +26,10 @@ export const setupSwagger = (app: INestApplication) => {
       {
         type: 'http',
         scheme: 'bearer',
-        bearerFormat: 'JWT', // Optional: Specifies the format of the token
+        bearerFormat: 'JWT', // Optional: specify format (e.g., JWT)
+        name: 'Authorization', // Optional: defaults to 'Authorization'
+        description: 'Enter JWT token', // Optional: description
+        in: 'header', // Optional: defaults to 'header'
       },
       'bearerAuth', // Name of the security scheme
     )

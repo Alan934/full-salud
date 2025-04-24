@@ -9,7 +9,7 @@ import { PatientService } from '../patient/patient.service';
 import { PractitionerService } from '../practitioner/practitioner.service';
 import { CreateMedicationRequestDto, UpdateMedicationRequestDto } from '../../domain/dtos/medication-request/medication-request.dto';
 import { FilteredMedicationRequestDto } from '../../domain/dtos/medication-request/FilteredMedicationRequest.dto';
-import { Role } from 'src/domain/enums';
+import { Role } from '../../domain/enums';
 import { query } from 'express';
 
 @Injectable()

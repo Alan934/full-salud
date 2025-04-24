@@ -1,8 +1,9 @@
 import { DeepPartial } from 'typeorm';
-import { Body, Get, Param, ParseUUIDPipe, Patch, Type } from '@nestjs/common';
+import { Body, Get, Param, ParseUUIDPipe, Patch, Type, UseGuards } from '@nestjs/common';
 import { AbstractValidationPipe } from '../pipes/abstract-validation.pipe';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiExtraModels,
   ApiInternalServerErrorResponse,
@@ -14,6 +15,8 @@ import { ShortBaseDto } from '../dtos/base-short.dto';
 import { toDto, toDtoList } from '../util/transform-dto.util';
 import { INotificationPreferencesService } from '../bases/i-notification-preference-base.service';
 import { NotificationPreference } from '../../domain/entities/notification-preference.entity';
+import { AuthGuard, Roles, RolesGuard } from '../../modules/auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 export interface INotificationBaseController<
   T extends NotificationPreference,
@@ -54,6 +57,9 @@ export function NotificationPreferencesControllerFactory<
   {
     protected service: INotificationPreferencesService<T, C, U>;
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Patch(':id')
     @ApiBody({
       type: updateDto

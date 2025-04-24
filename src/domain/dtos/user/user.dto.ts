@@ -58,7 +58,7 @@ export class UserDto {
   //si se crea secretary, patient o organization, la contraseña es opcional
   @IsOptionalIf(
     (dto) =>
-      dto.role == Role.organization ||
+      dto.role == Role.ORGANIZATION ||
       dto.role == Role.SECRETARY ||
       dto.role == Role.PATIENT
   )
@@ -73,7 +73,7 @@ export class UserDto {
   @IsOptional()
   @IsEnum(Role)
   @ApiProperty({
-    examples: [Role.PATIENT, Role.ADMIN, Role.organization, Role.SPECIALIST]
+    examples: [Role.PATIENT, Role.ADMIN, Role.ORGANIZATION, Role.PRACTITIONER]
   })
   role: Role;
 

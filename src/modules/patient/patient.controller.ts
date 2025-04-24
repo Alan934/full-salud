@@ -7,7 +7,7 @@ import {
   SerializerPatientDto,
   UpdatePatientDto
 } from '../../domain/dtos';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
 import { Role, DocumentType } from '../../domain/enums';
 import { toDto } from '../../common/util/transform-dto.util';
@@ -41,8 +41,9 @@ export class PatientController extends ControllerFactory<
     return await this.patientService.createPatient(createPatientDto);
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN)
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get()
   async getAll(@Query('page') page: string = '1',
   @Query('limit') limit: string = '10'): 
@@ -53,35 +54,41 @@ export class PatientController extends ControllerFactory<
     return { patients: patients.map((patient) => toDto(SerializerPatientDto, patient)), total, page: pageNumber, limit: limitNumber };
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN, Role.PATIENT)
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get(':id')
   async getOnePatient(@Param('id') id: string) {
     return await this.patientService.getOne(id);
   }
 
-
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch(':id')
   async updatePatient(@Param('id') id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return await this.patientService.update(id, updatePatientDto);
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN)
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Delete(':id')
   async softDelete(@Param('id') id: string) {
     return await this.patientService.softDelete(id);
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN)
+  @Roles(Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Post('/recover/:id')
   async recover(@Param('id') id: string) {
     return await this.patientService.recover(id);
   }
 
-  @Roles(Role.SPECIALIST, Role.ADMIN)
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
   @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get('document/:type/:number')
   @ApiOperation({ description: 'Get patient by document type and number' })
   @ApiResponse({ 

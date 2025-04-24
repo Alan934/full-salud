@@ -1,7 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
+
+// Helper function for delay
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 @Injectable()
 export class WhatsAppService {
@@ -58,59 +61,68 @@ export class WhatsAppService {
   }
 
   async sendMessage(to: string, message: string): Promise<void> {
-    // Base URL of the external endpoint
     const baseUrl = 'https://fullsalud-productomonolito-production.up.railway.app/api/bot/send-message';
-
-    // Encode parameters for safe inclusion in URL
     const encodedTo = encodeURIComponent(to);
     const encodedMessage = encodeURIComponent(message);
-
-    // Construct the full URL with query parameters
     const externalUrl = `${baseUrl}?to=${encodedTo}&message=${encodedMessage}`;
 
-    this.logger.log(`Sending message via POST to: ${externalUrl}`);
+    const maxRetries = 5; // Maximum number of retry attempts
+    const retryDelayMs = 2000; // Delay between retries in milliseconds (e.g., 2 seconds)
 
-    try {
-      // Make the POST request. Send null as the body since data is in query params.
-      // We expect an empty response body on success (status 201).
-      const response = await firstValueFrom(
-        this.httpService.post(externalUrl, {}, { // Send null or {} as body
-          // Optional: Set headers if required by the endpoint
-          headers: { 'Accept': '*/*' },
-          timeout: 15000,
-        }),
-      );
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      this.logger.log(`Sending message via POST to: ${externalUrl} (Attempt ${attempt}/${maxRetries})`);
+      try {
+        const response = await firstValueFrom(
+          this.httpService.post(externalUrl, {}, {
+            headers: { 'Accept': '*/*' },
+            timeout: 15000, // Keep timeout for individual attempts
+          }),
+        );
 
-      // Check for successful status codes (e.g., 200, 201, 204)
-      if (response.status >= 200 && response.status < 300) {
-        this.logger.log(`Successfully sent message request to external endpoint. Status: ${response.status}`);
-        // No specific action needed for empty body success
-      } else {
-        // Handle unexpected success status codes if necessary
-        this.logger.warn(`External endpoint returned unexpected success status: ${response.status}`);
-      }
+        // Check for successful status codes (200-299)
+        if (response.status >= 200 && response.status < 300) {
+          this.logger.log(`Successfully sent message request. Status: ${response.status} (Attempt ${attempt})`);
+          return; // Success, exit the function
+        } else {
+          // Handle unexpected success status codes if necessary
+          this.logger.warn(`External endpoint returned non-error but non-success status: ${response.status} (Attempt ${attempt})`);
+          // Decide if this case should retry or exit. Let's retry for now.
+          // If it should exit, you could 'return;' here.
+        }
 
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      if (axiosError.response) {
-        this.logger.error(
-          `Error sending message request: Status ${axiosError.response.status}, Data: ${JSON.stringify(axiosError.response.data)}`,
-          axiosError.stack,
-        );
-      } else if (axiosError.request) {
-        this.logger.error(
-          `Error sending message request: No response received from ${externalUrl}`,
-          axiosError.stack,
-        );
-      } else {
-        this.logger.error(
-          `Error sending message request: Request setup failed - ${axiosError.message}`,
-          axiosError.stack,
-        );
-      }
-      // Re-throw the error to be handled by the controller
-      throw new Error(`Failed to send message via external endpoint: ${axiosError.message}`);
-    }
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        this.logger.error(`Attempt ${attempt} failed. Code: ${axiosError.code}`);
+
+        if (axiosError.response) {
+          this.logger.error(
+            `Error sending message request: Status ${axiosError.response.status}, Data: ${JSON.stringify(axiosError.response.data)}`,
+            axiosError.stack, // Keep stack trace for detailed debugging
+          );
+        } else if (axiosError.request) {
+          this.logger.error(
+            `Error sending message request: No response received from ${externalUrl}. Code: ${axiosError.code}`,
+            // No stack trace needed here as it's less informative for network issues
+          );
+        } else {
+          this.logger.error(
+            `Error sending message request: Request setup failed - ${axiosError.message}`,
+            axiosError.stack,
+          );
+        }
+
+        // If it's the last attempt, throw the error to signal final failure
+        if (attempt === maxRetries) {
+          this.logger.error(`Max retries (${maxRetries}) reached. Giving up.`);
+          throw new Error(`Failed to send message via external endpoint after ${maxRetries} attempts: ${axiosError.message} (Last Code: ${axiosError.code})`);
+        }
+
+        // Wait before the next retry
+        this.logger.log(`Waiting ${retryDelayMs}ms before next attempt...`);
+        await delay(retryDelayMs);
+
+      } // End catch block
+    } // End for loop
   }
 
   async disconnect(): Promise<void> {

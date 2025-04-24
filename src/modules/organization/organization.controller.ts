@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, Patch } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, Patch, UseGuards } from '@nestjs/common';
 import { OrganizationService } from './organization.service';
 import { Organization } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
@@ -7,11 +7,10 @@ import {
   SerializerOrganizationDto,
   UpdateOrganizationDto
 } from '../../domain/dtos';
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
-import { OrganizationPaginationDto } from '../../domain/dtos/organization/organization-filtered-pagination.dto';
-import { toDto, toDtoList } from '../../common/util/transform-dto.util';
-import { PaginationMetadata } from '../../common/util/pagination-data.util';
+import { ApiBearerAuth, ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { toDto } from '../../common/util/transform-dto.util';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Organization')
 @Controller('organization')
@@ -30,6 +29,9 @@ export class OrganizationController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Post()
   @ApiOperation({ description: 'Crear una nueva organización' })
   @ApiCreatedResponse({ type: SerializerOrganizationDto })
@@ -52,6 +54,9 @@ export class OrganizationController extends ControllerFactory<
   //   return { data: serializedData, meta };
   // }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get(':id')
   @ApiOperation({ description: 'Obtener una organización por su ID con todas sus relaciones' })
   @ApiOkResponse({ type: SerializerOrganizationDto })
@@ -60,6 +65,9 @@ export class OrganizationController extends ControllerFactory<
     return toDto(SerializerOrganizationDto, organization);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch(':id')
   @ApiOperation({ description: 'Actualizar una organización por su ID' })
   @ApiOkResponse({ type: SerializerOrganizationDto })

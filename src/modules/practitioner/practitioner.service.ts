@@ -81,7 +81,7 @@ export class PractitionerService extends BaseService<
         ...userData,
         dni,
         password: hashedPassword,
-        role: Role.SPECIALIST,
+        role: Role.PRACTITIONER,
         license,
         email,
         username,

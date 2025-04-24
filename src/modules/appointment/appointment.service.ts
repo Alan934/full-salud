@@ -886,7 +886,7 @@ export class AppointmentService extends BaseService<
       const loggedUser = await this.authService.getUserById(updateTurnDto.userId);
       this.logger.log(loggedUser.role)
       if (updateTurnDto.status === AppointmentStatus.CANCELLED) {
-        if (loggedUser.role === Role.SPECIALIST) {
+        if (loggedUser.role === Role.PRACTITIONER) {
           await this.notificationService.createNotification({
             patientId: turn.patient.id,
             read: false,

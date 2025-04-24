@@ -10,7 +10,7 @@ export const databaseProviders: TypeOrmModuleOptions = {
   username: envConfig.NODE_ENV === 'development' ? envConfig.DB_USERNAME_DEV : envConfig.DB_USERNAME,
   password: envConfig.NODE_ENV === 'development' ? envConfig.DB_PASSWORD_DEV : envConfig.DB_PASSWORD,
   autoLoadEntities: true, // Carga las entidades automáticamente
-  synchronize: envConfig.NODE_ENV === 'development', // Sincroniza la base de datos con las entidades (no recomendado para producción)
+  synchronize: process.env.NODE_ENV !== 'production', // Solo en desarrollo // Sincroniza la base de datos con las entidades (no recomendado para producción)
   ssl: true, // Obligatorio para Neon.tech y Vercel
   extra: {
     // Configuraciones del pool de conexiones

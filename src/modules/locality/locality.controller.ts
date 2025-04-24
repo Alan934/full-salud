@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { LocalityService } from './locality.service';
 import { Locality } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
@@ -9,6 +9,7 @@ import {
   UpdateLocalityDto
 } from '../../domain/dtos';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiParam,
@@ -17,6 +18,8 @@ import {
 import { PaginationDto } from '../../common/dtos/pagination-common.dto';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Localities')
 @ApiExtraModels(SerailizerShortLocalityDto)
@@ -31,6 +34,9 @@ export class LocalityController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get('by-department/:departmentId')
   @ApiParam({
     name: 'departmentId',

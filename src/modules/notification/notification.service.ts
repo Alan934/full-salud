@@ -43,7 +43,7 @@ export class NotificationService extends BaseService<
           where: { patient: { id: userId } }
         }); // Obtiene las notificaciones del usuario
       }
-      if(user.role == 'specialist'){
+      if(user.role == 'practitioner'){
         notifications = await this.repository.find({
           where: { practitioner: { id: userId } }
         }); // Obtiene las notificaciones del usuario

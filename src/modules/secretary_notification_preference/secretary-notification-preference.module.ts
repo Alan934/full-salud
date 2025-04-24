@@ -1,11 +1,12 @@
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { SecretaryNotificationPreference } from '../../domain/entities';
 import { SecretaryNotificationPreferenceController } from './secretary-notification-preference.controller';
 import { SecretaryNotificationPreferenceService } from './secretary-notification-preference.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([SecretaryNotificationPreference])],
+  imports: [TypeOrmModule.forFeature([SecretaryNotificationPreference]), forwardRef(() => AuthModule)],
   controllers: [SecretaryNotificationPreferenceController],
   providers: [SecretaryNotificationPreferenceService],
   exports: [SecretaryNotificationPreferenceService]

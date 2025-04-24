@@ -22,7 +22,7 @@ export class CreatePrescriptionDto {
   @Type(() => ShortBaseDto)
   patient: ShortBaseDto;
 
-  //recibe el id del especialista
+  //recibe el id del practitioner
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)

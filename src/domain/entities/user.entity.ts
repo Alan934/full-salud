@@ -53,7 +53,7 @@ export abstract class User extends Base {
     enum: Role,
   })
   @ApiProperty({
-    examples: [Role.PATIENT, Role.ADMIN, Role.organization, Role.SPECIALIST],
+    examples: [Role.PATIENT, Role.ADMIN, Role.ORGANIZATION, Role.PRACTITIONER],
   })
   role: Role;
 

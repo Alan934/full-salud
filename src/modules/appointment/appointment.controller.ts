@@ -9,6 +9,7 @@ import {
   Query,
   BadRequestException,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import 'multer';
 import { AppointmentService } from './appointment.service';
@@ -25,9 +26,12 @@ import {
   ApiResponse,
   ApiTags,
   ApiCreatedResponse,
-  ApiParam
+  ApiParam,
+  ApiBearerAuth
 } from '@nestjs/swagger';
 import { toDto } from '../../common/util/transform-dto.util';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Appointment')
 @Controller('appointment')
@@ -41,7 +45,10 @@ export class AppointmentController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Post()
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Crear un turno y un paciente si no existe' })
   @ApiCreatedResponse({
     description: 'Turno creado exitosamente con un paciente asociado',
@@ -55,7 +62,10 @@ export class AppointmentController extends ControllerFactory<
     return await this.service.createTurn(createTurnDto);
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get(':id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener un turno por su ID' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiResponse({ status: 200, description: 'Turno encontrado', type: SerializerAppointmentDto })
@@ -67,7 +77,10 @@ export class AppointmentController extends ControllerFactory<
     return toDto(SerializerAppointmentDto, turn);
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get()
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener todos los turnos con paginación' })
   @ApiResponse({ status: 200, description: 'Lista de turnos paginada', type: [SerializerAppointmentDto] })
   async getAllTurns(
@@ -92,7 +105,10 @@ export class AppointmentController extends ControllerFactory<
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('specialist/:specialistId')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación' })
   @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
@@ -120,7 +136,10 @@ export class AppointmentController extends ControllerFactory<
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('specialist-all/:specialistId')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación, exluyendo estado no_show' })
   @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
@@ -148,36 +167,42 @@ export class AppointmentController extends ControllerFactory<
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('stats/:specialistId')
-@ApiOperation({ description: 'Obtener estadísticas de turnos para un especialista, filtradas por periodo (opcional: week omonth o year)' })
-@ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
-@ApiResponse({
-  status: 200,
-  description: 'Estadísticas de turnos obtenidas correctamente',
-  schema: {
-    example: {
-      completedStats: { count: 10, percentage: 50 },
-      canceledStats: { count: 10, percentage: 50 },
-      totalTurns: 20,
-      period: { start: '2024-03-01', end: '2024-04-01' }
+  @ApiBearerAuth('bearerAuth')
+  @ApiOperation({ description: 'Obtener estadísticas de turnos para un especialista, filtradas por periodo (opcional: week omonth o year)' })
+  @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
+  @ApiResponse({
+    status: 200,
+    description: 'Estadísticas de turnos obtenidas correctamente',
+    schema: {
+      example: {
+        completedStats: { count: 10, percentage: 50 },
+        canceledStats: { count: 10, percentage: 50 },
+        totalTurns: 20,
+        period: { start: '2024-03-01', end: '2024-04-01' }
+      }
     }
+  })
+  @ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista en el periodo indicado' })
+  async getTurnStatsForSpecialist(
+    @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
+    @Query('period') period?: 'month' | 'year'
+  ): Promise<{
+    completedStats: { count: number; percentage: number };
+    canceledStats: { count: number; percentage: number };
+    totalTurns: number;
+    period?: { start: string; end: string };
+  }> {
+    const stats = await this.service.getTurnStatsForSpecialist(specialistId, period);
+    return stats;
   }
-})
-@ApiResponse({ status: 404, description: 'No se encontraron turnos para el especialista en el periodo indicado' })
-async getTurnStatsForSpecialist(
-  @Param('specialistId', new ParseUUIDPipe({ version: '4' })) specialistId: string,
-  @Query('period') period?: 'month' | 'year'
-): Promise<{
-  completedStats: { count: number; percentage: number };
-  canceledStats: { count: number; percentage: number };
-  totalTurns: number;
-  period?: { start: string; end: string };
-}> {
-  const stats = await this.service.getTurnStatsForSpecialist(specialistId, period);
-  return stats;
-}
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('patient/:patientId')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
@@ -205,7 +230,10 @@ async getTurnStatsForSpecialist(
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('patient-all/:patientId')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos por el ID de un paciente con paginación, exluyendo estado no_show' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
@@ -233,7 +261,10 @@ async getTurnStatsForSpecialist(
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Get('completed/patient/:patientId')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos completados por el ID de un paciente con paginación' })
   @ApiParam({ name: 'patientId', description: 'UUID del paciente', type: String })
   @ApiResponse({ status: 200, description: 'Turnos completados encontrados', type: [SerializerAppointmentDto] })
@@ -261,7 +292,10 @@ async getTurnStatsForSpecialist(
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch('/cancel/:id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiResponse({ status: 200, description: 'Turno eliminado correctamente', schema: { example: { message: 'Turn deleted successfully', deletedTurn: { /* ejemplo del turno */ } } } })
@@ -272,7 +306,10 @@ async getTurnStatsForSpecialist(
     return this.service.removeTurn(id, null);
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch('/reprogram/:id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Reprogramar un turno' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiResponse({ status: 200, description: 'Turno eliminado correctamente', schema: { example: { turn: { /* ejemplo del turno */ } } } })
@@ -284,7 +321,10 @@ async getTurnStatsForSpecialist(
     return { turn: toDto(SerializerAppointmentDto, turn) };
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch('/recover/:id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Recuperar un turno eliminado' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiResponse({ status: 200, description: 'Turno recuperado correctamente', type: SerializerAppointmentDto })
@@ -296,7 +336,10 @@ async getTurnStatsForSpecialist(
     return toDto(SerializerAppointmentDto, turn);
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch(':id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Actualizar un turno' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiBody({ type: UpdateAppointmentDto })
@@ -310,7 +353,10 @@ async getTurnStatsForSpecialist(
     return toDto(SerializerAppointmentDto, turn);
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
   @Patch('check-overlap/:id')
+  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Verificar superposición y actualizar un turno' })
   @ApiParam({ name: 'id', description: 'UUID del turno', type: String })
   @ApiBody({ type: UpdateAppointmentDto })

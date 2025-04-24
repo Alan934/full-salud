@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { PractitionerRoleService } from './practitioner-role.service';
 import { PractitionerRole } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
@@ -7,8 +7,9 @@ import {
   SerializerPractitionerRoleDto,
   UpdatePractitionerRoleDto
 } from '../../domain/dtos';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Role } from '../../domain/enums/role.enum';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
 @ApiTags('Practitioner Role')
 @Controller('practitioner-role')
 export class PractitionerRoleController extends ControllerFactory<
@@ -26,6 +27,9 @@ export class PractitionerRoleController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Post()
   @ApiOperation({ summary: 'Create a new practitionerRole' })
   @ApiResponse({ status: 201, description: 'practitionerRole created successfully' })
@@ -33,6 +37,9 @@ export class PractitionerRoleController extends ControllerFactory<
     return await this.practitionerRoleService.createpractitionerRole(createpractitionerRoleDto);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get(':id')
   @ApiOperation({ summary: 'Get a practitionerRole by ID' })
   @ApiResponse({ status: 200, description: 'practitionerRole found' })
@@ -41,6 +48,9 @@ export class PractitionerRoleController extends ControllerFactory<
     return await this.practitionerRoleService.getOne(id);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get()
   @ApiOperation({ summary: 'Get all practitionerRole' })
   @ApiResponse({ status: 200, description: 'List of practitionerRole' })
@@ -48,6 +58,9 @@ export class PractitionerRoleController extends ControllerFactory<
     return await this.practitionerRoleService.getAll();
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch(':id')
   @ApiOperation({ summary: 'Update a practitionerRole by ID' })
   @ApiResponse({ status: 200, description: 'practitionerRole updated successfully' })
@@ -59,6 +72,9 @@ export class PractitionerRoleController extends ControllerFactory<
     return await this.practitionerRoleService.updatepractitionerRole(id, updatepractitionerRoleDto);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({ summary: 'Soft delete a practitionerRole by ID' })
@@ -68,6 +84,9 @@ export class PractitionerRoleController extends ControllerFactory<
     await this.practitionerRoleService.softDelete(id);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch('/recover/:id')
   @ApiOperation({ summary: 'Recover a soft-deleted practitionerRole by ID' })
   @ApiResponse({ status: 200, description: 'practitionerRole recovered successfully' })
@@ -77,3 +96,4 @@ export class PractitionerRoleController extends ControllerFactory<
   }
 
 }
+

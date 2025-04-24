@@ -1,5 +1,6 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiParam,
@@ -17,6 +18,8 @@ import { DepartmentService } from './department.service';
 import { PaginationDto } from '../../common/dtos/pagination-common.dto';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('Department')
 @ApiExtraModels(SerializerShortDepartmentDto) // Registrar el DTO en Swagger
@@ -36,6 +39,9 @@ export class DepartmentController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get('by-province/:provinceId')
   @ApiParam({
     name: 'provinceId',

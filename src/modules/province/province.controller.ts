@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ProvinceService } from './province.service';
 import { Province } from '../../domain/entities';
 import { ControllerFactory } from '../../common/factories/controller.factory';
@@ -9,6 +9,7 @@ import {
   UpdateProvinceDto
 } from '../../domain/dtos';
 import {
+  ApiBearerAuth,
   ApiExtraModels,
   ApiOperation,
   ApiParam,
@@ -17,6 +18,8 @@ import {
 import { PaginationDto } from '../../common/dtos/pagination-common.dto';
 import { toDtoList } from '../../common/util/transform-dto.util';
 import { ApiPaginationResponse } from '../../common/swagger/api-pagination-response';
+import { Role } from '../../domain/enums/role.enum';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
 
 @ApiTags('Province')
 @ApiExtraModels(SerializerShortProvinceDto) // Registrar el DTO en Swagger
@@ -31,6 +34,9 @@ export class ProvinceController extends ControllerFactory<
     super();
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get('by-country/:countryId')
   @ApiParam({ name: 'countryId', required: true, description: 'ID del país' })
   @ApiOperation({

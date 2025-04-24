@@ -1,13 +1,15 @@
-import { Controller, Get, Post, Body, Patch, Param, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, ParseUUIDPipe, Query, UseGuards } from '@nestjs/common';
 import { PatientPractitionerFavoriteService } from './patient-practitioner-favorite.service';
 import { CreatePatientPractitionerFavoriteDto } from '../../domain/dtos/patient-practitioner-favorite/patient-practitioner-favorite.dto';
 import { UpdatePatientPractitionerFavoriteDto } from '../../domain/dtos/patient-practitioner-favorite/patient-practitioner-favorite.dto';
-import { ApiBody, ApiCreatedResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiCreatedResponse, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ControllerFactory } from '../../common/factories/controller.factory';
 import { SerializerPatientPractitionerFavoriteDto } from '../../domain/dtos/patient-practitioner-favorite/patient-practitioner-favorite-serializer.dto';
 import { PatientPractitionerFavorite } from '../../domain/entities/patient-practitioner-favorite.entity';
 import { toDto } from '../../common/util/transform-dto.util';
 import { PaginationDto } from '../../common/dtos/pagination-common.dto';
+import { AuthGuard, Roles, RolesGuard } from '../auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 @ApiTags('PatientPractitionerFavorite')
 @Controller('patient-practitioner-favorite')
@@ -21,6 +23,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     super()
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Post()
   @ApiOperation({description: 'Crear un favorito'})
   @ApiCreatedResponse({
@@ -33,6 +38,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     return toDto(SerializerPatientPractitionerFavoriteDto, favorite)
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get()
   @ApiOperation({description: 'Obtener todos los favoritos'})
   @ApiResponse({status: 200, description: 'Lista de favoritos', type: [SerializerPatientPractitionerFavoriteDto]})
@@ -50,6 +58,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get(':id')
   @ApiOperation({description: 'Obtener un favorito por id'})
   @ApiParam({name:' favorite', description: 'UUID de favorito', type: String})
@@ -62,6 +73,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     return toDto(SerializerPatientPractitionerFavoriteDto, favorite)
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Get('getByPatient/:patientId')
   @ApiOperation({description: 'Obtener un favorito por id de usuario'})
   @ApiParam({name:' patientId', description: 'UUID de usuario', type: String})
@@ -84,6 +98,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     };
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch(':id')
   @ApiOperation({ description: 'Actualizar un favorito' })
   @ApiParam({ name: 'id', description: 'UUID de favorito', type: String })
@@ -98,6 +115,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     return toDto(SerializerPatientPractitionerFavoriteDto, favorite)
   }
 
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch('/remove/:id')
   @ApiOperation({ description: 'Eliminar (soft delete) de favorito' })
   @ApiParam({ name: 'id', description: 'UUID del favorito', type: String })
@@ -109,6 +129,9 @@ export class PatientPractitionerFavoriteController  extends ControllerFactory<
     return this.favoriteService.removeFavorite(id);
   }
 
+  @Roles(Role.ADMIN)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
   @Patch('/recover/:id')
   @ApiOperation({ description: 'Recuperar (soft delete) de favorito' })
   @ApiParam({ name: 'id', description: 'UUID del favorito', type: String })

@@ -43,6 +43,7 @@ export class AuthController {
 
   // Endpoint para subir imágenes
   @Post('upload')
+  @ApiBearerAuth('bearerAuth')
   @UseInterceptors(FileInterceptor('image'))
   async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{ url: string }> {
     const url = await this.authService.uploadImage(file);

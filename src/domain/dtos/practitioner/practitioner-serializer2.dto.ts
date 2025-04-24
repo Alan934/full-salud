@@ -35,7 +35,7 @@ class SerializerUserDto {
   username: string;
 
   @Expose()
-  @ApiProperty({ example: 'specialist' })
+  @ApiProperty({ example: 'practitioner' })
   role: string;
 
   @Expose()
@@ -139,7 +139,7 @@ export class SerializerPractitionerDto extends FullBaseDto {
   username: string;
 
   @Expose()
-  @ApiProperty({ example: 'specialist' })
+  @ApiProperty({ example: 'practitioner' })
   role: string;
 
   @Expose()
