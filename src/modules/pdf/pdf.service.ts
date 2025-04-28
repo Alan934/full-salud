@@ -34,7 +34,6 @@ export class PdfService {
         // 'patient.socialWork'],
       ],
     });
-    console.log("prescription", prescription)
 
     //receta bar code
     const codeToEncode = prescription.id;
@@ -266,13 +265,10 @@ export class PdfService {
 
           if(text === 'Sexo: Masculino'){
             const textWidth2 = doc.widthOfString(`Sexo: ${genero}`);
-            console.log(`Ancho del texto "Sexo: ${genero}": ${textWidth2} y x: ${x}`);
           }
 
           // Verifica si el texto se desborda, teniendo en cuenta el margen derecho
-          console.log(text, 'texto y x + textWidth + marginRight: ', x + textWidth + marginRight)
           if (x + textWidth + marginRight > 590) { // 595 es el ancho total de la página
-            console.log(text, 'desborda texto y x + textWidth + marginRight: ', x + textWidth + marginRight)
               x = 16; // Reinicia x al margen izquierdo
               y += lineHeight; // Mueve y a la siguiente línea
           }
@@ -368,7 +364,6 @@ async createPdfIndicaciones(createPdfDto: CreatePdfDto):Promise<Buffer> {
       //, 'practitioner.location'],
       // 'patient.socialWork'],
   });
-  console.log("prescription", prescription)
 
   //receta bar code
   const codeToEncode = prescription.id;
@@ -551,13 +546,10 @@ async createPdfIndicaciones(createPdfDto: CreatePdfDto):Promise<Buffer> {
 
         if(text === 'Sexo: Masculino'){
           const textWidth2 = doc.widthOfString(`Sexo: ${genero}`);
-          console.log(`Ancho del texto "Sexo: ${genero}": ${textWidth2} y x: ${x}`);
         }
 
         // Verifica si el texto se desborda, teniendo en cuenta el margen derecho
-        console.log(text, 'texto y x + textWidth + marginRight: ', x + textWidth + marginRight)
         if (x + textWidth + marginRight > 590) { // 595 es el ancho total de la página
-          console.log(text, 'desborda texto y x + textWidth + marginRight: ', x + textWidth + marginRight)
             x = 16; // Reinicia x al margen izquierdo
             y += lineHeight; // Mueve y a la siguiente línea
         }

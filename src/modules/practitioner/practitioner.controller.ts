@@ -80,8 +80,6 @@ export class PractitionerController extends ControllerFactory<
     }
   }
 
-  @Roles(Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
   @ApiBearerAuth('bearerAuth')
   @Get(':id')
   @ApiOperation({ description: 'Get a practitioner by ID' })
@@ -90,8 +88,6 @@ export class PractitionerController extends ControllerFactory<
     return plainToClass(SerializerPractitionerDto, practitioner);
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT, Role.SECRETARY)
-  @UseGuards(AuthGuard, RolesGuard)
   @ApiBearerAuth('bearerAuth')
   @Get('search/by-name-license')
   @ApiOperation({ 

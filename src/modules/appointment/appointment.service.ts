@@ -48,7 +48,7 @@ export class AppointmentService extends BaseService<
 
   async createTurn(
     createTurnDto: CreateAppointmentDto
-  ): Promise<Appointment | { status: number; message: string }> {
+  ): Promise<Appointment> {
     const queryRunner = this.repository.manager.connection.createQueryRunner();
 
     await queryRunner.connect();
@@ -117,8 +117,7 @@ export class AppointmentService extends BaseService<
 
       // Validar que la fecha y el horario sea correcto
       const dateOfWeek = this.getDayOfWeek(createTurnDto.date);
-      
-      console.log('dateOfWeek: ', dateOfWeek)
+           
       for(const specialist of specialists){
         const availability = await queryRunner.manager.findOne(PractitionerAppointment, {
           where: {
@@ -168,8 +167,10 @@ export class AppointmentService extends BaseService<
             .groupBy('appointment.hour') // Agrupar por hour para obtener el máximo por cada hora
             .getRawMany() // Obtener los resultados en formato raw
         : null;
+
       const savedTurn = await queryRunner.manager.save(newTurn);
       const consultationTime = await this.maxConsultationTime(savedTurn.id);
+
       if (createTurnDto.date && createTurnDto.hour) {
         const validateTurn = await this.validateTurn(
           createTurnDto.hour,
@@ -177,12 +178,8 @@ export class AppointmentService extends BaseService<
           consultationTime
         );
         if (!validateTurn) {
-          await queryRunner.release();
-          await this.repository.delete(savedTurn.id);
-          return {
-            status: 400,
-            message: 'El turno se superpone con otro turno existente.'
-          };
+          await queryRunner.manager.delete(Appointment, savedTurn.id);
+          throw new BadRequestException('El turno se superpone con otro turno existente.');
         }
       }
       //-----------------------------------------------------------------------------------
@@ -329,26 +326,21 @@ export class AppointmentService extends BaseService<
 
           savedTurn.whats24 = String(twentyFourWhats.id);
         }
-      }
-
-      
+      }  
 
       // Save the updated `savedTurn` with job IDs
       await this.repository.save(savedTurn);
 
       return savedTurn;
     } catch (error) {
-      await queryRunner.rollbackTransaction();
-
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
-        throw error;
+      // Solo hacer rollback si la transacción está activa
+      if (queryRunner.isTransactionActive) {
+        await queryRunner.rollbackTransaction();
       }
-
-      throw ErrorManager.createSignatureError((error as Error).message);
+      // Re-lanzar el error para que Nest lo maneje
+      throw error;
     } finally {
+      // Liberar el queryRunner siempre
       await queryRunner.release();
     }
   }
@@ -788,69 +780,6 @@ export class AppointmentService extends BaseService<
     }
   }
 
-  //Actualizar un turno.
-  // async updateTurn(id: string, updateTurnDto: UpdateAppointmentDto): Promise<Appointment> {
-  //   try {
-  //     const turn = await this.repository.findOne({ where: { id, deletedAt: null } });
-
-  //     if (!turn) {
-  //       throw new NotFoundException(`Turn with ID ${id} not found`);
-  //     }
-
-  //     //actualizar el turn con los datos de updateTurnDto
-  //     Object.assign(turn, updateTurnDto);
-
-  //     // guardar los datos actualizados.
-  //     const updatedTurn = await this.repository.save(turn);
-
-  //      //Actualiza solo el estado usando createQueryBuilder
-  //   //   await this.repository
-  //   //   .createQueryBuilder()
-  //   //   .update(Appointment)
-  //   //   .set({ status: updateTurnDto.status })
-  //   //   .where('id = :id', { id })
-  //   //   .execute();
-
-  //   //  const updatedTurn = await this.repository.findOne({ where: { id, deletedAt: null } })
-      
-  //     const loggedUser =  await this.authService.getUserById(updateTurnDto.userId)
-
-  //     if(updateTurnDto.status == AppointmentStatus.CANCELLED){
-  //       //check user rol to send notification
-  //       if(loggedUser.role === Role.SPECIALIST){
-  //         //create notification to user segun corresponda
-  //         await this.notificationService.createNotificaction({
-  //           userId: turn.patient.id,
-  //           read: false,
-  //           title: "Cancelacion de Turno",
-  //           text: `Se ha cancelado un nuevo turno para el ${updateTurnDto.date} a las ${updateTurnDto.hour}`
-  //         })
-  //       }else{  
-  //         //notification to practitioner
-  //         if(Array.isArray(updateTurnDto.practitionerIds)){
-  //           for(const practitioner of updateTurnDto.practitionerIds){
-  //             await this.notificationService.createNotificaction({
-  //               userId: practitioner.id,
-  //               read: false,
-  //               title: "Cancelacion de Turno",
-  //               text: `Se ha cancelado un nuevo turno   para el ${updateTurnDto.date} a las ${updateTurnDto.hour}`
-  //             })
-  //           }
-  //         }else{
-  //           await this.notificationService.createNotificaction({
-  //             userId: updateTurnDto.practitionerIds,
-  //             read: false,
-  //             title: "Cancelacion de Turno",
-  //             text: `Se ha cancelado un nuevo turno para el ${updateTurnDto.date} a las ${updateTurnDto.hour}`
-  //           })
-  //         }
-  //       }
-  //     }
-  //     return updatedTurn
-  //   } catch (error) {
-  //     throw ErrorManager.createSignatureError((error as Error).message);
-  //   }
-  // }
   async updateTurn(
     id: string,
     updateTurnDto: UpdateAppointmentDto,
@@ -1051,53 +980,6 @@ export class AppointmentService extends BaseService<
       ? String(data.maxConsultationTime)
       : '00:30:00';
   }
-
-  // async cancelQueue(id: string) {
-
-  //   const appointment = await this.repository.findOne({
-  //     where: { id, deletedAt: null },
-  //   });
-
-  //   if (!appointment) {
-  //     throw new NotFoundException(`Turn with ID ${id} not found`);
-  //   }
-
-  //   // Cancelar el trabajo de correo electrónico
-  //   if(appointment.email3) {
-  //     const job = await this.emailQueue.getJob(appointment.email3);
-  //     if (job) {
-  //       await job.remove();
-  //     }
-  //   }
-
-  //   if(appointment.email24) {
-  //     const job = await this.emailQueue.getJob(appointment.email24);
-  //     if (job) {
-  //       await job.remove();
-  //     }
-  //   }
-  //   // Cancelar el trabajo de WhatsApp
-  //   if(appointment.whats3) {
-  //     const job = await this.whatsappQueue.getJob(appointment.whats3);
-  //     if (job) {
-  //       await job.remove();
-  //     }
-  //   }
-
-  //   if(appointment.whats24) {
-  //     const job = await this.whatsappQueue.getJob(appointment.whats24);
-  //     if (job) {
-  //       await job.remove();
-  //     }
-  //   }
-
-  //   // Actualizar el turno para eliminar los IDs de los trabajos
-  //   appointment.email3 = null;
-  //   appointment.email24 = null;
-  //   appointment.whats3 = null;
-  //   appointment.whats24 = null;
-  //   await this.repository.save(appointment);
-  // }
 
   async reprogramTurn( id: string ) : Promise<Appointment> {
     const repro = true;

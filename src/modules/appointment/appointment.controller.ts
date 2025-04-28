@@ -45,25 +45,21 @@ export class AppointmentController extends ControllerFactory<
     super();
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
-  @UseGuards(AuthGuard, RolesGuard)
   @Post()
-  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Crear un turno y un paciente si no existe' })
   @ApiCreatedResponse({
     description: 'Turno creado exitosamente con un paciente asociado',
     type: SerializerAppointmentDto,
   })
-  @ApiResponse({ status: 400, description: 'Bad Request' })
-  @ApiResponse({ status: 404, description: 'Especialista no encontrado' })
+  @ApiResponse({ status: 201, description: 'Turno creado exitosamente' })
+  @ApiResponse({ status: 400, description: 'Error de validación' })
+  @ApiResponse({ status: 404, description: 'Recurso no encontrado' })
   async createTurnWithPatient(
     @Body() createTurnDto: CreateAppointmentDto,
   ) {
     return await this.service.createTurn(createTurnDto);
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
-  @UseGuards(AuthGuard, RolesGuard)
   @Get(':id')
   @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener un turno por su ID' })
@@ -105,10 +101,7 @@ export class AppointmentController extends ControllerFactory<
     };
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
-  @UseGuards(AuthGuard, RolesGuard)
   @Get('specialist/:specialistId')
-  @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Obtener turnos por el ID de un especialista con paginación' })
   @ApiParam({ name: 'specialistId', description: 'UUID del especialista', type: String })
   @ApiResponse({ status: 200, description: 'Turnos encontrados', type: [SerializerAppointmentDto] })
@@ -292,8 +285,6 @@ export class AppointmentController extends ControllerFactory<
     };
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
   @Patch('/cancel/:id')
   @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Eliminar (soft delete) un turno' })
@@ -306,8 +297,6 @@ export class AppointmentController extends ControllerFactory<
     return this.service.removeTurn(id, null);
   }
 
-  @Roles(Role.PRACTITIONER, Role.ADMIN)
-  @UseGuards(AuthGuard, RolesGuard)
   @Patch('/reprogram/:id')
   @ApiBearerAuth('bearerAuth')
   @ApiOperation({ description: 'Reprogramar un turno' })

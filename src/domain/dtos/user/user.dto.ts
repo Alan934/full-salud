@@ -134,7 +134,7 @@ export class UserDto {
 export class AuthUserDto {
   @IsOptional()
   @IsEmail()
-  @ApiProperty({ example: 'juan@example.com', required: false })
+  @ApiProperty({ example: 'juan@example.com', required: true })
   email?: string;
 
   @IsOptional()

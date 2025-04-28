@@ -15,7 +15,6 @@ export async function generateBarcode(code: string, format: string, outputPath: 
         });
         const buffer = canvas.toBuffer('image/png');
         fs.writeFileSync(outputPath, buffer);
-        console.log(`Código de barras generado en: ${outputPath}`);
         return outputPath; // Devuelve la ruta de salida
     } catch (error) {
         console.error('Error al generar el código de barras:', error);
@@ -30,7 +29,6 @@ export async function generateQRCode(data: string, outputPath: string): Promise<
         margin: 1, // Margen alrededor del código QR
         width: 200, // Ancho del código QR en píxeles
       });
-      console.log(`Código QR generado en: ${outputPath}`);
       return outputPath;
     } catch (error) {
       console.error('Error al generar el código QR:', error);

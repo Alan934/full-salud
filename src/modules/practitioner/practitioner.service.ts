@@ -350,7 +350,6 @@ export class PractitionerService extends BaseService<
       const entities = await query.getMany();
 
       //retorna los resultados
-      console.log(entities);
       return {
         data: entities,
         meta: getPagingData(entities, page, limit)

@@ -132,7 +132,6 @@ export class MedicationRequestsService extends BaseService<
 
     override async update(id: string, updateDto: UpdateMedicationRequestDto): Promise<MedicationRequest> {
         try {
-            console.log('to update: ', updateDto)
             const existingMedicationRequest = await this.repository.findOne({
                 where: { id },
                 relations: ['practitioner', 'patient', 'medicines'],
@@ -333,80 +332,6 @@ export class MedicationRequestsService extends BaseService<
           throw ErrorManager.createSignatureError((error as Error).message);
         }
       }
-
-      //TODO find filtered paginated
-    //   async findAllPaginated(
-    //     filteredDto: FilteredMedicationRequestDto
-    //     // page: number = 1, limit: number = 10
-    //     ): Promise<{medicationRequests: MedicationRequest[], page: number, lastPage: number,  total: number}> {
-    //     try {
-    //         const {page, limit} = filteredDto 
-
-    //         // Construir array de relaciones
-    //         let relations: string[] = [];
-
-    //         // Verificar si hay filtros para agregar relaciones
-    //         if (filteredDto.practitionerId) {
-    //         relations.push('practitioner');
-    //         }
-    //         if (filteredDto.patientId) {
-    //         relations.push('patient');  // 'practitionerRole' es la relación en la entidad Practitioner
-    //         }
-    //         if (filteredDto.medicines) {
-    //         relations.push('medicines');
-    //         }
-
-    //         // Construir el objeto 'where' para los filtros
-    //         const where: FindOptions<MedicationRequest> = {}; // Objeto para las condiciones WHERE
-
-    //         for (const key in filteredDto) {
-    //         if (Object.prototype.hasOwnProperty.call(filteredDto, key)) {
-    //             const value = filteredDto[key];
-
-    //             // Excluir relaciones y campos undefined/null
-    //             if (key !== 'ProfessionalDegree' && key !== 'practitionerRole' && key !== 'socialWorkId' && value !== undefined && value !== null) {
-    //             where[key] = value; // Filtro exacto por atributo
-    //             }
-    //         }
-    //         }
-
-    //         // Opciones de búsqueda y relaciones a incluir
-    //         const findOptions: unknown = {
-    //         where: where,
-    //         relations: relations.length > 0 ? relations : undefined,
-    //         skip: (page - 1) * limit,
-    //         take: limit,
-    //         };
-
-    //         const [data, total] = await this.repository
-    //         .createQueryBuilder('medicationRequest')
-    //         .leftJoinAndSelect('medicationRequest.practitioner', 'practitioner')
-    //         .leftJoinAndSelect('medicationRequest.patient', 'patient')
-    //         .leftJoinAndSelect('medicationRequest.acceptedSocialWorks', 'acceptedSocialWorks')
-    //         //.leftJoinAndSelect('medicationRequest.practitionerAppointment', 'practitionerAppointment')
-    //         .leftJoinAndSelect('practitionerAppointment.location', 'location')  // Si "location" también es una relación
-    //         .addSelect([
-    //           'medicationRequest.indications',
-    //           'medicationRequest.diagnosis',
-    //           'medicationRequest.isValidSignature',
-    //           'medicationRequest.prolongedTreatment',
-    //           'medicationRequest.hiv',
-    //           'medicationRequest.genericName',
-    //           'medicationRequest.medicinePresentation',
-    //           'medicationRequest.medicinePharmaceuticalForm',
-    //           'medicationRequest.medicineQuantity',
-    //         ])
-    //         .where('medicationRequest.deletedAt IS NULL')
-    //         .skip((page - 1) * limit)
-    //         .take(limit)
-    //         .getManyAndCount();
-    //         console.log('medicationRequests: ', data)
-    //         const lastPage = Math.ceil(total / limit);
-    //       return { medicationRequests: data, page, lastPage, total };
-    //     } catch (error) {
-    //       throw ErrorManager.createSignatureError((error as Error).message);
-    //     }
-    //   }
 
     async findAllPaginated(
         filteredDto: FilteredMedicationRequestDto

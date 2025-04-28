@@ -20,7 +20,7 @@ PatientPractitionerFavorite, CreatePatientPractitionerFavoriteDto, UpdatePatient
   async createFavorite(createFavoriteDto: CreatePatientPractitionerFavoriteDto):Promise<PatientPractitionerFavorite>{
     const queryRunner = this.repository.manager.connection.createQueryRunner();
     const { userId, practitionerId: specialistId} = createFavoriteDto
-    console.log('Start creating turn...');
+    
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
@@ -65,17 +65,13 @@ PatientPractitionerFavorite, CreatePatientPractitionerFavoriteDto, UpdatePatient
       return savedFavorite
       
     } catch (error) {
-      console.log('Error occurred:', error);
       await queryRunner.rollbackTransaction();      
       
       if (error instanceof NotFoundException) {
-        console.log('NotFoundException: ', error.message);
         throw error;
       }
-      console.log('General error: ', error);
       throw ErrorManager.createSignatureError((error as Error).message);
     } finally {
-      console.log('Releasing query runner...');
       await queryRunner.release();
     }
   }
