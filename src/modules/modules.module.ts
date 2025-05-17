@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import * as Modules from '.';
+import * as Modules from './index';
 
 @Module({
   imports: Object.values(Modules),

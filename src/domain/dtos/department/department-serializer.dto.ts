@@ -1,8 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
-import { ShortBaseDto } from 'src/common/dtos';
+import { ShortBaseDto } from '../../../common/dtos';
 import { SerializerProvinceDto } from '..';
-
+//asdasdas
 export class SerializerDepartmentDto extends ShortBaseDto {
   @Expose()
   @ApiProperty({ example: 'Maipú' })

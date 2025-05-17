@@ -1,7 +1,7 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { PaginationDto, ShortBaseDto } from '../../../common/dtos';
 
 export class CreateDepartmentDto {
   @IsNotEmpty()
@@ -10,9 +10,28 @@ export class CreateDepartmentDto {
   name: string;
 
   @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ShortBaseDto)
-  province: ShortBaseDto;
+  @IsString() // Cambiado a IsString
+  @ApiProperty({ example: 'uuid-de-la-provincia' })
+  provinceId: string; // Cambiado el nombre y el tipo
+  }
+
+export class UpdateDepartmentDto {
+  @IsString()
+  @IsOptional()
+  @ApiProperty({ example: 'Maipú' })
+  name?: string;
+
+  @IsOptional()
+  @IsString() // Cambiado a IsString
+  @ApiProperty({ example: 'uuid-de-la-provincia' })
+  provinceId?: string; // Cambiado el nombre y el tipo
 }
 
-export class UpdateDepartmentDto extends PartialType(CreateDepartmentDto) {}
+
+export class FilteredDepartmentDto extends PaginationDto{
+  @IsOptional()
+  @IsString()
+  @ApiProperty({ example: 'Maipú' })
+  name?: string;
+}
+

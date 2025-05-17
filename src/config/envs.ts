@@ -8,135 +8,98 @@ const enVarsSchema = joi
       .string()
       .valid('development', 'production')
       .default('development'),
+    HOST_DEV: joi.string(),
+    DB_PORT_DEV: joi.number(),
+    DB_USERNAME_DEV: joi.string(),
+    DB_PASSWORD_DEV: joi.string().allow(''),
+    DB_NAME_DEV: joi.string(),
     HOST: joi.string().default('localhost'),
     DB_PORT: joi.number().default(3306),
+    JWT_SECRET: joi.string().required(),
     DB_USERNAME: joi.string().default('root'),
     DB_PASSWORD: joi.string().allow('').default(''),
     DB_NAME: joi.string(),
-    CLOUDINARY_NAME: joi.string().allow(),
-    CLOUDINARY_API_KEY: joi.number().allow(),
-    CLOUDINARY_API_SECRET: joi.string().allow(),
     SWAGGER_PATH: joi.string(),
     SWAGGER_PASSWORD: joi.string(),
-    S3_ACCESS_KEY_ID: joi.string().allow(),
-    S3_SECRET_ACCESS_KEY: joi.string().allow(),
-    S3_REGION: joi.string().allow(),
-    S3_BUCKET_NAME: joi.string().allow(),
+    BLOB_READ_WRITE_TOKEN: joi.string().allow(),
+    GOOGLE_CLIENT_ID: joi.string().allow(),
+    GOOGLE_CLIENT_SECRET: joi.string().allow(),
+    GOOGLE_CALLBACK_URL: joi.string().allow(),
+    EMAIL_HOST: joi.string().allow(),
+    EMAIL_PORT: joi.number().allow(),
+    GOOGLE_USER: joi.string().allow(),
+    GOOGLE_PASSWORD: joi.string().allow(),
+    REDIS_PASSWORD: joi.string().allow(),
+    REDIS_USERNAME: joi.string().allow(),
+    REDIS_HOST: joi.string().allow(),
+    REDIS_PORT: joi.number().allow(),
+    WHATSAPP_ACCESS_TOKEN: joi.string().allow(),
   })
   .unknown()
   .required(); // unknown() permite que se añadan variables de entorno no definidas en el esquema
-
 const { error, value: envVars } = enVarsSchema.validate(process.env);
-
 if (error) {
   throw new Error(`Config validation error: ${error.message}`);
 }
-
 //Intertfaz para las varialbes de entorno
-
 interface EnvVars {
   PORT: number;
   NODE_ENV: string;
+  HOST_DEV: string;
+  DB_PORT_DEV: number;
+  DB_USERNAME_DEV: string;
+  DB_PASSWORD_DEV: string;
+  DB_NAME_DEV: string;
   HOST: string;
   DB_PORT: number;
   DB_USERNAME: string;
   DB_PASSWORD: string;
   DB_NAME: string;
-  CLOUDINARY_NAME: string;
-  CLOUDINARY_API_KEY: string;
-  CLOUDINARY_API_SECRET: string;
+  JWT_SECRET: string;
   SWAGGER_PATH: string;
   SWAGGER_PASSWORD: string;
-  S3_ACCESS_KEY_ID: string;
-  S3_SECRET_ACCESS_KEY: string;
-  S3_REGION: string;
-  S3_BUCKET_NAME: string;
+  BLOB_READ_WRITE_TOKEN: string;
+  GOOGLE_CLIENT_ID: string;
+  GOOGLE_CLIENT_SECRET: string;
+  GOOGLE_CALLBACK_URL: string;
+  EMAIL_HOST: string;
+  EMAIL_PORT: number;
+  GOOGLE_USER: string;
+  GOOGLE_PASSWORD: string;
+  REDIS_PASSWORD: string;
+  REDIS_USERNAME: string;
+  REDIS_HOST: string;
+  REDIS_PORT: number;
+  WHATSAPP_ACCESS_TOKEN: string;
 }
-
 //Exportamos las envs validadas
-
 export const envConfig: EnvVars = {
   PORT: envVars.PORT,
   NODE_ENV: envVars.NODE_ENV,
+  HOST_DEV: envVars.HOST_DEV,
+  DB_PORT_DEV: envVars.DB_PORT_DEV,
+  DB_USERNAME_DEV: envVars.DB_USERNAME_DEV,
+  DB_PASSWORD_DEV: envVars.DB_PASSWORD_DEV,
+  DB_NAME_DEV: envVars.DB_NAME_DEV,
   HOST: envVars.HOST,
   DB_PORT: envVars.DB_PORT,
   DB_USERNAME: envVars.DB_USERNAME,
   DB_PASSWORD: envVars.DB_PASSWORD,
   DB_NAME: envVars.DB_NAME,
-  CLOUDINARY_NAME: envVars.CLOUDINARY_NAME,
-  CLOUDINARY_API_KEY: envVars.CLOUDINARY_API_KEY,
-  CLOUDINARY_API_SECRET: envVars.CLOUDINARY_API_SECRET,
+  JWT_SECRET: envVars.JWT_SECRET,
   SWAGGER_PATH: envVars.SWAGGER_PATH,
   SWAGGER_PASSWORD: envVars.SWAGGER_PASSWORD,
-  S3_ACCESS_KEY_ID: envVars.S3_ACCESS_KEY_ID,
-  S3_SECRET_ACCESS_KEY: envVars.S3_SECRET_ACCESS_KEY,
-  S3_REGION: envVars.S3_REGION,
-  S3_BUCKET_NAME: envVars.S3_BUCKET_NAME
+  BLOB_READ_WRITE_TOKEN: envVars.BLOB_READ_WRITE_TOKEN,
+  GOOGLE_CLIENT_ID: envVars.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET: envVars.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL: envVars.GOOGLE_CALLBACK_URL,
+  EMAIL_HOST: envVars.EMAIL_HOST,
+  EMAIL_PORT: envVars.EMAIL_PORT,
+  GOOGLE_USER: envVars.GOOGLE_USER,
+  GOOGLE_PASSWORD: envVars.GOOGLE_PASSWORD,
+  REDIS_PASSWORD: envVars.REDIS_PASSWORD,
+  REDIS_USERNAME: envVars.REDIS_USERNAME,
+  REDIS_HOST: envVars.REDIS_HOST,
+  REDIS_PORT: envVars.REDIS_PORT,
+  WHATSAPP_ACCESS_TOKEN: envVars.WHATSAPP_ACCESS_TOKEN,
 };
-
-
-
-
-// import 'dotenv/config';
-// import * as joi from 'joi';
-
-// // Esquema de validación para las variables de entorno
-// const enVarsSchema = joi
-//   .object({
-//     PORT: joi.number().default(3000), // Puerto por defecto
-//     NODE_ENV: joi.string().valid('development', 'production').default('development'),
-//     HOST: joi.string().default('localhost'),
-//     POSTGRES_URL: joi.string().required(), // Requerido para la conexión a PostgreSQL
-//     CLOUDINARY_NAME: joi.string().allow(''),
-//     CLOUDINARY_API_KEY: joi.string().allow(''),
-//     CLOUDINARY_API_SECRET: joi.string().allow(''),
-//     SWAGGER_PATH: joi.string().allow(''),
-//     SWAGGER_PASSWORD: joi.string().allow(''),
-//     S3_ACCESS_KEY_ID: joi.string().allow(''),
-//     S3_SECRET_ACCESS_KEY: joi.string().allow(''),
-//     S3_REGION: joi.string().allow(''),
-//     S3_BUCKET_NAME: joi.string().allow('')
-//   })
-//   .unknown()
-//   .required();
-
-// // Validación de las variables de entorno
-// const { error, value: envVars } = enVarsSchema.validate(process.env);
-
-// if (error) {
-//   throw new Error(`Config validation error: ${error.message}`);
-// }
-
-// // Interfaz para las variables de entorno
-// interface EnvVars {
-//   PORT: number; // Asegúrate de que el puerto esté configurado correctamente
-//   NODE_ENV: string;
-//   HOST: string;
-//   POSTGRES_URL: string; // Agregado para la URL de PostgreSQL
-//   CLOUDINARY_NAME?: string;
-//   CLOUDINARY_API_KEY?: string;
-//   CLOUDINARY_API_SECRET?: string;
-//   SWAGGER_PATH?: string;
-//   SWAGGER_PASSWORD?: string;
-//   S3_ACCESS_KEY_ID?: string;
-//   S3_SECRET_ACCESS_KEY?: string;
-//   S3_REGION?: string;
-//   S3_BUCKET_NAME?: string;
-// }
-
-// // Exportamos las envs validadas
-// export const envConfig: EnvVars = {
-//   PORT: envVars.PORT, // Exportado para el uso en la aplicación
-//   NODE_ENV: envVars.NODE_ENV,
-//   HOST: envVars.HOST,
-//   POSTGRES_URL: envVars.POSTGRES_URL, // Exportado
-//   CLOUDINARY_NAME: envVars.CLOUDINARY_NAME,
-//   CLOUDINARY_API_KEY: envVars.CLOUDINARY_API_KEY,
-//   CLOUDINARY_API_SECRET: envVars.CLOUDINARY_API_SECRET,
-//   SWAGGER_PATH: envVars.SWAGGER_PATH,
-//   SWAGGER_PASSWORD: envVars.SWAGGER_PASSWORD,
-//   S3_ACCESS_KEY_ID: envVars.S3_ACCESS_KEY_ID,
-//   S3_SECRET_ACCESS_KEY: envVars.S3_SECRET_ACCESS_KEY,
-//   S3_REGION: envVars.S3_REGION,
-//   S3_BUCKET_NAME: envVars.S3_BUCKET_NAME
-// };

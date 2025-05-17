@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Base } from 'src/common/bases/base.entity';
-import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
-import { Locality } from '.';
+import { Base } from '../../common/bases/base.entity';
+import { Column, Entity, ManyToOne, JoinColumn, OneToOne } from 'typeorm';
+import { Locality, Location } from '.';
 
-@Entity('addresses')
+@Entity('address')
 export class Address extends Base {
   @Column({
     type: 'varchar',
@@ -68,4 +68,7 @@ export class Address extends Base {
     nullable: true
   })
   longitude: string;
+
+  @OneToOne(() => Location, (location) => location.address)
+  location: Location;
 }

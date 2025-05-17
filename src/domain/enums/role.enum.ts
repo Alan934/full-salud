@@ -1,8 +1,8 @@
 export enum Role {
   ADMIN = 'admin',
   PATIENT = 'patient',
-  SPECIALIST = 'specialist',
-  INSTITUTION = 'institution',
+  PRACTITIONER = 'practitioner',
+  ORGANIZATION = 'organization',
   SECRETARY = 'secretary',
-  SPECIALISTS_SECRETARY = 'specialists_secretary'
+  PRACTITIONER_SECRETARY = 'practitioner_secretary'
 }

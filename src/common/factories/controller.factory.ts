@@ -7,7 +7,8 @@ import {
   Patch,
   Post,
   Query,
-  Type
+  Type,
+  UseGuards
 } from '@nestjs/common';
 import { PaginationDto } from '../dtos/pagination-common.dto';
 import { AbstractValidationPipe } from '../pipes/abstract-validation.pipe';
@@ -16,6 +17,7 @@ import { Base } from '../bases/base.entity';
 import { DeepPartial } from 'typeorm';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
   ApiExtraModels,
@@ -27,6 +29,8 @@ import { ShortBaseDto } from '../dtos/base-short.dto';
 import { ApiPaginationResponse } from '../swagger/api-pagination-response';
 import { toDto, toDtoList } from '../util/transform-dto.util';
 import { PaginationMetadata } from '../util/pagination-data.util';
+import { AuthGuard, Roles, RolesGuard } from '../../modules/auth/guards/auth.guard';
+import { Role } from '../../domain/enums';
 
 export interface ICrudController<
   T extends Base,
@@ -74,6 +78,7 @@ export function ControllerFactory<
 
   @ApiBadRequestResponse({ description: 'Error: Bad Request' })
   @ApiExtraModels(PaginationDto, ShortBaseDto)
+  @ApiBearerAuth('bearerAuth')
   class CrudController<
     T extends Base,
     C extends DeepPartial<T>,
@@ -83,6 +88,9 @@ export function ControllerFactory<
   {
     protected service: BaseService<T, C, U>;
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Post()
     @ApiOperation({ description: 'Crear un registro' })
     @ApiBody({ type: createDto })
@@ -96,6 +104,9 @@ export function ControllerFactory<
       return toDto(serializerDto, data) as unknown as S;
     }
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Get()
     @ApiOperation({ description: 'Obtener registros páginados' })
     @ApiPaginationResponse(serializerDto)
@@ -106,6 +117,9 @@ export function ControllerFactory<
       return { data: serializedData, meta };
     }
 
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Get('including-deleted')
     @ApiOperation({
       description:
@@ -122,6 +136,9 @@ export function ControllerFactory<
       return { data: serializedData, meta };
     }
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Get(':id')
     @ApiOperation({ description: 'Obtener un registro mediante su id (UUID)' })
     @ApiNotFoundResponse({
@@ -137,6 +154,9 @@ export function ControllerFactory<
       return toDto(serializerDto, data) as unknown as S;
     }
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Patch(':id')
     @ApiBody({ type: updateDto })
     @ApiOperation({ description: 'Actualizar un registro' })
@@ -156,6 +176,9 @@ export function ControllerFactory<
       return toDto(serializerDto, data) as unknown as S;
     }
 
+    @Roles(Role.PRACTITIONER, Role.ADMIN)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Delete('soft-delete/:id')
     @ApiOperation({ description: 'Eliminar un registro lógicamente' })
     @ApiNotFoundResponse({
@@ -168,6 +191,9 @@ export function ControllerFactory<
       return this.service.softRemove(id);
     }
 
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Delete(':id')
     @ApiOperation({ description: 'Eliminar un registro definitivamente' })
     @ApiNotFoundResponse({
@@ -180,6 +206,9 @@ export function ControllerFactory<
       return this.service.remove(id);
     }
 
+    @Roles(Role.ADMIN)
+    @UseGuards(AuthGuard, RolesGuard)
+    @ApiBearerAuth('bearerAuth')
     @Patch('restore/:id')
     @ApiOperation({
       description: 'Recuperar un registro lógicamente eliminado'

@@ -1,37 +1,37 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsNotEmpty,
   IsOptional,
+  IsString,
   ValidateIf,
   ValidateNested
 } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
-import { CreateIndicationDto } from '..';
+import { ShortBaseDto } from '../../../common/dtos';
+import { CreateClinicalIndicationDto } from '..';
 
 export class CreatePrescriptionDto {
   @IsNotEmpty()
-  @IsDate()
-  @Type(() => Date)
-  date: Date;
+  @IsString()
+  @Type(() => String)
+  date: string;
 
   //recibe el id del paciente
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  patientTurn: ShortBaseDto;
+  patient: ShortBaseDto;
 
-  //recibe el id del especialista
+  //recibe el id del practitioner
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ShortBaseDto)
-  specialist: ShortBaseDto;
+  practitioner: ShortBaseDto;
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => CreateIndicationDto)
-  indications?: CreateIndicationDto[];
+  @Type(() => CreateClinicalIndicationDto)
+  indications?: CreateClinicalIndicationDto[];
 
   @IsNotEmpty()
   @ValidateIf((dto) => !dto.indications || dto.observations) //si indications no está presente, observations es obligatoria
@@ -39,5 +39,5 @@ export class CreatePrescriptionDto {
 }
 
 export class UpdatePrescriptionDto extends PartialType(
-  OmitType(CreatePrescriptionDto, ['patientTurn', 'specialist', 'indications'])
+  OmitType(CreatePrescriptionDto, ['patient', 'practitioner', 'indications'])
 ) {}

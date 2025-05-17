@@ -1,6 +1,6 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { SocialWork, Speciality } from '.';
+import { SocialWork, PractitionerRole } from '.';
 
 @Entity('payments')
 export class Payment extends Base {
@@ -20,9 +20,9 @@ export class Payment extends Base {
   @JoinColumn({ name: 'social_work_id' })
   socialWork: SocialWork;
 
-  @ManyToOne(() => Speciality, {
+  @ManyToOne(() => PractitionerRole, {
     eager: true
   })
-  @JoinColumn({ name: 'speciality_id' })
-  speciality: Speciality;
+  @JoinColumn({ name: 'practitionerRole_id' })
+  practitionerRole: PractitionerRole;
 }

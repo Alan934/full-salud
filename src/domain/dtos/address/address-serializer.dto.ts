@@ -1,6 +1,6 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Expose, Type } from 'class-transformer';
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import { SerializerLocalityDto } from '../locality/locality-serializer.dto';
 
 export class SerializerAddressDto extends FullBaseDto {
@@ -40,9 +40,9 @@ export class SerializerAddressDto extends FullBaseDto {
 export class SerializerShortAddressDto extends SerializerAddressDto {
   @Exclude()
   @ApiHideProperty()
-  deletedAt!: Date;
+  deletedAt!: string;
 
   @Exclude()
   @ApiHideProperty()
-  createdAt!: Date;
+  createdAt!: string;
 }

@@ -1,15 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
-import { PaginationDto } from 'src/common/dtos';
-import { Filter } from 'src/common/util/dynamic-query-builder.util';
-import { Role } from 'src/domain/enums';
+import { IsBoolean, IsEnum, IsOptional, IsString } from 'class-validator';
+import { PaginationDto } from '../../../common/dtos';
+import { Filter } from '../../../common/util/dynamic-query-builder.util';
+import { Role } from '../../enums';
 
 export class UserPaginationDto extends PaginationDto implements Filter {
-  @IsOptional()
-  @IsNumberString()
-  @ApiProperty({ example: '2615836294' })
-  phone?: string;
-
   @IsOptional()
   @IsString()
   @ApiProperty({
@@ -29,7 +24,12 @@ export class UserPaginationDto extends PaginationDto implements Filter {
   @IsOptional()
   @IsEnum(Role)
   @ApiProperty({
-    examples: [Role.PATIENT, Role.ADMIN, Role.INSTITUTION, Role.SPECIALIST]
+    examples: [Role.PATIENT, Role.ADMIN, Role.ORGANIZATION, Role.PRACTITIONER]
   })
   role?: Role;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({ example: false })
+  googleBool?: boolean;
 }

@@ -1,8 +1,8 @@
-import { FullBaseDto } from 'src/common/dtos';
+import { FullBaseDto } from '../../../common/dtos';
 import {
-  SerializerShortSpecialistDto,
-  SerializerShortPacientTurnDto,
-  SerializerIndicationDto
+  SerializerClinicalIndicationDto,
+  SerializerShortPatientDto,
+  SerializerShortPractitionerDto
 } from '..';
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose, Type } from 'class-transformer';
@@ -10,30 +10,30 @@ import { Expose, Type } from 'class-transformer';
 export class SerializerPrescriptionDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '1970-12-07' })
-  date: Date;
+  date: string;
 
   @Expose()
-  @Type(() => SerializerShortPacientTurnDto)
-  patientTurn: SerializerShortPacientTurnDto;
+  @Type(() => SerializerShortPatientDto)
+  patient: SerializerShortPatientDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialist: SerializerShortSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner: SerializerShortPractitionerDto;
 
   @Expose()
-  @Type(() => SerializerIndicationDto)
-  indications: SerializerIndicationDto[];
+  @Type(() => SerializerClinicalIndicationDto)
+  indications: SerializerClinicalIndicationDto[];
 }
 export class SerializerShortPrescriptionDto extends FullBaseDto {
   @Expose()
   @ApiProperty({ example: '1970-12-07' })
-  date: Date;
+  date: string;
 
   @Expose()
-  @Type(() => SerializerShortPacientTurnDto)
-  patientTurn: SerializerShortPacientTurnDto;
+  @Type(() => SerializerShortPractitionerDto)
+  patientTurn: SerializerShortPractitionerDto;
 
   @Expose()
-  @Type(() => SerializerShortSpecialistDto)
-  specialist: SerializerShortSpecialistDto;
+  @Type(() => SerializerShortPractitionerDto)
+  practitioner: SerializerShortPractitionerDto;
 }

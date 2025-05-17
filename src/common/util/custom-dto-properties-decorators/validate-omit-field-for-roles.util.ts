@@ -7,8 +7,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface
 } from 'class-validator';
-import { CreateUserDto } from 'src/domain/dtos';
-import { Role } from 'src/domain/enums';
+import { UserDto } from '../../../domain/dtos';
+import { Role } from '../../../domain/enums';
 
 /**
  * Validation Arguments sobreescritos para el constraint personalizado
@@ -17,7 +17,7 @@ class OmitFieldForRolesValidationArguments implements ValidationArguments {
   value: any;
   constraints: Role[]; //constraints pasa a ser un arreglo de Role
   targetName: string;
-  object: CreateUserDto; //object es un CreateUserDto
+  object: UserDto; //object es un CreateUserDto
   property: string;
 }
 

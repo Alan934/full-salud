@@ -1,10 +1,10 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn } from 'typeorm';
 import { ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Department } from './department.entity';
 
-@Entity('localities')
+@Entity('locality')
 export class Locality extends Base {
   @Column({
     type: 'varchar',

@@ -1,415 +1,257 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BaseService } from 'src/common/bases/base.service';
-import { ErrorManager } from 'src/common/exceptions/error.manager';
+import { ChangePasswordDto } from '../../domain/dtos/password/chance-password';
+import { BaseService } from '../../common/bases/base.service';
+import { ErrorManager } from '../../common/exceptions/error.manager';
 import {
-  CreateNotificationPreferencesDto,
-  CreateUserDto,
+  UserDto,
   UpdateUserDto,
-  UserPaginationDto
-} from 'src/domain/dtos';
-import { PatientUserConnection, User } from 'src/domain/entities';
-import { Media } from 'src/domain/enums/media.enum';
-import { Role } from 'src/domain/enums/role.enum';
+  AuthUserDto,
+  SerializerUserDto
+} from '../../domain/dtos';
+import 'multer';
+import { Patient, Practitioner, User } from '../../domain/entities';
+import { Role } from '../../domain/enums/role.enum';
 import {
-  DeepPartial,
-  EntityManager,
-  FindManyOptions,
   Repository,
-  SelectQueryBuilder
 } from 'typeorm';
-import { PatientsNotificationPreferencesService } from '../patients_notification_preferences/patients-notification-preferences.service';
-import { SpecialistsNotificationPreferencesService } from '../specialists_notification_preferences/specialists-notification-preferences.service';
-import { InstitutionsNotificationPreferencesService } from '../institutions_notification_preferences/institutions-notification-preferences.service';
-import { AdminsNotificationPreferencesService } from '../admins_notification_preferences/admins-notification-preferences.service';
-import { SecretaryNotificationPreferencesService } from '../secretary_notification_preferences/secretary-notification-preferences.service';
-import { SpecialistsSecretaryNotificationPreferencesService } from '../specialists_secretary_notification_preferences/specialists-secretary-notification-preferences.service';
-import { ProfileImagesService } from '../profile_images/profile_images.service';
-import {
-  getPagingData,
-  PaginationMetadata
-} from 'src/common/util/pagination-data.util';
-import {
-  Conditions,
-  DynamicQueryBuilder
-} from 'src/common/util/dynamic-query-builder.util';
-import { NotificationsService } from '../notifications/notifications.service';
+import * as bcrypt from 'bcryptjs';
+import { plainToInstance } from 'class-transformer';
+import { JwtService } from '@nestjs/jwt';
+import { envConfig } from '../../config/envs';
+import { put } from '@vercel/blob';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService extends BaseService<
   User,
-  CreateUserDto,
+  UserDto,
   UpdateUserDto
 > {
   constructor(
     @InjectRepository(User) protected repository: Repository<User>,
-    protected readonly patientsNotificationPreferencesService: PatientsNotificationPreferencesService,
-    protected readonly specialistsNotificationPreferencesService: SpecialistsNotificationPreferencesService,
-    protected readonly institutionsNotificationPreferencesService: InstitutionsNotificationPreferencesService,
-    protected readonly adminsNotificationPreferencesService: AdminsNotificationPreferencesService,
-    protected readonly secretaryNotificationPreferencesService: SecretaryNotificationPreferencesService,
-    protected readonly specialistsSecretaryNotificationPreferencesService: SpecialistsSecretaryNotificationPreferencesService,
-    protected readonly profileImagesService: ProfileImagesService,
-    protected readonly notificationsService: NotificationsService
+    @InjectRepository(Patient) private readonly patientRepository: Repository<Patient>,
+    @InjectRepository(Practitioner) private readonly practitionerRepository: Repository<Practitioner>,
+    private readonly jwtService: JwtService,
   ) {
     super(repository);
   }
 
-  //método que devuelve el servicio de notification preferences correspondiente al rol recibido por parametro
-  private getNotificationPreferenceServiceByRole(role: Role): any {
-    switch (role) {
-      case Role.ADMIN:
-        return this.adminsNotificationPreferencesService;
-      case Role.PATIENT:
-        return this.patientsNotificationPreferencesService;
-      case Role.SPECIALIST:
-        return this.specialistsNotificationPreferencesService;
-      case Role.INSTITUTION:
-        return this.institutionsNotificationPreferencesService;
-      case Role.SECRETARY:
-        return this.secretaryNotificationPreferencesService;
-      case Role.SPECIALISTS_SECRETARY:
-        return this.specialistsSecretaryNotificationPreferencesService;
-      default:
-        throw ErrorManager.createSignatureError(
-          "User's role is not a valid role"
-        );
-    }
+  async onModuleInit() {
+    await this.ensureAdminExists();
   }
 
-  //Override del método create genérico
-  override async create(createDto: CreateUserDto): Promise<User> {
-    try {
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const newUser: User = await transactionalEntityManager.save(
-            User,
-            createDto
-          ); //guarda el usuario obtenido
-          //obtiene el servicio de preferencias de notificaciones que corresponde al rol del usuario
-          const notificationPreferencesService =
-            this.getNotificationPreferenceServiceByRole(newUser.role);
+  async signJWT(payload: JwtPayload) {
+    return this.jwtService.sign(payload);
+  }
 
-          //crea en la base de datos dos preferencias de notificaciones para el usuario, una para contener las preferencias de email y otra para las de whatsapp
-          await notificationPreferencesService.create(
-            new CreateNotificationPreferencesDto(Media.EMAIL, {
-              id: newUser.id
-            }),
-            transactionalEntityManager
-          );
-          await notificationPreferencesService.create(
-            new CreateNotificationPreferencesDto(Media.WHATSAPP, {
-              id: newUser.id
-            }),
-            transactionalEntityManager
-          );
-          return newUser; //devuelve el usuario creado
-        }
-      );
+  async loginUser(loginDto: AuthUserDto)/*: Promise<UserDto & { accessToken: string; refreshToken: string }>*/ {
+    const { email, username, password } = loginDto;
+    try {
+      const user: User | undefined = await this.patientRepository.findOne({
+        where: [{ email: email ?? undefined }, { username: username ?? undefined }],
+      }) || await this.practitionerRepository.findOne({
+        where: [{ email: email ?? undefined }, { username: username ?? undefined }],
+      }) || await this.repository.findOne({
+        where: [{ email: email ?? undefined }, { username: username ?? undefined }],
+      });
+
+      if (!user) {
+        throw new ErrorManager('Invalid email, username, or password', 401);
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      
+      if (!isPasswordValid) {
+        throw new ErrorManager('Invalid email, username, or password', 401);
+      }
+
+      const payload: JwtPayload = { id: user.id, email: user.email, role: user.role, name: user.name, lastName: user.lastName };
+      const accessToken = await this.signJWT(payload);
+
+      const userDto = plainToInstance(SerializerUserDto, user);
+      const { id, name, lastName, email: newEmail, role, urlImg, ...rest} = userDto;
+      return { id, name, lastName, email: newEmail, role, urlImg, accessToken };
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-
-  //condiciones que se agregarán al query builder para filtrar users
-  private userConditions: Conditions<User> = {
-    phone: (queryBuilder: SelectQueryBuilder<User>, value: string) =>
-      queryBuilder.andWhere('user.phone = :phone', { phone: `${value}` }),
-    email: (queryBuilder: SelectQueryBuilder<User>, value: string) =>
-      queryBuilder.andWhere('user.email LIKE :email', { email: `%${value}%` }),
-    username: (queryBuilder: SelectQueryBuilder<User>, value: string) =>
-      queryBuilder.andWhere('user.username LIKE :username', {
-        username: `%${value}%`
-      }),
-    role: (queryBuilder: SelectQueryBuilder<User>, value: Role) =>
-      queryBuilder.andWhere('user.role = :role', { role: value })
-  };
-
-  //Override del método findAll genérico
-  override async findAll(
-    paginationDto: UserPaginationDto
-  ): Promise<{ data: User[]; meta: PaginationMetadata }> {
+  
+  async generateRefreshToken(token: string) {
     try {
-      const { page, limit } = paginationDto;
+      const { sub, iat, exp, ...user} = this.jwtService.verify(token, {
+        secret: envConfig.JWT_SECRET,
+      });
 
-      const queryBuilderBase = this.repository.createQueryBuilder('user');
-
-      //añade las condiciones where al query builder
-      const query = DynamicQueryBuilder.buildSelectQuery<User>(
-        queryBuilderBase,
-        this.userConditions,
-        paginationDto
-      );
-
-      //añade la paginación al query creada
-      query.skip((page - 1) * limit).take(limit);
-
-      //ejecuta la query
-      const entities = await query.getMany();
+      const userDto = plainToInstance(SerializerUserDto, user);
 
       return {
-        data: entities,
-        meta: getPagingData(entities, page, limit)
-      };
+        ...userDto,
+        accessToken: await this.signJWT(user)
+      }
+      
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
 
-  //Override del método softRemove genérico
-  override async softRemove(id: string): Promise<string> {
+  async changePassword(userId: string, changePasswordDto: ChangePasswordDto): Promise<{ message: string }> {
     try {
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const entity = await transactionalEntityManager.findOne(User, {
-            where: { id }
-          }); //obtiene la entidad user de la base de datos
+      const user = await this.getUserById(userId);
 
-          //obtiene el servicio de preferencias de notificación según el rol del usuario
-          const notificationPreferencesService =
-            this.getNotificationPreferenceServiceByRole(entity.role);
-          //obtiene las preferencias de notificaciones que corresponden al usuario
-          const notificationPreferences =
-            (await notificationPreferencesService.getByUserIdWithManager(
-              id,
-              transactionalEntityManager
-            )) as any[];
-
-          //realiza eliminación lógica de las preferencias de notificación del usuario
-          notificationPreferences.forEach(
-            async (preference) =>
-              await notificationPreferencesService.softRemove(
-                preference.id,
-                transactionalEntityManager
-              )
-          );
-
-          // realiza eliminacion lógica de las notificaciones del usuario
-          await this.notificationsService.softRemoveForUserWithManager(
-            entity.id,
-            transactionalEntityManager
-          );
-
-          await transactionalEntityManager.softRemove(User, entity); //realiza eliminación lógica del usuario
-
-          return `Entity with id ${id} soft deleted`;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
-
-  //Override del método restore genérico
-  override async restore(id: string): Promise<User> {
-    try {
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          const entity = await transactionalEntityManager.findOne(User, {
-            where: { id },
-            withDeleted: true
-          } as FindManyOptions<User>); //obtiene la entidad de la base de datos
-
-          //obtiene el servicio de notification preferences que corresponde al rol del usuario
-          const notificationPreferencesService =
-            this.getNotificationPreferenceServiceByRole(entity.role);
-          //obtiene las preferencias de notificación eliminadas que están asociadas al usuario
-          const notificationPreferences =
-            (await notificationPreferencesService.getByUserIdIncludeDeletedWithManager(
-              id,
-              transactionalEntityManager
-            )) as any[];
-
-          //recupera las preferencias de notificación del usuario
-          notificationPreferences.forEach(
-            async (preference) =>
-              await notificationPreferencesService.restore(
-                preference.id,
-                transactionalEntityManager
-              )
-          );
-
-          // recupera las notificaciones del usuario
-          await this.notificationsService.restoreForUserWithManager(
-            entity.id,
-            transactionalEntityManager
-          );
-
-          const recovered = await transactionalEntityManager.recover(
-            User,
-            entity
-          ); //recupera la entidad de user
-
-          return recovered;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
-
-  // Método que sube imágenes y se las asigna al nuevo usuario
-  async createWithProfileImage(
-    createUserDto: CreateUserDto,
-    file?: Express.Multer.File | null // Es opcional enviar imágenes
-  ): Promise<User> {
-    // Inicia transacción
-    const queryRunner = this.repository.manager.connection.createQueryRunner();
-
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    let profileImage;
-    try {
-      // Verifica que file no sea nulo
-      if (file) {
-        // Crea y sube la imagen
-        profileImage = await this.profileImagesService.uploadFile(file);
+      // Validar que las contraseñas nuevas coincidan
+      if (changePasswordDto.newPassword !== changePasswordDto.confirmNewPassword) {
+        throw new ErrorManager('New passwords do not match', 400);
       }
 
-      // Utiliza el create del servicio y le pasa el dto de user y la imagen
-      const newUser = await this.create({
-        ...createUserDto,
-        profileImage
+      const newHashedPassword = await bcrypt.hash(changePasswordDto.newPassword, 10);
+
+      // Determinar la tabla correcta según el rol del usuario
+      if (user.role === Role.PRACTITIONER) {
+        const practitioner = await this.practitionerRepository.findOne({ where: { id: user.id } });
+        if (!practitioner) {
+          throw new ErrorManager('Practitioner not found', 404);
+        }
+        practitioner.password = newHashedPassword;
+        practitioner.passwordChangedAt = new Date();
+        await this.practitionerRepository.save(practitioner);
+      } else if (user.role === Role.PATIENT) {
+        const patient = await this.patientRepository.findOne({ where: { id: user.id } });
+        if (!patient) {
+          throw new ErrorManager('Patient not found', 404);
+        }
+        patient.password = newHashedPassword;
+        patient.passwordChangedAt = new Date();
+        await this.patientRepository.save(patient);
+      } else {
+        const generalUser = await this.repository.findOne({ where: { id: user.id } });
+        if (!generalUser) {
+          throw new ErrorManager('User not found', 404);
+        }
+        generalUser.password = newHashedPassword;
+        generalUser.passwordChangedAt = new Date();
+        await this.repository.save(generalUser);
+      }
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      throw ErrorManager.createSignatureError((error as Error).message);
+    }
+  }
+
+  async ensureAdminExists() {
+    const adminExists = await this.repository.findOne({
+      where: { role: Role.ADMIN },
+    });
+
+    if (!adminExists) {
+      console.log('No admin found. Creating default admin...');
+
+      const defaultAdmin = this.repository.create({
+        email: 'admin@example.com',
+        username: 'admin',
+        password: await bcrypt.hash('Admin123*', 10),
+        role: Role.ADMIN,
+        name: 'Default',
+        lastName: 'Admin',
       });
 
-      await queryRunner.commitTransaction();
-
-      // Retorna el usuario creado
-      return await this.findOne(newUser.id);
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-
-      // Eliminar la imágen subida si la transacción falla
-      if (profileImage) {
-        this.profileImagesService.deleteImage(profileImage.id);
-      }
-      throw ErrorManager.createSignatureError((error as Error).message);
-    } finally {
-      await queryRunner.release();
+      await this.repository.save(defaultAdmin);
+      console.log('Default admin created successfully.');
     }
   }
 
-  // Override del método remove genérico
-  override async remove(id: string): Promise<string> {
+  async getUserById(userId: string): Promise<User> {
     try {
-      const user = await this.findOne(id); // Verifica que la entidad existe
-      const profileImageId = user.profileImage ? user.profileImage.id : null; // Obtiene el id de profile image
-
-      // Inicia la transacción
-      return await this.repository.manager.transaction(
-        async (transactionalEntityManager) => {
-          await transactionalEntityManager.remove(user); // Elimina el usuario, si existe
-
-          if (profileImageId) {
-            // Si hay alguna imagen asociada, la elimina
-            this.profileImagesService.deleteImage(profileImageId);
-          }
-
-          return `User with id ${id} deleted`;
-        }
-      );
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
-    }
-  }
-
-  //eliminar un usuario con un manager de entidades
-  async removeWithManager(id: string, manager: EntityManager) {
-    try {
-      const user = await manager.findOne(User, {
-        where: { id }
+      const user: User | undefined = await this.patientRepository.findOne({
+        where: [{ id: userId ?? undefined }],
+      }) || await this.practitionerRepository.findOne({
+        where: [{ id: userId ?? undefined }],
+      }) || await this.repository.findOne({
+        where: [{ id: userId ?? undefined }],
       });
-      const profileImageId = user.profileImage ? user.profileImage.id : null;
-
-      await manager.remove(user);
-
-      if (profileImageId) {
-        this.profileImagesService.deleteImage(profileImageId);
+  
+      if (!user) {
+        throw new ErrorManager('Invalid User by id', 401);
       }
+
+      return user;
     } catch (error) {
       throw ErrorManager.createSignatureError((error as Error).message);
+    }    
+  }
+
+  async uploadImage(file: Express.Multer.File): Promise<string> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    // Validar el tipo de archivo
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      throw new BadRequestException('Invalid file type. Only JPEG, PNG, GIF, and WEBP are allowed');
+    }
+
+    // Validar el tamaño del archivo
+    const maxFileSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxFileSize) {
+      throw new BadRequestException('File size exceeds the maximum allowed size of 5MB');
+    }
+
+    try {
+      const blob = await put(file.originalname, file.buffer, {
+        access: 'public',
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+
+      return blob.url;
+    } catch (error) {
+      throw new BadRequestException('Failed to upload image');
     }
   }
 
-  async softRemoveWithManager(
-    id: string,
-    manager: EntityManager
-  ): Promise<string> {
-    try {
-      const entity = await manager.findOne(User, {
-        where: { id }
-      }); //obtiene la entidad user de la base de datos
-
-      //obtiene el servicio de preferencias de notificación según el rol del usuario
-      const notificationPreferencesService =
-        this.getNotificationPreferenceServiceByRole(entity.role);
-      //obtiene las preferencias de notificaciones que corresponden al usuario
-      const notificationPreferences =
-        (await notificationPreferencesService.getByUserIdWithManager(
-          id,
-          manager
-        )) as any[];
-
-      //realiza eliminación lógica de las preferencias de notificación del usuario
-      notificationPreferences.forEach(
-        async (preference) =>
-          await notificationPreferencesService.softRemove(
-            preference.id,
-            manager
-          )
-      );
-
-      // realiza eliminacion lógica de las notificaciones del usuario
-      await this.notificationsService.softRemoveForUserWithManager(
-        entity.id,
-        manager
-      );
-
-      await manager.softRemove(User, entity); //realiza eliminación lógica del usuario
-
-      return `Entity with id ${id} soft deleted`;
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
+  async googleSignIn(req) {
+    if (!req.user) {
+      throw new HttpException('No user from Google', 400);
     }
-  }
 
-  async restoreWithManager(id: string, manager: EntityManager): Promise<User> {
-    try {
-      const entity = await manager.findOne(User, {
-        where: { id },
-        withDeleted: true
-      } as FindManyOptions<User>); //obtiene la entidad de la base de datos
+    const { email, firstName, lastName, picture, birthDate, sex, phoneNumber, address, username } = req.user;
+    
+    const user: User | undefined = await this.patientRepository.findOne({
+      where: {googleBool: true, email: email},
+    }) || await this.practitionerRepository.findOne({
+      where: {googleBool: true, email: email},
+    }) || await this.repository.findOne({
+      where: {googleBool: true, email: email},
+    });
 
-      //obtiene el servicio de notification preferences que corresponde al rol del usuario
-      const notificationPreferencesService =
-        this.getNotificationPreferenceServiceByRole(entity.role);
-      //obtiene las preferencias de notificación eliminadas que están asociadas al usuario
-      const notificationPreferences =
-        (await notificationPreferencesService.getByUserIdIncludeDeletedWithManager(
-          id,
-          manager
-        )) as any[];
+    const exist: User | undefined = await this.patientRepository.findOne({
+      where: { email: email },
+    }) || await this.practitionerRepository.findOne({
+      where: { email: email },
+    }) || await this.repository.findOne({
+      where: { email: email },
+    });
 
-      //recupera las preferencias de notificación del usuario
-      await Promise.all(
-        notificationPreferences.map(
-          async (preference) =>
-            await notificationPreferencesService.restore(preference.id, manager)
-        )
-      );
+    if(!user && exist) {
+      return new HttpException('Email already in use', 400);
+    }
 
-      // recupera las notificaciones del usuario
-      await this.notificationsService.restoreForUserWithManager(
-        entity.id,
-        manager
-      );
+    if(user) {
+      const payload: JwtPayload = { id: user.id, email: user.email, role: user.role, name: user.name, lastName: user.lastName };
+      const accessToken = await this.signJWT(payload);
 
-      const recovered = await manager.recover(User, entity); //recupera la entidad de user
-
-      return recovered;
-    } catch (error) {
-      throw ErrorManager.createSignatureError((error as Error).message);
+      const userDto = plainToInstance(SerializerUserDto, user);
+      const { id, name, lastName, email: newEmail, role, urlImg, ...rest} = userDto;
+      return { id, name, lastName, email: newEmail, role, urlImg, accessToken };
+    } else {
+      return {
+        email: email,
+        name: firstName,
+        lastName: lastName,
+        username: username,
+        urlImg: picture,
+      }
     }
   }
 }

@@ -1,7 +1,7 @@
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsNotEmpty } from 'class-validator';
-import { ShortBaseDto } from 'src/common/dtos';
+import { IsInt, IsNotEmpty, IsOptional } from 'class-validator';
+import { ShortBaseDto } from '../../../common/dtos';
 
 export class CreatePaymentDto {
   @IsNotEmpty()
@@ -14,8 +14,21 @@ export class CreatePaymentDto {
 
   @IsNotEmpty()
   @Type(() => ShortBaseDto)
-  speciality: ShortBaseDto;
+  practitionerRole: ShortBaseDto;
 }
-export class UpdatePaymentDto extends PartialType(
-  OmitType(CreatePaymentDto, ['socialWork', 'speciality'] as const)
-) {}
+
+export class UpdatePaymentDto {
+  @IsOptional()
+  @IsInt()
+  paymentTime?: number;
+
+  @IsOptional()
+  @Type(() => ShortBaseDto)
+  socialWork?: ShortBaseDto;
+
+  @IsOptional()
+  @Type(() => ShortBaseDto)
+  practitionerRole?: ShortBaseDto;  
+}
+
+

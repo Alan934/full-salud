@@ -1,9 +1,9 @@
-import { Base } from 'src/common/bases/base.entity';
+import { Base } from '../../common/bases/base.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { Country } from './country.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
-@Entity('provinces')
+@Entity('province')
 export class Province extends Base {
   @Column({
     type: 'varchar',

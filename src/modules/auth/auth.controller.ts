@@ -1,105 +1,71 @@
-import {
-  Body,
-  Controller,
-  FileTypeValidator,
-  Get,
-  ParseFilePipe,
-  Post,
-  Query,
-  UploadedFile,
-  UseInterceptors
-} from '@nestjs/common';
-import { ControllerFactory } from 'src/common/factories/controller.factory';
-import {
-  CreateUserDto,
-  CreateUserDtoWithFiles,
-  SerializerUserDto,
-  UpdateUserDto,
-  UserPaginationDto
-} from 'src/domain/dtos';
-import { User } from 'src/domain/entities';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { Body, Controller, Get, Patch, Post, Query, Req, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
-import {
-  ApiBody,
-  ApiConsumes,
-  ApiOperation,
-  ApiResponse,
-  ApiTags
-} from '@nestjs/swagger';
+import { AuthUserDto } from '../../domain/dtos';
+import { ChangePasswordDto } from '../../domain/dtos/password/chance-password';
+import { AuthGuard, Roles, RolesGuard } from './guards/auth.guard';
+import { AuthGuard as GAuthGuard } from '@nestjs/passport';
+import { Role } from '../../domain/enums';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { toDto, toDtoList } from 'src/common/util/transform-dto.util';
-import { ApiPaginationResponse } from 'src/common/swagger/api-pagination-response';
-import { PaginationMetadata } from 'src/common/util/pagination-data.util';
+import { User, Token } from './decorators';
+import { CurrentUser } from './interfaces/current-user.interface';
 
-@ApiTags('Auth')
+@ApiTags('Authentication')
 @Controller('auth')
-export class AuthController extends ControllerFactory<
-  User,
-  CreateUserDto,
-  UpdateUserDto,
-  SerializerUserDto
->(User, CreateUserDto, UpdateUserDto, SerializerUserDto) {
-  constructor(protected service: AuthService) {
-    super();
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  // Endpoint para login
+  @Post('/login')
+  async loginUser(@Body() loginDto: AuthUserDto)/*: Promise<UserDto & { accessToken: string; refreshToken: string }>*/ {
+    return await this.authService.loginUser(loginDto);
   }
 
-  // Ruta multipart/form-data que permite crear usurio y subir imágenes.
-  @Post('with-profile-image')
-  @ApiOperation({
-    description: `
-  **Nota importante**: Swagger UI no maneja de forma nativa los objetos anidados, por lo que esta ruta no puede probarse correctamente a través de esta interfaz. Se recomienda probarla con Postman o similar para enviar datos con \`multipart/form-data\`.
+  // Endpoints para autenticación con Google
+  @Get('google/signin')
+  @UseGuards(GAuthGuard('google'))
+  async googleSignIn(@Req() req) {}
 
-  Pasos para probar en Postman (con multipart/form-data):
+  @Get('google/signin/callback')
+  @UseGuards(GAuthGuard('google'))
+  async googleSignInCallback(@Req() req) {
+    return this.authService.googleSignIn(req);
+  }
+
+  // Endpoint para verificar token y generar RefreshToken
+  @UseGuards(AuthGuard)
+  @Post('verify')
+  @ApiBearerAuth('bearerAuth')
+  verifyToken(@User() user: CurrentUser, @Token() token: string) {
+    return this.authService.generateRefreshToken(token);
+  }
+
+  // Endpoint para subir imágenes
+  @Post('upload')
+  @ApiBearerAuth('bearerAuth')
+  @UseInterceptors(FileInterceptor('image'))
+  async uploadImage(@UploadedFile() file: Express.Multer.File): Promise<{ url: string }> {
+    const url = await this.authService.uploadImage(file);
+    return { url };
+  }
   
-  1. Selecciona el método POST con la URL \`/auth/with-profile-image\`.
-  2. En la pestaña "Headers", agregá el siguiente encabezado:
-     - \`Content-Type: multipart/form-data\`.
-  3. En la pestaña "Body", selecciona "form-data".
-  4. Agrega los siguientes campos en el formulario:
-     - \`phone\`: Número de celular del usuario (ejemplo: \`2615836294\`).
-     - \`email\`: Correo electrónico del usuario (ejemplo: \`juan@example.com\`).
-     - \`username\`: Nombre de usuario (ejemplo: \`juan123\`).
-     - \`password\`: Contraseña del usuario (ejemplo: \`Clave1*\`).
-     - \`role\`: Rol del usuario (ejemplo: \`patient\` o \`admin\`).
-     - \`addresses\`: Información de la dirección en formato JSON (si aplica), por ejemplo:
-     - \`addresses[0][id]\`: ID de la primera dirección.
-     - \`profileImage\` (opcional): Archivo de imagen de perfil (formatos permitidos: PNG, JPG, JPEG). Asegúrate de seleccionar un archivo válido en el formato requerido.
-     
-     **Nota**: Guíate por la sección \`Body\` en esta misma documentación para obtener los campos correctos que se deben incluir en la petición. Si esta descripción estuviera desactualizada, la sección \`Body\` mostrará la información más precisa.
-  `
-  })
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({ type: CreateUserDtoWithFiles })
-  @ApiResponse({ type: SerializerUserDto })
-  @UseInterceptors(FileInterceptor('profileImage'))
-  async createWithDerivationImages(
-    @Body() createUserDto: CreateUserDto,
-    @UploadedFile(
-      new ParseFilePipe({
-        validators: [new FileTypeValidator({ fileType: /png|jpg|jpeg/ })], // Valida el tipo de archivo
-        fileIsRequired: false // Indica que el archivo es opcional
-      })
-    )
-    profileImage?: Express.Multer.File | null
-  ): Promise<SerializerUserDto> {
-    const data = await this.service.createWithProfileImage(
-      createUserDto,
-      profileImage
-    );
-    return toDto(SerializerUserDto, data); // Parsea la entidad a dto
+  // Endpoint para cambiar contraseña
+  @Patch('change-password')
+  @Roles(Role.PRACTITIONER, Role.ADMIN, Role.PATIENT)
+  @UseGuards(AuthGuard, RolesGuard)
+  @ApiBearerAuth('bearerAuth')
+  @ApiBody({ type: ChangePasswordDto })
+  async changePassword(
+    @User() user: CurrentUser,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    return await this.authService.changePassword(user.id, changePasswordDto);
   }
 
-  @Get()
-  @ApiOperation({
-    description: 'Obtener users paginados con filtros opcionales'
-  })
-  @ApiPaginationResponse(SerializerUserDto)
-  override async findAll(
-    @Query()
-    paginationDto: UserPaginationDto
-  ): Promise<{ data: SerializerUserDto[]; meta: PaginationMetadata }> {
-    const { data, meta } = await this.service.findAll(paginationDto);
-    const serializedData = toDtoList(SerializerUserDto, data);
-    return { data: serializedData, meta };
+  //test endpoint
+  @Get('/getUserById')
+  async getUserById(@Query('id') id: string) {
+    return await this.authService.getUserById(id)
   }
 }
