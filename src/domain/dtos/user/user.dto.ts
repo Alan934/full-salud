@@ -20,7 +20,6 @@ import { DocumentType } from '../../enums';
 import { Type } from 'class-transformer';
 
 export class UserDto {
-
   @IsUUID()
   @IsOptional()
   @ApiProperty({ example: '550e8400-e29b-41d4-a716-446655440000' })
@@ -90,7 +89,7 @@ export class UserDto {
   @IsOptional()
   @IsEnum(Gender)
   @ApiProperty({
-    examples: [Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.RATHER_NOT_SAY],
+    examples: [Gender.MALE, Gender.FEMALE, Gender.OTHER, Gender.RATHER_NOT_SAY]
   })
   gender?: Gender;
 
@@ -101,7 +100,10 @@ export class UserDto {
 
   @IsOptional()
   @IsString()
-  @ApiProperty({ example: 'https://rybwefx6jybsfaoy.public.blob.vercel-storage.com/colapinto-z9UMp9pG9UAu6DZm3s1ajWCBJDpN9H.jpg' })
+  @ApiProperty({
+    example:
+      'https://rybwefx6jybsfaoy.public.blob.vercel-storage.com/colapinto-z9UMp9pG9UAu6DZm3s1ajWCBJDpN9H.jpg'
+  })
   urlImg?: string;
 
   @IsOptional()
@@ -128,7 +130,6 @@ export class UserDto {
   @IsOptional()
   @IsUUID()
   socialWorkEnrollmentId?: string;
-
 }
 
 export class AuthUserDto {
@@ -137,34 +138,22 @@ export class AuthUserDto {
   @ApiProperty({ example: 'juan@example.com', required: true })
   email?: string;
 
-  @IsOptional()
-  @IsString()
-  @ApiProperty({ example: 'juan123', required: false })
-  username?: string;
-
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ example: 'Clave1*' })
   password: string;
-
-  
 }
 
 //"reescribe" profile image, no permite actualizar rol
 export class UpdateUserDto extends PartialType(
-  OmitType(UserDto, [
-    'role',
-    'username',
-    'password'
-  ] as const)
+  OmitType(UserDto, ['role', 'username', 'password'] as const)
 ) {
   // @IsNumberString()
-  // 
+  //
   // @ApiProperty({ example: '2615836294' })
   // phone?: string;
 
   @IsString()
-
   @IsOptional()
   @ApiProperty({ example: 'juan123' })
   username?: string;
@@ -178,7 +167,7 @@ export class UpdateUserDto extends PartialType(
       minLowercase: 1,
       minUppercase: 1,
       minNumbers: 1,
-      minSymbols: 0 
+      minSymbols: 0
     },
     {
       message:
@@ -190,7 +179,6 @@ export class UpdateUserDto extends PartialType(
   })
   @ApiProperty({ example: 'Clave1*' })
   password?: string;
-
 }
 
 export class CreateUserDto {
@@ -208,5 +196,4 @@ export class CreateUserDto {
   @IsString()
   @ApiProperty({ example: 'Clave1*' })
   password: string;
-
 }

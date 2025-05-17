@@ -36,10 +36,10 @@ export class PractitionerSocialWorkService {
       }
 
       const newEntry = this.repository.create({
-        practitionerId, // Almacenar el ID
-        socialWorkId,   // Almacenar el ID
-        practitioner,   // Asignar la entidad completa
-        socialWork,     // Asignar la entidad completa
+        practitionerId,
+        socialWorkId,
+        practitioner,
+        socialWork,
         price,
       });
 
@@ -77,7 +77,7 @@ export class PractitionerSocialWorkService {
         relations: ['practitioner', 'socialWork'],
         skip: (page - 1) * limit,
         take: limit,
-        order: { createdAt: 'DESC' } // o como prefieras ordenar
+        order: { createdAt: 'DESC' }
       });
 
       const lastPage = Math.ceil(total / limit);
@@ -105,7 +105,7 @@ export class PractitionerSocialWorkService {
 
   async update(id: string, updateDto: UpdatePractitionerSocialWorkDto): Promise<PractitionerSocialWork> {
     try {
-      const entry = await this.getOne(id); // Reutiliza getOne para buscar y manejar NotFound
+      const entry = await this.getOne(id);
 
       if (updateDto.price !== undefined) {
         entry.price = updateDto.price;
@@ -143,7 +143,6 @@ export class PractitionerSocialWorkService {
         throw new ErrorManager(`PractitionerSocialWork entry with ID "${id}" is not deleted.`, 400);
       }
       await this.repository.recover(entry);
-      // Volver a cargar con relaciones después de recuperar
       return this.getOne(id);
     } catch (error) {
       if (error instanceof NotFoundException || error instanceof ErrorManager) throw error;

@@ -1,4 +1,9 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BaseService } from '../../common/bases/base.service';
 import * as xml2js from 'xml2js';
@@ -21,13 +26,18 @@ import {
   PractitionerRole,
   Appointment,
   Location,
-  SocialWork
+  SocialWork,
+  User
 } from '../../domain/entities';
 import { EntityManager, Not, Repository, SelectQueryBuilder } from 'typeorm';
 import { Gender, Role } from '../../domain/enums';
 import * as bcrypt from 'bcrypt';
 import axios from 'axios';
-import { CreatePractitionerDto, PractitionerByNameAndLicenseDto, UpdatePractitionerDto } from '../../domain/dtos/practitioner/practitioner.dto';
+import {
+  CreatePractitionerDto,
+  PractitionerByNameAndLicenseDto,
+  UpdatePractitionerDto
+} from '../../domain/dtos/practitioner/practitioner.dto';
 import { PractitionerFilteredPaginationDto } from '../../domain/dtos/practitioner/practitioner-filtered-pagination.dto';
 import { AuthService } from '../auth/auth.service';
 import { plainToInstance } from 'class-transformer';
@@ -290,7 +300,9 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
     }
   }
 
-  async findByNameAndLicense(filterDto: PractitionerByNameAndLicenseDto): Promise<Practitioner> {
+  async findByNameAndLicense(
+    filterDto: PractitionerByNameAndLicenseDto
+  ): Promise<Practitioner> {
     try {
       const queryBuilder = this.repository.createQueryBuilder('practitioner')
         .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
@@ -314,7 +326,9 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
       }
       const practitioner = await queryBuilder.getOne();
       if (!practitioner) {
-        throw new NotFoundException('No practitioner found with the provided filters');
+        throw new NotFoundException(
+          'No practitioner found with the provided filters'
+        );
       }
       return practitioner;
 
@@ -462,11 +476,13 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
     try {
       const practitioner = await this.repository.findOne({
         where: { id },
-        withDeleted: true,
+        withDeleted: true
       });
 
       if (!practitioner || !practitioner.deletedAt) {
-        throw new NotFoundException(`Specialist with ID ${id} not found or not deleted`);
+        throw new NotFoundException(
+          `Specialist with ID ${id} not found or not deleted`
+        );
       }
 
       await this.repository.recover(practitioner);
@@ -507,14 +523,19 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
       queryBuilder.andWhere('practitioner.license = :license', {
         license: value
       }),
-    practitionerRole: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('practitioner_role.id = :id', { id: value }),
+    practitionerRole: (
+      queryBuilder: SelectQueryBuilder<Practitioner>,
+      value: string
+    ) => queryBuilder.andWhere('practitioner_role.id = :id', { id: value }),
     socialWorkEnrollmentId: (
       queryBuilder: SelectQueryBuilder<Practitioner>,
       value: string
-    ) => queryBuilder.andWhere('social_work_enrrollment.id = :id', { id: value }),
-    professionalDegree: (queryBuilder: SelectQueryBuilder<Practitioner>, value: string) =>
-      queryBuilder.andWhere('professionalDegree.id = :id', { id: value })
+    ) =>
+      queryBuilder.andWhere('social_work_enrrollment.id = :id', { id: value }),
+    professionalDegree: (
+      queryBuilder: SelectQueryBuilder<Practitioner>,
+      value: string
+    ) => queryBuilder.andWhere('professionalDegree.id = :id', { id: value })
   };
 
   //Override del método base findAll para filtrar por propiedades
@@ -530,9 +551,12 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
           'practitioner.practitionerAppointment',
           'practitionerAppointment'
         )
-        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
-        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
-        //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
+        .leftJoinAndSelect(
+          'practitioner.professionalDegree',
+          'professionalDegree'
+        )
+        .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole');
+      //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work');
 
       //añade las condiciones where al query builder
       const query = DynamicQueryBuilder.buildSelectQuery<Practitioner>(
@@ -574,7 +598,9 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
             .set({ practitioner: null })
             .where('specialist_id = :id', { id: entity.id })
             .execute();
-          await manager.delete(PractitionerAppointment, { practitioner: entity });
+          await manager.delete(PractitionerAppointment, {
+            practitioner: entity
+          });
           await manager.delete(ChargeItem, { practitioner: entity });
           await manager.remove(Practitioner, entity);
           return `Entity with id ${id} deleted`;
@@ -621,9 +647,15 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
   async findAllWithTurns(): Promise<Practitioner[]> {
     try {
       return await this.repository
-        .createQueryBuilder('practitioner')      
-        .leftJoinAndSelect('practitioner.practitionerAppointment', 'practitionerAppointment')
-        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .createQueryBuilder('practitioner')
+        .leftJoinAndSelect(
+          'practitioner.practitionerAppointment',
+          'practitionerAppointment'
+        )
+        .leftJoinAndSelect(
+          'practitioner.professionalDegree',
+          'professionalDegree'
+        )
         .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
         //.leftJoinAndSelect('practitioner.acceptedSocialWorks', 'social_work')
         .leftJoinAndSelect('practitioner.turns', 'turn')
@@ -636,11 +668,11 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
   }
 
   async practitionerPaginationAll(
-    filteredDto: PractitionerFilteredPaginationDto,
-  ): Promise<{ 
-    data: Practitioner[]; 
-    total: number; 
-    page: number; 
+    filteredDto: PractitionerFilteredPaginationDto
+  ): Promise<{
+    data: Practitioner[];
+    total: number;
+    page: number;
     limit: number;
     lastPage: number;
     filters?: any;
@@ -650,7 +682,10 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
 
       const queryBuilder = this.repository
         .createQueryBuilder('practitioner')
-        .leftJoinAndSelect('practitioner.professionalDegree', 'professionalDegree')
+        .leftJoinAndSelect(
+          'practitioner.professionalDegree',
+          'professionalDegree'
+        )
         .leftJoinAndSelect('practitioner.practitionerRole', 'practitionerRole')
         .leftJoinAndSelect('practitioner.socialWorkEnrollment', 'socialWorkEnrollment') // Esta es la obra social principal del profesional
         // .leftJoinAndSelect('socialWorkEnrollment.socialWork', 'swEnrollmentDetail') // Detalle de la OS principal
@@ -679,9 +714,12 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
 
       // Filtro para socialWorkEnrollmentId (obra social principal del profesional)
       if (filters.socialWorkEnrollmentId) {
-        queryBuilder.andWhere('socialWorkEnrollment.id = :socialWorkEnrollmentId', { 
-          socialWorkEnrollmentId: filters.socialWorkEnrollmentId 
-        });
+        queryBuilder.andWhere(
+          'socialWorkEnrollment.id = :socialWorkEnrollmentId',
+          {
+            socialWorkEnrollmentId: filters.socialWorkEnrollmentId
+          }
+        );
       }
 
       // Filtro para socialWorkId (obras sociales que atiende el profesional)
@@ -724,5 +762,4 @@ async validatePractitionerInSisa(dni: string, license: string): Promise<boolean>
       throw ErrorManager.createSignatureError((error as Error).message);
     }
   }
-  
 }

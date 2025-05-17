@@ -93,3 +93,4 @@ export * from './patient-appointment/patient-appointment-serializer.dto';
 export * from './patient-appointment/patient-appointment.dto';
 export * from './patient-practitioner-favorite/patient-practitioner-favorite-serializer.dto';
 export * from './patient-practitioner-favorite/patient-practitioner-favorite.dto';
+export * from './user/reset-password.dto';

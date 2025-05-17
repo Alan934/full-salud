@@ -15,15 +15,16 @@ import { envConfig } from '../../config/envs';
 import { GoogleStrategy } from './config/google.strategy';
 import { JwtAuthGuard, RolesGuard } from './guards/auth.guard';
 import { Reflector } from '@nestjs/core';
+import { MailService } from '../mail/mail.service';
 
 @Module({
   imports: [
     JwtModule.register({
       global: true,
       secret: envConfig.JWT_SECRET,
-      signOptions: { expiresIn: '15m' },
+      signOptions: { expiresIn: '15m' }
     }),
-    TypeOrmModule.forFeature([User, Practitioner, Patient]),
+    TypeOrmModule.forFeature([User, Practitioner, Patient])
     // PatientsNotificationPreferencesModule,
     // SpecialistsNotificationPreferencesModule,
     // organizationsNotificationPreferencesModule,
@@ -34,11 +35,12 @@ import { Reflector } from '@nestjs/core';
   ],
   controllers: [AuthController],
   providers: [
-    AuthService, 
+    AuthService,
     GoogleStrategy,
     JwtAuthGuard,
     RolesGuard,
-    Reflector
+    Reflector,
+    MailService
   ],
   exports: [AuthService, JwtAuthGuard, RolesGuard]
 })
